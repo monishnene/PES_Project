@@ -12,10 +12,10 @@ endif
 
 	cfiles=	main.c	project1.c	conversion.c	debug.c	memory.c	
 
-	CCFLAGS=	-DPROJECT1	-Wall	-Werror	-g	-O0	-std=c99	-I /home/monish/PES_project1  -lc	
+	CCFLAGS=	-DPROJECT1	-Wall	-Werror	-g	-O0	-std=c99	-I /root/PES_Project1  -lc	
 
 build:	main.o	memory.o	debug.o	conversion.o	project1.o
-	$(CC)	-o	Project1	main.o	memory.o	debug.o	conversion.o	project1.o	$(CCFLAGS)
+	$(CC)	-o	Project1BBBNATIVELYCOMPILED	main.o	memory.o	debug.o	conversion.o	project1.o	$(CCFLAGS)
 
 compile-all:	$(cfiles)	
 	$(CC)	-c	$(cfiles)	$(CCFLAGS)
