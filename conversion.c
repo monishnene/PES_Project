@@ -65,7 +65,14 @@ uint8_t i2a(short i,int32_t data, uint8_t * ptr, uint32_t base)
 }
 
 void compli(uint8_t * ptr,short i)
-{	short j,c1=0,c2;
+{	short j,c1=1,c2;
+	
+	for(j=0;j<i;j++)
+	{
+		temp=*(ptr+j)^1;
+		*(ptr+j)=temp;	
+	}	
+
 	for(j=0;j<i;j++)
 	{
 		c2=*(ptr+i-2-j)&c1
@@ -97,13 +104,12 @@ uint8_t my_itoa(int32_t data, uint8_t * ptr, uint32_t base)
 		case 2:
 			if (data < 0)
 			{
-		    *ptr=1+'0';
-		    ptr++;
-		    data *= -1;
-		    i=i2a(i,data,*ptr,base);
-		    compli(ptr,i);
-		    i++;
-			return i;
+			    *ptr=1+'0';
+			    ptr++;
+			    data *= -1;
+			    i=i2a(i,data,*ptr,base);
+			    compli(ptr,i);
+			    return i;
 			}
 			*(ptr)=0;
 			ptr++;

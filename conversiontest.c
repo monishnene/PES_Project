@@ -68,9 +68,16 @@ unsigned char i2a(short i, unsigned int data, unsigned char* ptr, unsigned int b
 }
 
 void compli(unsigned char* ptr,short i)
-{	short j,c1=0,c2,temp;
+{	short j,c1=1,c2,temp;
+	
 	for(j=0;j<i;j++)
 	{
+	temp=*(ptr+j)^1;
+	*(ptr+j)=temp;	
+	}
+
+	for(j=0;j<i;j++)
+	{	
 		c2=*(ptr+i-2-j)&c1;
 		temp=*(ptr+i-2-j)^c1;
 		*(ptr+i-2-j)=temp;
@@ -101,13 +108,12 @@ unsigned char my_itoa(int32_t data, unsigned char* ptr, unsigned int base)
 		case 2:
 			if (data < 0)
 			{
-		    *ptr=1+'0';
-		    ptr++;
-		    data *= -1;
-		    i=i2a(i,data,ptr,base);
-		    compli(ptr,i);
-		    i++;
-			return i;
+			    	*ptr=1+'0';
+			    	ptr++;
+			    	data *= -1;
+			    	i=i2a(i,data,ptr,base);
+			    	compli(ptr,i);
+				return i;
 			}
 			*(ptr)=0;
 			ptr++;
@@ -275,7 +281,7 @@ short i,n;
 char arr[50];
 unsigned char* ptr;
 ptr=&arr;
-n=my_itoa(3256,ptr,2);
+n=my_itoa(-325,ptr,2);
 for (i=0;i<n;i++)
 {
 printf("%c", arr[i]);
