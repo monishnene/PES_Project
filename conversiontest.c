@@ -104,7 +104,7 @@ unsigned char my_itoa(int32_t data, unsigned char* ptr, unsigned int base)
 		    *ptr=1+'0';
 		    ptr++;
 		    data *= -1;
-		    i=i2a(i,data,*ptr,base);
+		    i=i2a(i,data,ptr,base);
 		    compli(ptr,i);
 		    i++;
 			return i;
@@ -112,7 +112,7 @@ unsigned char my_itoa(int32_t data, unsigned char* ptr, unsigned int base)
 			*(ptr)=0;
 			ptr++;
 			i++;
-			i= i2a(i,data,*ptr,base);
+			i= i2a(i,data,ptr,base);
 			my_reverse(ptr,i-1);
 			return i;
 
@@ -146,12 +146,12 @@ unsigned char my_itoa(int32_t data, unsigned char* ptr, unsigned int base)
 				*ptr='45';
 				ptr++;
 				data *= -1;
-				i=i2a(i,data,*ptr,base);
+				i=i2a(i,data,ptr,base);
 				my_reverse(ptr,i-1);
 				i++;
 				return i;
 			}
-			i= i2a(i,data,*ptr,base);
+			i= i2a(i,data,ptr,base);
 			my_reverse(ptr,i-1);
 			return i;
 
@@ -270,13 +270,15 @@ unsigned char little_to_big32(unsigned int * data, unsigned int length)
 }
 
 void main()
-{ int i;
+{ 
+short i,n;
 char arr[50];
 unsigned char* ptr;
 ptr=&arr;
-my_itoa(3256,ptr,2);
-for (i=0;i<50;i++)
+n=my_itoa(3256,ptr,2);
+for (i=0;i<n;i++)
 {
 printf("%c", arr[i]);
 } 
+printf("\n");
 }
