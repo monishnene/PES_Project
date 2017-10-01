@@ -2,10 +2,11 @@
  * conversion.c
  *
  *  Created on: Sep 29, 2017
- *      Author: monish
+ *      Author: monish and sanika
  */
 #include <memory.h>
-
+#include <conversion.h>
+ 
 int32_t numvalue(short flag,uint8_t* ptr, uint8_t digits, uint32_t base)
 {
 	short i;
