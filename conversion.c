@@ -108,6 +108,7 @@ uint8_t my_itoa(int32_t data, uint8_t * ptr, uint32_t base)
 			    ptr++;
 			    data *= -1;
 			    i=i2a(i,data,*ptr,base);
+			    my_reverse(ptr,i-1);
 			    compli(ptr,i);
 			    return i;
 			}

@@ -112,12 +112,12 @@ unsigned char my_itoa(int32_t data, unsigned char* ptr, unsigned int base)
 			    	ptr++;
 			    	data *= -1;
 			    	i=i2a(i,data,ptr,base);
+				my_reverse(ptr,i-1);
 			    	compli(ptr,i);
 				return i;
 			}
 			*(ptr)=0;
 			ptr++;
-			i++;
 			i= i2a(i,data,ptr,base);
 			my_reverse(ptr,i-1);
 			return i;
@@ -281,7 +281,7 @@ short i,n;
 char arr[50];
 unsigned char* ptr;
 ptr=&arr;
-n=my_itoa(-325,ptr,2);
+n=my_itoa(-4444,ptr,2);
 for (i=0;i<n;i++)
 {
 printf("%c", arr[i]);
