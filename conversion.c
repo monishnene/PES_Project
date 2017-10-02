@@ -146,7 +146,7 @@ uint8_t my_itoa(int32_t data, uint8_t * ptr, uint32_t base)
 		case 10:
 			if (data < 0)
 			{
-				*ptr='45';
+				*ptr='-';
 				ptr++;
 				data *= -;
 				i=i2a(data,*ptr,base);
