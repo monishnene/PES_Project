@@ -51,8 +51,6 @@ int numvalue(short flag, unsigned char* ptr, unsigned char digits, unsigned int 
 	{
 		a=c2i(*(ptr+i));	
 		number = base*number + a;
-		printf("num=%d\n",number);
-		printf("i=%d\n",i);
 	}
 	if(flag==1)
 	{
@@ -277,7 +275,6 @@ int my_atoi(unsigned char* ptr, unsigned char digits, unsigned int base)
 				}	
 				number=-power+number;
 			}
-			printf("%d \n",number);
 			return number;
 
 		case 10:
@@ -303,7 +300,6 @@ int my_atoi(unsigned char* ptr, unsigned char digits, unsigned int base)
 				}	
 				number=-power+number;
 			}
-			printf("%d \n",number);
 			return number;
 
 		default:
