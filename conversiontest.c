@@ -290,13 +290,14 @@ int my_atoi(unsigned char* ptr, unsigned char digits, unsigned int base)
 			number=numvalue(flag,ptr,digits,base);	
 			return number;
 
-		case 16:if ((*(ptr)=='7')||(*(ptr)=='4')||(*(ptr)=='5')||(*(ptr)=='6'))
+		case 16:if ((*(ptr)=='F')||(*(ptr)=='E')||(*(ptr)=='D')||(*(ptr)=='C')||(*(ptr)=='B')||(*(ptr)=='A')||(*(ptr)=='a')||(*(ptr)=='b')||(*(ptr)=='f')||(*(ptr)=='e')||(*(ptr)=='d')||(*(ptr)=='c')||(*(ptr)=='9')||(*(ptr)=='8'))
 			{
 				flag=1;			
 			}
 			number=numvalue(0,ptr,digits,16);
 			if(flag==1)
 			{	for(i=0;i<digits;i++)
+
 				{
 				power *= 16;
 				}	
@@ -351,11 +352,11 @@ short i;
 int n;
 char arr[50];
 unsigned char* ptr = arr;
-*(ptr+0)='7';
-*(ptr+1)='7';
-*(ptr+2)='7';
-*(ptr+3)='7';
+*(ptr+0)='0';
+*(ptr+1)='0';
+*(ptr+2)='0';
+*(ptr+3)='F';
 printf("\n");
-n=my_atoi(ptr,4,8);
+n=my_atoi(ptr,4,16);
 printf("The value is %d \n",n);
 }
