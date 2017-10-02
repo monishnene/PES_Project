@@ -1,2 +1,2 @@
-test conversion:	conversiontest.c	memory.c	 
-	gcc	-o	conversiontest.elf	conversiontest.c	memory.c
+project1:	main.c	conversion.c	debug.c		memory.c	
+	gcc	-o	main.elf	main.c	debug.c	conversion.c	memory.c

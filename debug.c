@@ -4,6 +4,7 @@
  *  Created on: Sep 29, 2017
  *      Author: monish 
  */
+#include <debug.h>
 
 void print_memory(uint8_t * start, uint32_t length)
 {

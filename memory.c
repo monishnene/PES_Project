@@ -4,7 +4,6 @@
  *  Created on: Sep 29, 2017
  *      Author: monish and sanika
  */
-#include <stdlib.h>
 #include <memory.h>
 unsigned char* my_memmove(unsigned char* src, unsigned char* dst, size_t length)
 {
@@ -44,7 +43,7 @@ unsigned char* my_memcpy(unsigned char* src, unsigned char* dst, size_t length)
 	return dst;
 }
 
-int8_t* my_memset(unsigned char* src, size_t length, unsigned char value)
+char* my_memset(unsigned char* src, size_t length, unsigned char value)
 {
 	unsigned char i;
 	for(i=0;i<length;i++)
@@ -85,15 +84,15 @@ unsigned char* my_reverse(unsigned char* src, size_t length)
 	return src;
 }
 
-int32_t* reserve_words(size_t length)
+int* reserve_words(size_t length)
 {
-int32_t* src;
+int* src;
 size_t arr[length];
 src=&arr;
 return src;
 }
 
-void free_words(int32_t* src)
+void free_words(int* src)
 {
 src=NULL;
 }

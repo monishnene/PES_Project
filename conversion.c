@@ -4,30 +4,60 @@
  *  Created on: Sep 29, 2017
  *      Author: monish and sanika
  */
-#include<stdio.h>
 #include <memory.h>
-#include<stdlib.h>
 
-int32_t numvalue(short flag,unsigned char* ptr, unsigned char digits, unsigned int base)
-{
-	short i;
-        unsigned int number;
-	for(i=0;i<digits;i++)
-	{
-		number = base*number + *(ptr+i);
-	}
-	if(flag==1)
-	{
-		number *= -1;
-	}
-}
-
-short table(char a)
+short c2i(char a)
 {
 if(a=='0')
 {return 0;}
 else if(a=='1')
 {return 1;}
+else if(a=='2')
+{return 2;}
+else if(a=='3')
+{return 3;}
+else if(a=='4')
+{return 4;}
+else if(a=='5')
+{return 5;}
+else if(a=='6')
+{return 6;}
+else if(a=='7')
+{return 7;}
+else if(a=='8')
+{return 8;}
+else if(a=='9')
+{return 9;}
+else if(a=='A'||a=='a')
+{return 10;}
+else if(a=='B'||a=='b')
+{return 11;}
+else if(a=='C'||a=='c')
+{return 12;}
+else if(a=='D'||a=='d')
+{return 13;}
+else if(a=='E'||a=='e')
+{return 14;}
+else if(a=='F'||a=='f')
+{return 15;}
+else
+return ;
+}
+
+int numvalue(short flag, unsigned char* ptr, unsigned char digits, unsigned int base)
+{
+	short i,a;
+        unsigned int number=0;
+	for(i=0;i<digits;i++)
+	{
+		a=c2i(*(ptr+i));	
+		number = base*number + a;
+	}
+	if(flag==1)
+	{
+		number *= -1;
+	}
+	return number;
 }
 
 char hexcon(int temp)
@@ -39,6 +69,7 @@ char hexcon(int temp)
 			return 'A';
 
 			case 11:
+
 			return 'B';
 
 			case 12:
@@ -94,20 +125,7 @@ void compli(unsigned char* ptr,short i)
 	return;
 }
 
-unsigned int a2i(unsigned char* ptr, unsigned char digits, unsigned int base)
-{
-	short i=0,j=0;
-	unsigned int number=0;
-	while(*(ptr+i)!='\0')
-	{
-		number = number + (*(ptr+i)-48) * base;
-		i++;
-	}
-	return i;
-}
-
-
-unsigned char my_itoa(int32_t data, unsigned char* ptr, unsigned int base)
+unsigned char my_itoa(int data, unsigned char* ptr, unsigned int base)
 {	
 	short i=0,j,k,l=0,a,b,c,d;
 	char temp;
@@ -136,7 +154,7 @@ unsigned char my_itoa(int32_t data, unsigned char* ptr, unsigned int base)
 			i=my_itoa(data,ptr,2);
 			k=i-1;
 			j=(k)%3;		
-			temp=*(ptr);
+			temp = *(ptr);
 			if(j>0)
 			{
 				for(k=k-1;k>=0;k--)
@@ -150,9 +168,9 @@ unsigned char my_itoa(int32_t data, unsigned char* ptr, unsigned int base)
 			}
 			for(k=0;k<i+j-2;k+=3)
 			{	
-				a=table(*(ptr+k));
-				b=table(*(ptr+k+1));
-				c=table(*(ptr+k+2));			
+				a=c2i(*(ptr+k));
+				b=c2i(*(ptr+k+1));
+				c=c2i(*(ptr+k+2));			
 				temp=a*4+b*2+c;
 				*(ptr+l)=temp+'0';
 				l++;
@@ -201,10 +219,10 @@ unsigned char my_itoa(int32_t data, unsigned char* ptr, unsigned int base)
 				}
 			}
 			for(k=0;k<i+j-1;k+=4)
-			{	a=table(*(ptr+k));
-				b=table(*(ptr+k+1));
-				c=table(*(ptr+k+2));
-				d=table(*(ptr+k+3));			
+			{	a=c2i(*(ptr+k));
+				b=c2i(*(ptr+k+1));
+				c=c2i(*(ptr+k+2));
+				d=c2i(*(ptr+k+3));			
 				temp=a*8+b*4+c*2+d;
 				*(ptr+l)=hexcon(temp);
 				l++;
@@ -227,28 +245,38 @@ unsigned char my_itoa(int32_t data, unsigned char* ptr, unsigned int base)
 	}
 }
 
-int32_t my_atoi(unsigned char* ptr, unsigned char digits, unsigned int base)
+int my_atoi(unsigned char* ptr, unsigned char digits, unsigned int base)
 {	short i,j,k,flag=0;
-	int32_t number=0,temp;
+	int number=0,temp,power=1;
 	switch(base)
 	{
 		case 2:
-			if (*(ptr)=='1')
+			if ((*(ptr)=='1'))
 			{
-				compli(ptr,digits);
-				flag=1;
+				flag=1;			
 			}
-			number=numvalue(flag,ptr,digits,base);
+			number=numvalue(0,ptr,digits,2);
+			if(flag==1)
+			{	for(i=0;i<digits;i++)
+				{
+				power *= 2;
+				}	
+				number=-power+number;
+			}
 			return number;
 
-		case 8:
-			for(i=digits-1;i>=0;i--)
+		case 8:	if ((*(ptr)=='7')||(*(ptr)=='4')||(*(ptr)=='5')||(*(ptr)=='6'))
 			{
-				temp = *(ptr+i);
-				i2a(3*i,temp, ptr,2);
-				my_reverse(ptr,3);
+				flag=1;			
 			}
-			number=my_atoi(ptr,3*digits,2);
+			number=numvalue(0,ptr,digits,8);
+			if(flag==1)
+			{	for(i=0;i<digits;i++)
+				{
+				power *= 8;
+				}	
+				number=-power+number;
+			}
 			return number;
 
 		case 10:
@@ -258,17 +286,22 @@ int32_t my_atoi(unsigned char* ptr, unsigned char digits, unsigned int base)
 				digits--;
 				flag=1;
 			}
-			number=numvalue(flag,ptr,digits,base);
+			number=numvalue(flag,ptr,digits,base);	
 			return number;
 
-		case 16:
-			for(i=digits-1;i>=0;i--)
+		case 16:if ((*(ptr)=='F')||(*(ptr)=='E')||(*(ptr)=='D')||(*(ptr)=='C')||(*(ptr)=='B')||(*(ptr)=='A')||(*(ptr)=='a')||(*(ptr)=='b')||(*(ptr)=='f')||(*(ptr)=='e')||(*(ptr)=='d')||(*(ptr)=='c')||(*(ptr)=='9')||(*(ptr)=='8'))
 			{
-				temp = *(ptr+i);
-				i2a(4*i,temp, ptr,2);
-				my_reverse(ptr,4);
+				flag=1;			
 			}
-			number=my_atoi(ptr,4*digits,2);
+			number=numvalue(0,ptr,digits,16);
+			if(flag==1)
+			{	for(i=0;i<digits;i++)
+
+				{
+				power *= 16;
+				}	
+				number=-power+number;
+			}
 			return number;
 
 		default:
@@ -304,9 +337,9 @@ unsigned char little_to_big32(unsigned int * data, unsigned int length)
 		{
 			 temp = *(data+i);
 			 *(data+i) = *(data+3-i);
+
 			 *(data+3-i) = temp;
 		}
 	}
 	return 1;
 }
-
