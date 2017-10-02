@@ -22,6 +22,14 @@ int32_t numvalue(short flag,unsigned char* ptr, unsigned char digits, unsigned i
 	}
 }
 
+short table(char a)
+{
+if(a=='0')
+{return 0;}
+else if(a=='1')
+{return 1;}
+}
+
 char hexcon(int temp)
 {
 	switch(temp)
@@ -100,9 +108,9 @@ unsigned int a2i(unsigned char* ptr, unsigned char digits, unsigned int base)
 
 
 unsigned char my_itoa(int32_t data, unsigned char* ptr, unsigned int base)
-{
-	short i=0,j,k,l;
-	int temp;
+{	
+	short i=0,j,k,l=0,a,b,c,d;
+	char temp;
 	switch (base)
 	{
 		case 2:
@@ -114,33 +122,48 @@ unsigned char my_itoa(int32_t data, unsigned char* ptr, unsigned int base)
 			    	i=i2a(i,data,ptr,base);
 				my_reverse(ptr,i-1);
 			    	compli(ptr,i);
+				i++;	
 				return i;
 			}
 			*(ptr)=0;
 			ptr++;
 			i= i2a(i,data,ptr,base);
 			my_reverse(ptr,i-1);
+			i++;
 			return i;
 
 		case 8:
-			l=0;
 			i=my_itoa(data,ptr,2);
-			k=i;
-			j=(i-1)%3;
+			k=i-1;
+			j=(k)%3;		
 			temp=*(ptr);
-			for(k-1;k>=0;k--)
+			if(j>0)
 			{
-			*(ptr+k+3-j)=*(ptr+k);
+				for(k=k-1;k>=0;k--)
+				{
+					*(ptr+k+3-j)=*(ptr+k);
+				}
+				for(k=0;k<3-j;k++)
+				{
+					*(ptr+k)=temp;
+				}
 			}
-			for(k=0;k<3-j;k++)
-			{
-			*(ptr+i)=temp;
+			for(k=0;k<i+j-2;k+=3)
+			{	
+				a=table(*(ptr+k));
+				b=table(*(ptr+k+1));
+				c=table(*(ptr+k+2));			
+				temp=a*4+b*2+c;
+				*(ptr+l)=temp+'0';
+				l++;
 			}
-			for(k=0;k<i+j-1;k+=3)
+			if(*(ptr)=='0')
 			{
-			temp=*(ptr+k)*4+*(ptr+k+1)*2+*(ptr+k+2);
-			*(ptr+l)=temp + '0';
-			l++;
+				for(i=0;i<l;i++)
+				{	
+					*(ptr)=*(ptr+1);
+				}		
+			l--;
 			}
 			*(ptr+l)='\0';
 			l++;
@@ -162,26 +185,38 @@ unsigned char my_itoa(int32_t data, unsigned char* ptr, unsigned int base)
 			return i;
 
 		case 16:
-			l=0;
 			i=my_itoa(data,ptr,2);
-			k=i;
-			j=(i-1)%4;
+			k=i-1;
+			j=(k)%4;		
 			temp=*(ptr);
-			for(k-1;k>=0;k--)
+			if(j>0)
 			{
-				*(ptr+k+4-j)=*(ptr+k);
-			}
-			for(k=0;k<4-j;k++)
-			{
-				*(ptr+i)=temp;
+				for(k=k-1;k>=0;k--)
+				{
+					*(ptr+k+4-j)=*(ptr+k);
+				}
+				for(k=0;k<4-j;k++)
+				{
+					*(ptr+k)=temp;
+				}
 			}
 			for(k=0;k<i+j-1;k+=4)
-			{
-			temp=*(ptr+k)*8+*(ptr+k+1)*4+*(ptr+k+2)*2+*(ptr+k+3);
-			temp=hexcon(temp);
-			*(ptr+l)=temp;
-			l++;
+			{	a=table(*(ptr+k));
+				b=table(*(ptr+k+1));
+				c=table(*(ptr+k+2));
+				d=table(*(ptr+k+3));			
+				temp=a*8+b*4+c*2+d;
+				*(ptr+l)=hexcon(temp);
+				l++;
 			}
+			if(*(ptr)=='0')
+			{
+				for(i=0;i<=l;i++)
+				{
+					*(ptr)=*(ptr+1);
+				}	
+			l--;
+			}	
 			*(ptr+l)='\0';
 			l++;
 			return l;
@@ -277,14 +312,17 @@ unsigned char little_to_big32(unsigned int * data, unsigned int length)
 
 void main()
 { 
-short i,n;
+short i;
+int32_t n;
 char arr[50];
 unsigned char* ptr;
-ptr=&arr;
-n=my_itoa(-560..,ptr,2);
-for (i=0;i<n;i++)
+ptr = &arr;
+
+
+n=my_itoa(-85,ptr,16);
+for(i=0;i<n;i++)
 {
-printf("%c", arr[i]);
-} 
+printf("%c",arr[i]);
+}
 printf("\n");
 }
