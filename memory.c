@@ -5,6 +5,7 @@
  *      Author: monish and sanika
  */
 #include <memory.h>
+#include <stdlib>
 unsigned char* my_memmove(unsigned char* src, unsigned char* dst, size_t length)
 {
 	unsigned char i;
