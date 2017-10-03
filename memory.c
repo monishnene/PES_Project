@@ -20,7 +20,7 @@ unsigned char* my_memmove(unsigned char* src, unsigned char* dst, size_t length)
 
 	for(i=0;i<length;i++)
 	{
-		if(dst+length-1==src+i)
+		if(dst+length-1==src+i) /*For handling overlap condition for every iteration*/
 		{
 			dst=src+length;
 			break;
@@ -29,7 +29,7 @@ unsigned char* my_memmove(unsigned char* src, unsigned char* dst, size_t length)
 
 	for(i=0;i<length;i++)
 	{
-		*(dst+i)=*(src+i);
+		*(dst+i)=*(src+i); /*Copies from source to destination for every iteration*/
 	}
 	return dst;
 }
@@ -39,7 +39,7 @@ unsigned char* my_memcpy(unsigned char* src, unsigned char* dst, size_t length)
 	unsigned char i;
 	for(i=0;i<length;i++)
 	{
-		*(dst+i)=*(src+i);
+		*(dst+i)=*(src+i); /*Copies from source to destination for every iteration*/
 	}
 	return dst;
 }
@@ -49,7 +49,7 @@ char* my_memset(unsigned char* src, size_t length, unsigned char value)
 	unsigned char i;
 	for(i=0;i<length;i++)
 	{
-		*(src+i)=value;
+		*(src+i)=value; /*Sets the char value to the memory location for every iteration*/
 	}
 	return src;
 }
@@ -59,24 +59,24 @@ unsigned char* my_memzero(unsigned char* src, size_t length)
 	unsigned char i;
 	for(i=0;i<length;i++)
 	{
-		*(src+i)=0;
+		*(src+i)=0; /*Clears the source location for every iteration*/
 	}
 	return src;
 }
 
-unsigned char* my_reverse(unsigned char* src, size_t length)
+unsigned char* my_reverse(unsigned char* src, size_t length) /*Function for reversing bytes*/
 {
 	char* temp;
 	int i,n;
-	if(length%2==0)
+	if(length%2==0) /*If the length is even*/
 	{
 		n=length/2;
 	}
 	else
 	{
-		n=(length-1)/2;
+		n=(length-1)/2; /*If the length is odd*/
 	}
-	for(i=0;i<n;i++)
+	for(i=0;i<n;i++) /*Loop for reversing the bytes*/
 	{
 		 temp = *(src+i);
 		 *(src+i) = *(src+length-i-1);
@@ -88,11 +88,11 @@ unsigned char* my_reverse(unsigned char* src, size_t length)
 int* reserve_words(size_t length)
 {
 int* src;
-src = (int*) malloc(length);
+src = (int*) malloc(length); /*To reserve words = length in memory*/
 return src;
 }
 
-void free_words(int* src)
+void free_words(int* src) /*Function to free memory*/
 {
 free(src);
 return;
