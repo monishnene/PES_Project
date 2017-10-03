@@ -2,7 +2,7 @@
  * memory.h
  *
  *  Created on: Sep 29, 2017
- *      Author: monish
+ *      Author: monish and sanika
  */
 
 #ifndef MEMORY_H_
