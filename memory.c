@@ -44,7 +44,7 @@ unsigned char* my_memcpy(unsigned char* src, unsigned char* dst, size_t length)
 	return dst;
 }
 
-char* my_memset(unsigned char* src, size_t length, unsigned char value)
+unsigned char* my_memset(unsigned char* src, size_t length, unsigned char value)
 {
 	unsigned char i;
 	for(i=0;i<length;i++)
@@ -66,7 +66,7 @@ unsigned char* my_memzero(unsigned char* src, size_t length)
 
 unsigned char* my_reverse(unsigned char* src, size_t length) /*Function for reversing bytes*/
 {
-	char* temp;
+	char* temp=NULL;
 	int i,n;
 	if(length%2==0) /*If the length is even*/
 	{
@@ -78,22 +78,23 @@ unsigned char* my_reverse(unsigned char* src, size_t length) /*Function for reve
 	}
 	for(i=0;i<n;i++) /*Loop for reversing the bytes*/
 	{
-		 temp = *(src+i);
+		 *temp = *(src+i);
 		 *(src+i) = *(src+length-i-1);
-		 *(src+length-i-1) = temp;
+		 *(src+length-i-1) = *temp;
 	}
 	return src;
 }
 
-int* reserve_words(size_t length)
+size_t* reserve_words(size_t length)
 {
-int* src;
-src = (int*) malloc(length); /*To reserve words = length in memory*/
+size_t* src;
+size_t arr[length];
+src= arr; /*To reserve words = length in memory*/
 return src;
 }
 
 void free_words(int* src) /*Function to free memory*/
 {
-free(src);
+src=NULL;
 return;
 }
