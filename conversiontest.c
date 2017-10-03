@@ -4,7 +4,7 @@
  *  Created on: Sep 29, 2017
  *      Author: monish and sanika
  */
-#include<stdio.h>
+#include <stdio.h>
 #include <memory.h>
 
 short c2i(char a)

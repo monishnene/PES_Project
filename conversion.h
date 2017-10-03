@@ -8,10 +8,15 @@
 #ifndef CONVERSION_H_
 #define CONVERSION_H_
 
-uint8_t my_itoa(int32_t data, uint8_t * ptr, uint32_t base);
-int32_t my_atoi(uint8_t * ptr, uint8_t digits, uint32_t base);
-int8_t big_to_little32(uint32_t * data, uint32_t length);
-int8_t little_to_big32(uint32_t * data, uint32_t length);
-
+unsigned char my_itoa(int data, unsigned char * ptr, unsigned int base);
+int my_atoi(char * ptr, unsigned char digits, unsigned int base);
+char big_to_little32(unsigned int * data, unsigned int length);
+char little_to_big32(unsigned int * data, unsigned int length);
+/*extra functions defined in conversion*/
+short c2i(char a);
+int numvalue(short flag, unsigned char* ptr, unsigned char digits, unsigned int base);
+char hexcon(int temp);
+unsigned char i2a(short i, unsigned int data, unsigned char* ptr, unsigned int base);
+void compli(unsigned char* ptr,short i);
 
 #endif /* CONVERSION_H_ */
