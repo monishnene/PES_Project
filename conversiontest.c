@@ -314,9 +314,9 @@ int my_atoi(unsigned char* ptr, unsigned char digits, unsigned int base)
 unsigned char  big_to_little32(unsigned int* data, unsigned int length)
 {
 	short i,j;
-	int temp=0;
 	for(i=0;i<length;i++)
 	{
+		unsigned int temp=0;
 		for(j=0;j<4;j++)
 		{
 			temp = 16*temp + (*(data+i)%16);  				 
@@ -330,9 +330,9 @@ unsigned char  big_to_little32(unsigned int* data, unsigned int length)
 unsigned char little_to_big32(unsigned int * data, unsigned int length)
 {
 	short i,j;
-	int temp=0;
 	for(i=0;i<length;i++)
-	{
+	{	
+		unsigned int temp=0;
 		for(j=0;j<4;j++)
 		{
 			temp = 16*temp + (*(data+i)%16);  				 
@@ -346,15 +346,39 @@ unsigned char little_to_big32(unsigned int * data, unsigned int length)
 
 void main()
 { 
-short i;
+unsigned short i;
 int n;
-char arr[50];
-unsigned char* ptr = arr;
-*(ptr+0)='8';
+unsigned int arr[50];
+unsigned int* data = arr;
+
+*(data+0)=46155;
+*(data+1)=17185;
+*(data+2)=4660;
+*(data+3)=65535;
+
+n=big_to_little32(data,4);
+for(i=0;i<4;i++)
+{
+printf("The value is %d\n",*(data+i));
+printf("\n");
+}
+}
+//for(i=0;i<n;i++)
+//{
+//printf("%c",*(data+i));
+//}
+/*unsigned char* ptr = arr;
+n=my_itoa(5678,ptr,16);
+for(i=0;i<n;i++)
+{
+printf("%c",*(ptr+i));
+}*/
+/* *(ptr+0)='f';
 *(ptr+1)='1';
 *(ptr+2)='1';
 *(ptr+3)='1';
 printf("\n");
 n=my_atoi(ptr,4,10);
-printf("The value is %d \n",n);
-}
+printf("The value is %d \n",n); */
+//printf("\n");
+//}
