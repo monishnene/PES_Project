@@ -87,12 +87,12 @@ unsigned char* my_reverse(unsigned char* src, size_t length)
 int* reserve_words(size_t length)
 {
 int* src;
-size_t arr[length];
-src=&arr;
+src = (int*) malloc(length);
 return src;
 }
 
 void free_words(int* src)
 {
-src=NULL;
+free(src);
+return;
 }
