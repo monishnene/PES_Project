@@ -4,6 +4,7 @@
  *  Created on: Sep 29, 2017
  *      Author: monish and sanika
  */
+#include<stdio.h>
 #include <memory.h>
 
 short c2i(char a)
@@ -313,33 +314,34 @@ int my_atoi(unsigned char* ptr, unsigned char digits, unsigned int base)
 unsigned char  big_to_little32(unsigned int* data, unsigned int length)
 {
 	short i,j;
-	char* temp;
 	for(i=0;i<length;i++)
 	{
-		data=data+4*i;
-		for(j=0;j<2;j++)
+		unsigned int temp=0;
+		for(j=0;j<4;j++)
 		{
-			 temp = *(data+i);
-			 *(data+i) = *(data+3-i);
-			 *(data+3-i) = temp;
+			temp = 16*temp + (*(data+i)%16);  				 
+			*(data+i)=*(data+i)/16;
 		}
+			*(data+i)=temp;
 	}
-	return 1;
+	return '1';
 }
 
 unsigned char little_to_big32(unsigned int * data, unsigned int length)
-{	short i,j;
-	char* temp;
+{
+	short i,j;
 	for(i=0;i<length;i++)
-	{
-		data=data+4*i;
-		for(j=0;j<2;j++)
+	{	
+		unsigned int temp=0;
+		for(j=0;j<4;j++)
 		{
-			 temp = *(data+i);
-			 *(data+i) = *(data+3-i);
-
-			 *(data+3-i) = temp;
+			temp = 16*temp + (*(data+i)%16);  				 
+			*(data+i)=*(data+i)/16;
 		}
+			*(data+i)=temp;
 	}
-	return 1;
+	return '1';
 }
+
+
+
