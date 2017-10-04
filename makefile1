@@ -1,0 +1,18 @@
+ifeq	($(PLATFORM),HOST)
+	CC=gcc
+endif
+
+ifeq	($(PLATFORM),BBB)
+	CC=arm-linux-gnueabihf-gcc
+endif
+
+ifeq	($(PLATFORM),KL25Z)
+	CC=arm-none-eabi-gcc
+endif
+	DEP=platform.h	
+
+	CCFLAGS=	-DVERBOSE	-DPROJECT1	-Wall	-Werror	-g	-O0	-std=c99	-I /home/monish/PES_project1
+
+Project1:	main.c	project1.c	debug.c
+	$(CC)	-o	Project	main.c	project1.c	debug.c	$(CCFLAGS)
+

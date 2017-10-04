@@ -7,15 +7,15 @@
 
 #ifndef MEMORY_H_
 #define MEMORY_H_
-
+#include <stdint.h>
 
 unsigned char* my_memmove(unsigned char* src, unsigned char* dst, int length);
 unsigned char* my_memcpy(unsigned char* src, unsigned char* dst, int length);
-unsigned char* my_memset(unsigned char* src, int length, unsigned char value)
+unsigned char* my_memset(unsigned char* src, int length, unsigned char value);
 unsigned char* my_memzero(unsigned char* src, int length);
 unsigned char* my_reverse(unsigned char* src, int length);
-int* reserve_words( length);
-void free_words(int* src);
+int* reserve_words(int length);
+void free_words(unsigned int* src);
 
 
 #endif /* MEMORY_H_ */

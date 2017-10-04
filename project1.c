@@ -16,11 +16,12 @@
  * @date April 2, 2017
  *
  */
-
+#include <debug.h>
 #include <stdio.h>
 #include <stdint.h>
 #include <platform.h>
 #include <memory.h>
+#include <project1.h>
 #include <conversion.h>
 
 int8_t test_data1() {
@@ -31,14 +32,14 @@ int8_t test_data1() {
 
   printf("\ntest_data1();\n");
   ptr = (uint8_t*) reserve_words( DATA_SET_SIZE_W );
-
+  
   if (! ptr )
   {
     return TEST_ERROR;
   }
-
-  digits = my_itoa( num, ptr, BASE_16);   
-  value = my_atoi( ptr, digits, BASE_16);
+  digits = my_itoa( num, ptr, 16);
+  printf("\ntest_data1();\n");   
+  value = my_atoi( ptr, digits, 16);
   #ifdef VERBOSE
   printf("  Initial number: %d\n", num);  
   printf("  Final Decimal number: %d\n", value);  
@@ -67,8 +68,8 @@ int8_t test_data2() {
     return TEST_ERROR;
   }
 
-  digits = my_itoa( num, ptr, BASE_10);
-  value = my_atoi( ptr, digits, BASE_10);
+  digits = my_itoa( num, ptr, 10);
+  value = my_atoi( ptr, digits, 10);
   #ifdef VERBOSE
   printf("  Initial Decimal number: %d\n", num);  
   printf("  Final Decimal number: %d\n", value);  
@@ -106,9 +107,9 @@ int8_t test_memmove1() {
     set[i] = i;
   }
 
-  print_array(set, MEM_SET_SIZE_B);
+  print_memory(set, MEM_SET_SIZE_B);
   my_memmove(ptra, ptrb, TEST_MEMMOVE_LENGTH);
-  print_array(set, MEM_SET_SIZE_B);
+  print_memory(set, MEM_SET_SIZE_B);
 
   for (i = 0; i < TEST_MEMMOVE_LENGTH; i++)
   {
@@ -144,9 +145,9 @@ int8_t test_memmove2() {
     set[i] = i;
   }
 
-  print_array(set, MEM_SET_SIZE_B);
+  print_memory(set, MEM_SET_SIZE_B);
   my_memmove(ptra, ptrb, TEST_MEMMOVE_LENGTH);
-  print_array(set, MEM_SET_SIZE_B);
+  print_memory(set, MEM_SET_SIZE_B);
 
   for (i = 0; i < TEST_MEMMOVE_LENGTH; i++)
   {
@@ -183,9 +184,9 @@ int8_t test_memmove3() {
     set[i] = i;
   }
 
-  print_array(set, MEM_SET_SIZE_B);
+  print_memory(set, MEM_SET_SIZE_B);
   my_memmove(ptra, ptrb, TEST_MEMMOVE_LENGTH);
-  print_array(set, MEM_SET_SIZE_B);
+  print_memory(set, MEM_SET_SIZE_B);
 
   for (i = 0; i < TEST_MEMMOVE_LENGTH; i++)
   {
@@ -194,7 +195,6 @@ int8_t test_memmove3() {
       ret = TEST_ERROR;
     }
   }
-
 
   free_words( (uint32_t*)set );
   return ret;
@@ -223,9 +223,9 @@ int8_t test_memcpy() {
     set[i] = i;
   }
 
-  print_array(set, MEM_SET_SIZE_B);
+  print_memory(set, MEM_SET_SIZE_B);
   my_memcpy(ptra, ptrb, TEST_MEMMOVE_LENGTH);
-  print_array(set, MEM_SET_SIZE_B);
+  print_memory(set, MEM_SET_SIZE_B);
 
   for (i = 0; i < TEST_MEMMOVE_LENGTH; i++)
   {
@@ -262,11 +262,11 @@ int8_t test_memset()
     set[i] = i;
   }
 
-  print_array(set, MEM_SET_SIZE_B);
+  print_memory(set, MEM_SET_SIZE_B);
   my_memset(ptra, MEM_SET_SIZE_B, 0xFF);
-  print_array(set, MEM_SET_SIZE_B);
+  print_memory(set, MEM_SET_SIZE_B);
   my_memzero(ptrb, MEM_ZERO_LENGTH);
-  print_array(set, MEM_SET_SIZE_B);
+  print_memory(set, MEM_SET_SIZE_B);
   
   /* Validate Set & Zero Functionality */
   for (i = 0; i < MEM_ZERO_LENGTH; i++)
@@ -305,9 +305,9 @@ int8_t test_reverse()
   
   my_memcpy(set, copy, MEM_SET_SIZE_B);
 
-  print_array(set, MEM_SET_SIZE_B);
+  print_memory(set, MEM_SET_SIZE_B);
   my_reverse(set, MEM_SET_SIZE_B);
-  print_array(set, MEM_SET_SIZE_B);
+  print_memory(set, MEM_SET_SIZE_B);
 
   for (i = 0; i < MEM_SET_SIZE_B; i++)
   {
@@ -321,7 +321,7 @@ int8_t test_reverse()
   return ret;
 }
 
-void course1(void) 
+void project1(void) 
 {
   uint8_t i;
   int8_t failed = 0;

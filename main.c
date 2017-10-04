@@ -2,12 +2,12 @@
 #include <platform.h>
 #include <memory.h>
 #include <conversion.h>
-#include <debug.h>	
+#include <debug.h>
+#include <stdint.h>	
 #ifdef PROJECT1
-	project1();
 #endif
-
-void main()
+int main()
 {
-course1();
+project1();
+return 0;
 }

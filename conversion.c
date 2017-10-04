@@ -6,7 +6,9 @@
  */
 #include<stdlib.h>
 #include<memory.h>
-short c2i(char a) /* Function for converting char to Int*/
+#include <stdint.h>
+
+uint16_t c2i(int8_t a) /* Function for converting char to Int*/
 {
 if(a=='0')
 {return 0;}
@@ -43,10 +45,10 @@ else if(a=='F'||a=='f')
 return 0;
 }
 
-int numvalue(short flag, unsigned char* ptr, unsigned char digits, unsigned int base)
+size_t numvalue(uint16_t flag, uint8_t* ptr, uint8_t digits, uint32_t base)
 {
-	short i,a;
-        unsigned int number=0;
+	uint16_t i,a;
+        uint32_t number=0;
 	for(i=0;i<digits;i++)       /*loop for obtaining number in case of ascii to int conversion*/
 	{
 		a=c2i(*(ptr+i));	
@@ -59,7 +61,7 @@ int numvalue(short flag, unsigned char* ptr, unsigned char digits, unsigned int 
 	return number;
 }
 
-char hexcon(int temp)           /*Function that includes switch statement for hex definition*/
+int8_t hexcon(int temp)           /*Function that includes switch statement for hex definition*/
 {
 	switch(temp)            /*switch case for defining hex characters above 9 i.e. 'A' to 'F'*/
 
@@ -89,9 +91,9 @@ char hexcon(int temp)           /*Function that includes switch statement for he
 	}
 }
 
-unsigned char i2a(short i, unsigned int data, unsigned char* ptr, unsigned int base)
+uint8_t i2a(uint16_t i, uint32_t data, uint8_t* ptr, uint32_t base)
 {
-	short temp;
+	uint16_t temp;
 	while(data>=base) /*Loop for converting integer to binary values*/
 	{
 	temp=data%base;  
@@ -106,8 +108,8 @@ unsigned char i2a(short i, unsigned int data, unsigned char* ptr, unsigned int b
 	return i;
 }
 
-void compli(unsigned char* ptr,short i) /*Function to find 2's complement for negative numbers*/
-{	short j,c1=1,c2,temp;
+void compli(uint8_t* ptr,uint16_t i) /*Function to find 2's complement for negative numbers*/
+{	uint16_t j,c1=1,c2,temp;
 	
 	for(j=0;j<i;j++)
 	{
@@ -125,10 +127,10 @@ void compli(unsigned char* ptr,short i) /*Function to find 2's complement for ne
 	return;
 }
 
-unsigned char my_itoa(int data, unsigned char* ptr, unsigned int base) /*Function for converting integer to ascii*/
+uint8_t my_itoa(int32_t data, uint8_t* ptr, uint32_t base) /*Function for converting integer to ascii*/
 {	
-	short i=0,j,k,l=0,a,b,c,d;
-	char temp;            
+	uint16_t i=0,j,k,l=0,a=0,b=0,c=0,d=0;
+	int8_t temp;            
 	switch (base)                /*Switch statement for binary,octal,decimal,hex*/
 	{
 		case 2:                     
@@ -244,9 +246,9 @@ unsigned char my_itoa(int data, unsigned char* ptr, unsigned int base) /*Functio
 	}
 }
 
-int my_atoi(unsigned char* ptr, unsigned char digits, unsigned int base) /*Function for converting ascii to int values*/
-{	short i,flag=0;
-	int number=0,power=1;
+int32_t my_atoi(uint8_t* ptr, uint8_t digits, uint32_t base) /*Function for converting ascii to int values*/
+{	uint16_t i,flag=0;
+	size_t number=0,power=1;
 	switch(base)
 	{
 		case 2:
@@ -308,12 +310,12 @@ int my_atoi(unsigned char* ptr, unsigned char digits, unsigned int base) /*Funct
 	}
 }
 
-unsigned char  big_to_little32(unsigned int* data, unsigned int length) /*Loop for converting big to little endian*/
+uint8_t  big_to_little32(uint32_t* data, uint32_t length) /*Loop for converting big to little endian*/
 {
-	short i,j;
+	uint16_t i,j;
 	for(i=0;i<length;i++) 
 	{
-		unsigned int temp=0;
+		uint32_t temp=0;
 		for(j=0;j<4;j++)
 		{
 			temp = 16*temp + (*(data+i)%16); /*Taking remainder and multiplying it by 16 for each iteration*/ 				 
@@ -324,12 +326,12 @@ unsigned char  big_to_little32(unsigned int* data, unsigned int length) /*Loop f
 	return '1';
 }
 
-unsigned char little_to_big32(unsigned int * data, unsigned int length) /*Loop for converting little to big endian*/
+uint8_t little_to_big32(uint32_t * data, uint32_t length) /*Loop for converting little to big endian*/
 {
-	short i,j;
+	uint16_t i,j;
 	for(i=0;i<length;i++)
 	{	
-		unsigned int temp=0;
+		uint32_t temp=0;
 		for(j=0;j<4;j++)
 		{
 			temp = 16*temp + (*(data+i)%16);  /*Taking remainder and multiplying it by 16 for each iteration*/ 					 

@@ -8,7 +8,7 @@
 #define DEBUG_H_
 
 #ifdef VERBOSE
-#define void print_memory(unsigned char * start, unsigned int length );
+void print_memory(unsigned char * start, unsigned int length );
 #endif
 
 #endif /* DEBUG_H_ */

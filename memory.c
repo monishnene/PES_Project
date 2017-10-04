@@ -4,10 +4,12 @@
  *  Created on: Sep 29, 2017
  *      Author: monish and sanika
  */
-#include <stdlib.h>
-unsigned char* my_memmove(unsigned char* src, unsigned char* dst, int length)
+#include <stdint.h>
+#include<stdlib.h>
+#include<stdio.h>
+uint8_t* my_memmove(uint8_t* src, uint8_t* dst, size_t length)
 {
-	unsigned char i;
+	uint8_t i;
 	for(i=0;i<length;i++)
 	{
 		if(dst==src+i)
@@ -33,9 +35,9 @@ unsigned char* my_memmove(unsigned char* src, unsigned char* dst, int length)
 	return dst;
 }
 
-unsigned char* my_memcpy(unsigned char* src, unsigned char* dst, int length)
+uint8_t* my_memcpy(uint8_t* src, uint8_t* dst, size_t length)
 {
-	unsigned char i;
+	uint8_t i;
 	for(i=0;i<length;i++)
 	{
 		*(dst+i)=*(src+i); /*Copies from source to destination for every iteration*/
@@ -43,9 +45,9 @@ unsigned char* my_memcpy(unsigned char* src, unsigned char* dst, int length)
 	return dst;
 }
 
-unsigned char* my_memset(unsigned char* src, int length, unsigned char value)
+uint8_t* my_memset(uint8_t* src, size_t length, uint8_t value)
 {
-	unsigned char i;
+	uint8_t i;
 	for(i=0;i<length;i++)
 	{
 		*(src+i)=value; /*Sets the char value to the memory location for every iteration*/
@@ -53,9 +55,9 @@ unsigned char* my_memset(unsigned char* src, int length, unsigned char value)
 	return src;
 }
 
-unsigned char* my_memzero(unsigned char* src, int length)
+uint8_t* my_memzero(uint8_t* src, size_t length)
 {
-	unsigned char i;
+	uint8_t i;
 	for(i=0;i<length;i++)
 	{
 		*(src+i)=0; /*Clears the source location for every iteration*/
@@ -64,10 +66,10 @@ unsigned char* my_memzero(unsigned char* src, int length)
 }
 
 
-unsigned char* my_reverse(unsigned char* src, int length) /*Function for reversing bytes*/
+uint8_t* my_reverse(uint8_t* src, size_t length) /*Function for reversing bytes*/
 {
-	char* temp=NULL;
-	int i,n;
+	int8_t* temp = NULL;
+	size_t i,n;
 	if(length%2==0) /*If the length is even*/
 	{
 		n=length/2;
@@ -85,16 +87,17 @@ unsigned char* my_reverse(unsigned char* src, int length) /*Function for reversi
 	return src;
 }
 
-int* reserve_words(int length)
+int32_t* reserve_words(size_t length)
 {
-int* src;
-int arr[length];
-src= arr; /*To reserve words = length in memory*/
+int32_t* src;
+int32_t arr[length];
+src=arr;
+/*src=(int32_t*) malloc(length); To reserve words = length in memory*/
 return src;
 }
 
-void free_words(int* src) /*Function to free memory*/
+void free_words(uint32_t* src) /*Function to free memory*/
 {
-src=NULL;
+free(src);
 return;
 }
