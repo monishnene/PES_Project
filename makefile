@@ -11,24 +11,27 @@ ifeq	($(PLATFORM),KL25Z)
 endif
 	DEP=platform.h	
 
-	CCFLAGS=	-DVERBOSE	-DPROJECT1	-Wall	-Werror	-g	-O0	-std=c99	
+	CCFLAGS=	-DVERBOSE	-DPROJECT1	-Wall	-Werror	-g	-O0	-std=c99	-I /home/monish/PES_project1
 
-%.o:	%.c	$(DEPS)
-	$(CC)	-c	-o	$@	$<	$(CCFLAGS)	
+Project1:	main.o	memory.o	debug.o	conversion.o	project1.o
+	$(CC)	-c	Project1	main.o	memory.o	debug.o	conversion.o	project1.o	$(CCFLAGS)
 
-memory:	memory.c	memory.h
-	$(CC)	-o	memory.o		$(CCFLAGS)	memory.c
+main.o:	main.c	project1.h	conversion.h	debug.h	memory.h	platform.h	
+	$(CC)	-c	main.c	$(CCFLAGS)	
 
-conversion:	conversion.c	memory.c	memory.h	conversion.h
-	$(CC)	-o	conversion.o	$(CCFLAGS)	conversion.c	memory.c		
-	
-debug:	debug.c		debug.h
-	$(CC)	-o	debug.o	$(CCFLAGS)	debug.c		
+project1.o:	project1.c	conversion.h	debug.h	memory.h	platform.h
+	$(CC)	-c	project1.c	$(CCFLAGS)	
 
-platform:	platform.c	platform.h
-	$(CC)	-o	platform.o	$(CCFLAGS)	memory.c	
+conversion.o:	conversion.c	memory.h	platform.h
+	$(CC)	-c	conversion.c	$(CCFLAGS)	
 
-.PHONY:	conversiontest.c	memory.c	debug.c		conversion.c	platform.c			
+memory.o:	memory.c	stdlib.h	platform.h
+	$(CC)	-c	memory.c	$(CCFLAGS)	
+
+debug.o:	debug.c	platform.h
+	$(CC)	-c	debug.c	$(CCFLAGS)	
+
+.PHONY:	conversiontest.c	memory.c	debug.c		conversion.c	project1.c			
 
 clean :
 	rm	-f	*.o	

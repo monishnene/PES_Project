@@ -4,9 +4,8 @@
  *  Created on: Sep 29, 2017
  *      Author: monish and sanika
  */
-#include <memory.h>
 #include <stdlib.h>
-unsigned char* my_memmove(unsigned char* src, unsigned char* dst, size_t length)
+unsigned char* my_memmove(unsigned char* src, unsigned char* dst, int length)
 {
 	unsigned char i;
 	for(i=0;i<length;i++)
@@ -34,7 +33,7 @@ unsigned char* my_memmove(unsigned char* src, unsigned char* dst, size_t length)
 	return dst;
 }
 
-unsigned char* my_memcpy(unsigned char* src, unsigned char* dst, size_t length)
+unsigned char* my_memcpy(unsigned char* src, unsigned char* dst, int length)
 {
 	unsigned char i;
 	for(i=0;i<length;i++)
@@ -44,7 +43,7 @@ unsigned char* my_memcpy(unsigned char* src, unsigned char* dst, size_t length)
 	return dst;
 }
 
-unsigned char* my_memset(unsigned char* src, size_t length, unsigned char value)
+unsigned char* my_memset(unsigned char* src, int length, unsigned char value)
 {
 	unsigned char i;
 	for(i=0;i<length;i++)
@@ -54,7 +53,7 @@ unsigned char* my_memset(unsigned char* src, size_t length, unsigned char value)
 	return src;
 }
 
-unsigned char* my_memzero(unsigned char* src, size_t length)
+unsigned char* my_memzero(unsigned char* src, int length)
 {
 	unsigned char i;
 	for(i=0;i<length;i++)
@@ -64,7 +63,8 @@ unsigned char* my_memzero(unsigned char* src, size_t length)
 	return src;
 }
 
-unsigned char* my_reverse(unsigned char* src, size_t length) /*Function for reversing bytes*/
+
+unsigned char* my_reverse(unsigned char* src, int length) /*Function for reversing bytes*/
 {
 	char* temp=NULL;
 	int i,n;
@@ -85,10 +85,10 @@ unsigned char* my_reverse(unsigned char* src, size_t length) /*Function for reve
 	return src;
 }
 
-size_t* reserve_words(size_t length)
+int* reserve_words(int length)
 {
-size_t* src;
-size_t arr[length];
+int* src;
+int arr[length];
 src= arr; /*To reserve words = length in memory*/
 return src;
 }

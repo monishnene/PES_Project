@@ -4,9 +4,8 @@
  *  Created on: Sep 29, 2017
  *      Author: monish and sanika
  */
-#include<stdio.h>
-#include <memory.h>
-
+#include<stdlib.h>
+#include<memory.h>
 short c2i(char a) /* Function for converting char to Int*/
 {
 if(a=='0')
@@ -41,7 +40,7 @@ else if(a=='E'||a=='e')
 {return 14;}
 else if(a=='F'||a=='f')
 {return 15;}
-else
+return 0;
 }
 
 int numvalue(short flag, unsigned char* ptr, unsigned char digits, unsigned int base)
@@ -241,8 +240,7 @@ unsigned char my_itoa(int data, unsigned char* ptr, unsigned int base) /*Functio
 			return l;
 
 		default:
-			printf("Not a valid base");   /*Not a valid base*/
-			return 0;
+			return 0;	 /* The base is invalid*/
 	}
 }
 
@@ -306,8 +304,7 @@ int my_atoi(unsigned char* ptr, unsigned char digits, unsigned int base) /*Funct
 			return number;
 
 		default:
-			printf("Not a valid base"); /* The base is invalid*/
-			return 0;
+			return 0;	 /* The base is invalid*/
 	}
 }
 

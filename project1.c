@@ -20,7 +20,6 @@
 #include <stdio.h>
 #include <stdint.h>
 #include <platform.h>
-#include <project1.h>
 #include <memory.h>
 #include <conversion.h>
 
@@ -51,6 +50,7 @@ int8_t test_data1() {
     return TEST_ERROR;
   }
   return TEST_NO_ERROR;
+
 }
 
 int8_t test_data2() {
