@@ -1,5 +1,20 @@
 /*
  * conversion.c
+Long description:-
+
+ The conversion.c is used for making different conversions like:-
+1) Integer to Ascii
+2) Ascii to integer 
+3) big to little endian and little to big endian
+Integer to Ascii uses my_itoa function that handles cases for base 2 to base 16. For base2, if the data is negative, it converts int to char and then converts the negative number into a positive number.The function i2a is then called on which converts the integer to binary values and then reverse function is being called upon to reverse the bits for proper representation of the bits. The compli function is then called which takes the 2's complement of the number and the final answer we get are the binary values for int number. Incase, the number is positive the same logic is applied except that the 2's complement is not required to be taken. For base 8, the binary values for number has been found out and arranged in groups of 3 and for each group respective powers of 2 have been multiplied to get the final answer. For base 10, incrementing the pointer so that it points to the signed bit in case of negative number.The negative number is converted to positive and then converted into bits which are then represented properly. For positive values, the same logic has been used as above.For base 16, the binary values for number has been found out and arranged in groups of 4 and for each group respective power of 2 has been multiplied to get the final answer.
+
+Ascii to integer uses my_atoi function that handles cases for base 2 to base 16. If msb is 1, flag is set to 1 and then negative number is first converted into positive. A function call is used to find the numvalue and then loop would be used for adjusting the value into integer. Similar logic is used for positive number. For base 8, if MSB is 4 or above flag is set to 1. Then, function call is used to find the numvalue and then loop is used for adjusting the value into integer. For base 10, if it has a negative sign, if flag =1, convert negative to positive.Then, the function call numvalue is used to find the numvalue.For, base 16, if MSB is 8 or above, then use the functioncall to find the numvalue. Loop for adjusting the value into integer is used. For all other cases the default condition is that the base is invalid.
+
+For  converting big to little endian, Remainder of data with 16 (for hex) is taken and is being multiplied by 16 for each iteration.After this operation, the MSB and LSB is being swapped  and the middle bytes remain the same. The little to big endian conversion uses the same logic the MSB gets stored first and then the middle bytes and LSB at the last.
+
+ *
+ *  Created on: Sep 29, 2017
+ *      Author: monish and sanika
  *
  *  Created on: Sep 29, 2017
  *      Author: monish and sanika

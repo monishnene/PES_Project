@@ -1,11 +1,11 @@
 ifeq	($(PLATFORM),HOST)
 	CC=gcc
-	flags=	-DVERBOSE
+	flags=	
 endif
 
 ifeq	($(PLATFORM),BBB)
 	CC=arm-linux-gnueabihf-gcc
-	flags=	-DVERBOSE
+	flags=	
 endif
 
 ifeq	($(PLATFORM),KL25Z)
@@ -15,7 +15,7 @@ endif
 
 	cfiles=	main.c	project1.c	conversion.c	debug.c	memory.c	
 
-	CCFLAGS=	$(flags)	-DPROJECT1	-Wall	-Werror	-g	-O0	-std=c99	-I /home/monish/PES_Project1  -lc	
+	CCFLAGS=	$(flags)	-DPROJECT1	-Wall	-Werror	-g	-O0	-std=c99	-DVERBOSE	-I /home/monish/PES_Project1  -lc	
 
 build:	main.o	memory.o	debug.o	conversion.o	project1.o
 	$(CC)	-o	project1	main.o	memory.o	debug.o	conversion.o	project1.o	$(CCFLAGS)
