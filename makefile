@@ -1,21 +1,24 @@
 ifeq	($(PLATFORM),HOST)
 	CC=gcc
+	flags=	-DVERBOSE
 endif
 
 ifeq	($(PLATFORM),BBB)
 	CC=arm-linux-gnueabihf-gcc
+	flags=	-DVERBOSE
 endif
 
 ifeq	($(PLATFORM),KL25Z)
 	CC=arm-none-eabi-gcc
+	flags=	-mthumb	-mfpu=fpv4-sp-d16	-specs=nosys.specs	-mcpu=cortex-m0	-march=armv6-m	-mfloat-abi=soft		
 endif	
 
 	cfiles=	main.c	project1.c	conversion.c	debug.c	memory.c	
 
-	CCFLAGS=	-DPROJECT1	-Wall	-Werror	-g	-O0	-std=c99	-I /root/PES_Project1  -lc	
+	CCFLAGS=	$(flags)	-DPROJECT1	-Wall	-Werror	-g	-O0	-std=c99	-I /home/monish/PES_Project1  -lc	
 
 build:	main.o	memory.o	debug.o	conversion.o	project1.o
-	$(CC)	-o	Project1BBBNATIVELYCOMPILED	main.o	memory.o	debug.o	conversion.o	project1.o	$(CCFLAGS)
+	$(CC)	-o	project1	main.o	memory.o	debug.o	conversion.o	project1.o	$(CCFLAGS)
 
 compile-all:	$(cfiles)	
 	$(CC)	-c	$(cfiles)	$(CCFLAGS)
@@ -27,7 +30,7 @@ project1.o:	project1.c	debug.c	conversion.h	debug.h	memory.h	platform.h
 	$(CC)	-c	project1.c	debug.c	$(CCFLAGS)	
 
 conversion.o:	conversion.c	platform.h
-	$(CC)	-c	conversion.c	$(CCFLAGS)	
+	$(CC)	-c	conversion.c	$(CCFLAGS)	 
 
 memory.o:	memory.c	platform.h
 	$(CC)	-c	memory.c	$(CCFLAGS)	
