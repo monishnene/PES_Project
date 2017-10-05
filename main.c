@@ -4,8 +4,6 @@
 #include <conversion.h>
 #include <debug.h>
 #include <stdint.h>	
-#ifdef PROJECT1
-#endif
 int main()
 {
 project1();

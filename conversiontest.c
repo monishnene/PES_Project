@@ -346,39 +346,41 @@ unsigned char little_to_big32(unsigned int * data, unsigned int length)
 
 void main()
 { 
-unsigned short i;
+short i;
 int n;
-unsigned int arr[50];
-unsigned int* data = arr;
+char arr[50];
+/*unsigned int* data = arr;
 
 *(data+0)=46155;
 *(data+1)=17185;
 *(data+2)=4660;
 *(data+3)=65535;
 
-n=big_to_little32(data,4);
+/*n=big_to_little32(data,4);
 for(i=0;i<4;i++)
 {
 printf("The value is %d\n",*(data+i));
 printf("\n");
 }
-}
+}*/
 //for(i=0;i<n;i++)
 //{
 //printf("%c",*(data+i));
 //}
-/*unsigned char* ptr = arr;
-n=my_itoa(5678,ptr,16);
+unsigned char* ptr;
+ptr = &arr;
+n=my_itoa(-4096,ptr,16);
 for(i=0;i<n;i++)
 {
 printf("%c",*(ptr+i));
-}*/
+}
 /* *(ptr+0)='f';
 *(ptr+1)='1';
 *(ptr+2)='1';
-*(ptr+3)='1';
+*(ptr+3)='1';*/
 printf("\n");
-n=my_atoi(ptr,4,10);
-printf("The value is %d \n",n); */
-//printf("\n");
-//}
+n=my_atoi(ptr,n,10);
+printf("The value is %d \n",n);
+printf("\n");
+}
+

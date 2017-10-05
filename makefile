@@ -10,10 +10,15 @@ ifeq	($(PLATFORM),KL25Z)
 	CC=arm-none-eabi-gcc
 endif	
 
-	CCFLAGS=	-DVERBOSE	-DPROJECT1	-Wall	-Werror	-g	-O0	-std=c99	-I /home/monish/PES_project1	
+	cfiles=	main.c	project1.c	conversion.c	debug.c	memory.c	
 
-Project1:	main.o	memory.o	debug.o	conversion.o	project1.o
+	CCFLAGS=	-DVERBOSE	-DPROJECT1	-Wall	-Werror	-g	-O0	-std=c99	-I /home/monish/PES_project1  -lc	
+
+build:	main.o	memory.o	debug.o	conversion.o	project1.o
 	$(CC)	-o	Project1	main.o	memory.o	debug.o	conversion.o	project1.o	$(CCFLAGS)
+
+compile-all:	$(cfiles)	
+	$(CC)	-c	$(cfiles)	$(CCFLAGS)
 
 main.o:	main.c	project1.h	conversion.h	debug.h	memory.h	platform.h	
 	$(CC)	-c	main.c	$(CCFLAGS)	
@@ -21,7 +26,7 @@ main.o:	main.c	project1.h	conversion.h	debug.h	memory.h	platform.h
 project1.o:	project1.c	debug.c	conversion.h	debug.h	memory.h	platform.h
 	$(CC)	-c	project1.c	debug.c	$(CCFLAGS)	
 
-conversion.o:	conversion.c	memory.h	platform.h
+conversion.o:	conversion.c	platform.h
 	$(CC)	-c	conversion.c	$(CCFLAGS)	
 
 memory.o:	memory.c	platform.h
@@ -60,9 +65,10 @@ memory.asm:	memory.c	platform.h
 debug.asm:	debug.c	platform.h
 	$(CC)	-S	debug.c	$(CCFLAGS)	
 
+.PHONY:	conversiontest.c	memory.c	debug.c		conversion.c	project1.c	main.c		
 
+compile-all:
 
-.PHONY:	conversiontest.c	memory.c	debug.c		conversion.c	project1.c			
 
 clean :
 	rm	-f	*.o	*.s	*.e	

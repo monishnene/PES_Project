@@ -28,24 +28,24 @@ int8_t test_data1() {
   uint8_t * ptr;
   int32_t num = -4096;
   uint32_t digits;
-  int32_t value;
+  int32_t value
+;
 
   printf("\ntest_data1();\n");
-  ptr = (uint8_t*) reserve_words( DATA_SET_SIZE_W );
+  ptr = (uint8_t*) reserve_words( 16 );
   
   if (! ptr )
   {
     return TEST_ERROR;
   }
   digits = my_itoa( num, ptr, 16);
-  printf("\ntest_data1();\n");   
-  value = my_atoi( ptr, digits, 16);
+		  
+  value = my_atoi( ptr,digits, 16);
   #ifdef VERBOSE
   printf("  Initial number: %d\n", num);  
   printf("  Final Decimal number: %d\n", value);  
   #endif
   free_words( (uint32_t*)ptr );
-
   if ( value != num )
   {
     return TEST_ERROR;
@@ -61,7 +61,7 @@ int8_t test_data2() {
   int32_t value;
 
   printf("test_data2();\n");
-  ptr = (uint8_t*) reserve_words( DATA_SET_SIZE_W );
+  ptr = (uint8_t*) reserve_words( 16);
 
   if (! ptr )
   {
@@ -295,14 +295,13 @@ int8_t test_reverse()
                                  0x72, 0x75, 0x74, 0x78, 0x21, 0x4D, 0x20, 0x40,
                                  0x20, 0x24, 0x7C, 0x20, 0x24, 0x69, 0x68, 0x54
                                };
-
+ 	
   printf("test_reverse()\n");
   copy = (uint8_t*)reserve_words(MEM_SET_SIZE_W);
   if (! copy )
   {
     return TEST_ERROR;
   }
-  
   my_memcpy(set, copy, MEM_SET_SIZE_B);
 
   print_memory(set, MEM_SET_SIZE_B);
@@ -335,6 +334,9 @@ void project1(void)
   results[5] = test_memcpy();
   results[6] = test_memset();
   results[7] = test_reverse();
+  
+  for(i=0;i<8;i++)	
+  {printf("%d",results[i]);}
 
   for ( i = 0; i < TESTCOUNT; i++) 
   {

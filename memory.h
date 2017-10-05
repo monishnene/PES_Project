@@ -13,7 +13,7 @@ unsigned char* my_memmove(unsigned char* src, unsigned char* dst, int length);
 unsigned char* my_memcpy(unsigned char* src, unsigned char* dst, int length);
 unsigned char* my_memset(unsigned char* src, int length, unsigned char value);
 unsigned char* my_memzero(unsigned char* src, int length);
-unsigned char* my_reverse(unsigned char* src, int length);
+uint8_t* my_reverse(unsigned char* src, int length);
 int* reserve_words(int length);
 void free_words(unsigned int* src);
 

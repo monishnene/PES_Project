@@ -5,8 +5,8 @@
  *      Author: monish and sanika
  */
 #include<stdlib.h>
-#include<memory.h>
 #include <stdint.h>
+#include<stdio.h>
 
 uint16_t c2i(int8_t a) /* Function for converting char to Int*/
 {
@@ -49,7 +49,7 @@ size_t numvalue(uint16_t flag, uint8_t* ptr, uint8_t digits, uint32_t base)
 {
 	uint16_t i,a;
         uint32_t number=0;
-	for(i=0;i<digits;i++)       /*loop for obtaining number in case of ascii to int conversion*/
+	for(i=0;i<digits-1;i++)       /*loop for obtaining number in case of ascii to int conversion*/
 	{
 		a=c2i(*(ptr+i));	
 		number = base*number + a;
@@ -61,11 +61,60 @@ size_t numvalue(uint16_t flag, uint8_t* ptr, uint8_t digits, uint32_t base)
 	return number;
 }
 
-int8_t hexcon(int temp)           /*Function that includes switch statement for hex definition*/
+uint8_t* reverse(uint8_t* src, size_t length) /*Function for reversing bytes*/
+{
+	int8_t temp;
+	size_t i,n;
+	if(length%2==0) /*If the length is even*/
+	{
+		n=length/2;
+	}
+	else
+	{
+		n=(length-1)/2; /*If the length is odd*/
+	}
+	for(i=0;i<n;i++) /*Loop for reversing the bytes*/
+	{
+		temp = *(src+i);
+		 *(src+i) = *(src+length-i-1);
+		 *(src+length-i-1) = temp;
+	}
+	return src;
+}
+
+int8_t i2c(int temp)           /*Function that includes switch statement for hex definition*/
 {
 	switch(temp)            /*switch case for defining hex characters above 9 i.e. 'A' to 'F'*/
 
-	{
+	{		case 1:
+			return '1';
+			
+			case 0:
+			return '0';
+			
+			case 2:
+			return '2';
+			
+			case 3:
+			return '3';
+			
+			case 4:
+			return '4';
+
+			case 5:
+			return '5';
+
+			case 6:
+			return '6';
+
+			case 7:
+			return '7';
+
+			case 8:
+			return '8';
+
+			case 9:
+			return '9';
 
 			case 10:
 			return 'A';
@@ -85,10 +134,9 @@ int8_t hexcon(int temp)           /*Function that includes switch statement for 
 
 			case 15:
 			return 'F';
-
-			default:
-			return temp +'0'; /*To convert int to char*/
+			 /*To convert int to char*/
 	}
+return '0';
 }
 
 uint8_t i2a(uint16_t i, uint32_t data, uint8_t* ptr, uint32_t base)
@@ -97,11 +145,11 @@ uint8_t i2a(uint16_t i, uint32_t data, uint8_t* ptr, uint32_t base)
 	while(data>=base) /*Loop for converting integer to binary values*/
 	{
 	temp=data%base;  
-	*(ptr+i)=temp +'0'; /*To convert int to char*/
+	*(ptr+i)=i2c(temp); /*To convert int to char*/
 	data=data/base;
 	i++;
 	}
-	*(ptr+i)=data +'0';
+	*(ptr+i)=i2c(data);
 	i++;
 	*(ptr+i)='\0';  /*Convert uptill the null char has reached*/
 	i++;
@@ -122,7 +170,7 @@ void compli(uint8_t* ptr,uint16_t i) /*Function to find 2's complement for negat
 		c2=*(ptr+i-2-j)&c1; //Carry 2 is the internal carry generated that contains the 'And' operation of the previous carry and the second last locationin a data
 		temp=*(ptr+i-2-j)^c1; //carrying out exor for the initial carry and the bit at the second last location in a data and storing it in a temp variable
 		*(ptr+i-2-j)=temp;   /*Storing the result back to the second last bit in the data*/
-		c1=c2;               /*storing c2 in c1 so that c2 becomes the previous carry for further operation*/
+		c1=c2; /*storing c2 in c1 so that c2 becomes the previous carry for further operation*/
 	}
 	return;
 }
@@ -139,16 +187,17 @@ uint8_t my_itoa(int32_t data, uint8_t* ptr, uint32_t base) /*Function for conver
 			    	*ptr=1+'0';  /*converting int to char*/
 			    	ptr++;       /*Incrementing the pointer so that it points at the negative sign of the negative integer*/
 			    	data *= -1;   /*converting negative to positive integer*/
-			    	i=i2a(i,data,ptr,base); /*Function call for converting integer to binary values*/
-				my_reverse(ptr,i-1);    /*Reversing the bits for proper representation*/
-			    	compli(ptr,i);         /*Function call to find 2's complement */
-				i++;	               
+			    	i=i2a(i,data,ptr,base); /*Function call for converting integer to binary values*/	
+				reverse(ptr,i-1);    /*Reversing the bits for proper representation*/		    	
+				compli(ptr,i);         /*Function call to find 2's complement */
+		         	i++;
 				return i;
 			}
+
 			*(ptr)=0;                      /*For positive integers*/
 			ptr++;
 			i= i2a(i,data,ptr,base);      /*Function call for converting integer to binary values*/
-			my_reverse(ptr,i-1);          /*Reversing the bits for proper representation*/
+			ptr=reverse(ptr,i-1);          /*Reversing the bits for proper representation*/
 			i++;                          
 			return i;
 
@@ -174,7 +223,7 @@ uint8_t my_itoa(int32_t data, uint8_t* ptr, uint32_t base) /*Function for conver
 				b=c2i(*(ptr+k+1));
 				c=c2i(*(ptr+k+2));			
 				temp=a*4+b*2+c;
-				*(ptr+l)=temp+'0';
+				*(ptr+l)=i2c(temp);
 				l++;
 			}
 			if(*(ptr)=='0')
@@ -196,37 +245,36 @@ uint8_t my_itoa(int32_t data, uint8_t* ptr, uint32_t base) /*Function for conver
 				ptr++;      /*Incrementing the pointer so that it points at the negative sign of the negative integer*/
 				data *= -1;  /*converting negative to positive integer*/
 				i=i2a(i,data,ptr,base); /*Function call for converting integer to binary values*/
-				my_reverse(ptr,i-1);    /*Reversing the bits for proper representation*/
+				reverse(ptr,i-1);    /*Reversing the bits for proper representation*/
 				i++;                 
 				return i;
 			}                               /*For positive integers*/
 			i= i2a(i,data,ptr,base);       /*Function call for converting integer to binary values*/ 
-			my_reverse(ptr,i-1);           /*Reversing the bits for proper representation*/
+			reverse(ptr,i-1);           /*Reversing the bits for proper representation*/
 			return i;
 
 		case 16:
-			i=my_itoa(data,ptr,2);        /*using recursive function*/
-			k=i-1;
-			j=(k)%4;		
-			temp=*(ptr);
+			i=my_itoa(data,ptr,2);        /*using recursive function*/												
+			j=(i-1)%4;		
+			temp=*(ptr); 
 			if(j>0)
-			{
-				for(k=k-1;k>=0;k--)  /*Loop for making groups of 4 bits*/
-				{
-					*(ptr+k+4-j)=*(ptr+k);
+			{	
+				for(k=2;k<i+1;k++)  /*Loop for adjusting groups of 4 bits*/
+				{	
+					*(ptr+i-k+4-j)=*(ptr+i-k);
 				}
-				for(k=0;k<4-j;k++)
+				for(k=0;k<4-j;k++) /*Loop for setting sign bit*/
 				{
 					*(ptr+k)=temp;
 				}
 			}
-			for(k=0;k<i+j-1;k+=4)       //Loop for multiplying the lsb,middle and msb groups with respective powers of 2 to get the char output                                                      //(hex)
+			for(k=0;k<i+j-1;k+=4)       //Loop for multiplying the lsb,middle and msb groups with respective powers of 2 to get the char output                                                  
 			{	a=c2i(*(ptr+k));
 				b=c2i(*(ptr+k+1));
 				c=c2i(*(ptr+k+2));
 				d=c2i(*(ptr+k+3));			
 				temp=a*8+b*4+c*2+d;
-				*(ptr+l)=hexcon(temp);
+				*(ptr+l)=i2c(temp);
 				l++;
 			}
 			if(*(ptr)=='0')
@@ -238,7 +286,7 @@ uint8_t my_itoa(int32_t data, uint8_t* ptr, uint32_t base) /*Function for conver
 			l--;
 			}	
 			*(ptr+l)='\0';
-			l++;
+			l++; 
 			return l;
 
 		default:
@@ -296,7 +344,7 @@ int32_t my_atoi(uint8_t* ptr, uint8_t digits, uint32_t base) /*Function for conv
 			}
 			number=numvalue(0,ptr,digits,16); /*function call to find the num value*/
 			if(flag==1)
-			{	for(i=0;i<digits;i++) /*Loop for adjusting the value into integer*/
+			{	for(i=1;i<digits;i++) /*Loop for adjusting the value into integer*/
 
 				{
 				power *= 16;
@@ -319,7 +367,7 @@ uint8_t  big_to_little32(uint32_t* data, uint32_t length) /*Loop for converting 
 		for(j=0;j<4;j++)
 		{
 			temp = 16*temp + (*(data+i)%16); /*Taking remainder and multiplying it by 16 for each iteration*/ 				 
-			*(data+i)=*(data+i)/16;
+			*(data+i)= *(data+i)/16;
 		}
 			*(data+i)=temp;
 	}
