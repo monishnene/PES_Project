@@ -334,9 +334,6 @@ void project1(void)
   results[5] = test_memcpy();
   results[6] = test_memset();
   results[7] = test_reverse();
-  
-  for(i=0;i<8;i++)	
-  {printf("%d",results[i]);}
 
   for ( i = 0; i < TESTCOUNT; i++) 
   {
