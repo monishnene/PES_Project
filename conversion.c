@@ -217,17 +217,16 @@ uint8_t my_itoa(int32_t data, uint8_t* ptr, uint32_t base) /*Function for conver
 			return i;
 
 		case 8:
-			i=my_itoa(data,ptr,2);        /*using recursive function*/
-			k=i-1;
-			j=(k)%3;		
-			temp = *(ptr);
-			if(j>0)                        /*Loop for making groups of 3 bits*/
-			{
-				for(k=k-1;k>=0;k--)  
-				{
-					*(ptr+k+3-j)=*(ptr+k);
+			i=my_itoa(data,ptr,2);        /*using recursive function*/												
+			j=(i-1)%3;		
+			temp=*(ptr); 
+			if(j>0)
+			{	
+				for(k=2;k<i+1;k++)  /*Loop for adjusting groups of 4 bits*/
+				{	
+					*(ptr+i-k+3-j)=*(ptr+i-k);
 				}
-				for(k=0;k<3-j;k++)
+				for(k=0;k<3-j;k++) /*Loop for setting sign bit*/
 				{
 					*(ptr+k)=temp;
 				}
