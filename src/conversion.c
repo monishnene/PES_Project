@@ -61,9 +61,12 @@ return 0;
 }
 
 size_t numvalue(uint16_t flag, uint8_t* ptr, uint8_t digits, uint32_t base)
-{
+{       
+        
 	uint16_t i,a;
         uint32_t number=0;
+        if( * ptr!= NULL)
+        {
 	for(i=0;i<digits-1;i++)       /*loop for obtaining number in case of ascii to int conversion*/
 	{
 		a=c2i(*(ptr+i));	
@@ -73,6 +76,8 @@ size_t numvalue(uint16_t flag, uint8_t* ptr, uint8_t digits, uint32_t base)
 	{
 		number *= -1;     /*For converting negative number to positive*/
 	}
+       
+        }
 	return number;
 }
 
@@ -80,6 +85,8 @@ uint8_t* reverse(uint8_t* src, size_t length) /*Function for reversing bytes*/
 {
 	int8_t temp;
 	size_t i,n;
+        if( * src!= NULL && length >0)
+        {
 	if(length%2==0) /*If the length is even*/
 	{
 		n=length/2;
@@ -94,6 +101,7 @@ uint8_t* reverse(uint8_t* src, size_t length) /*Function for reversing bytes*/
 		 *(src+i) = *(src+length-i-1);
 		 *(src+length-i-1) = temp;
 	}
+        }
 	return src;
 }
 
@@ -155,7 +163,9 @@ return '0';
 }
 
 uint8_t i2a(uint16_t i, uint32_t data, uint8_t* ptr, uint32_t base)
-{
+{       
+        if( * ptr != NULL )
+        {
 	uint16_t temp;
 	while(data>=base) /*Loop for converting integer to binary values*/
 	{
@@ -168,12 +178,14 @@ uint8_t i2a(uint16_t i, uint32_t data, uint8_t* ptr, uint32_t base)
 	i++;
 	*(ptr+i)='\0';  /*Convert uptill the null char has reached*/
 	i++;
+        }
 	return i;
 }
 
 void compli(uint8_t* ptr,uint16_t i) /*Function to find 2's complement for negative numbers*/
 {	uint16_t j,c1=1,c2,temp;
-	
+	if ( * ptr!= NULL)
+        {
 	for(j=0;j<i;j++)
 	{
 	temp=*(ptr+j)^1; /*exoring logic 1 with each location and storing it in a temp variable everytime the loop executes*/
@@ -187,13 +199,16 @@ void compli(uint8_t* ptr,uint16_t i) /*Function to find 2's complement for negat
 		*(ptr+i-2-j)=temp;   /*Storing the result back to the second last bit in the data*/
 		c1=c2; /*storing c2 in c1 so that c2 becomes the previous carry for further operation*/
 	}
+        }
 	return;
 }
 
 uint8_t my_itoa(int32_t data, uint8_t* ptr, uint32_t base) /*Function for converting integer to ascii*/
 {	
 	uint16_t i=0,j,k,l=0,a=0,b=0,c=0,d=0;
-	int8_t temp;            
+	int8_t temp; 
+        if ( *ptr != NULL) 
+        {           
 	switch (base)                /*Switch statement for binary,octal,decimal,hex*/
 	{
 		case 2:                     
@@ -302,15 +317,20 @@ uint8_t my_itoa(int32_t data, uint8_t* ptr, uint32_t base) /*Function for conver
 			*(ptr+l)='\0';
 			l++; 
 			return l;
+                
+
 
 		default:
 			return 0;	 /* The base is invalid*/
 	}
+        }
 }
 
 int32_t my_atoi(uint8_t* ptr, uint8_t digits, uint32_t base) /*Function for converting ascii to int values*/
 {	uint16_t i,flag=0;
 	size_t number=0,power=1;
+        if( *ptr != NULL)
+        {
 	switch(base)
 	{
 		case 2:
@@ -370,11 +390,14 @@ int32_t my_atoi(uint8_t* ptr, uint8_t digits, uint32_t base) /*Function for conv
 		default:
 			return 0;	 /* The base is invalid*/
 	}
+        }
 }
 
 uint8_t  big_to_little32(uint32_t* data, uint32_t length) /*Loop for converting big to little endian*/
 {
 	uint16_t i,j;
+        if ( * data != NULL)
+        {
 	for(i=0;i<length;i++) 
 	{
 		uint32_t temp=0;
@@ -385,12 +408,15 @@ uint8_t  big_to_little32(uint32_t* data, uint32_t length) /*Loop for converting 
 		}
 			*(data+i)=temp;
 	}
+        }
 	return '1';
 }
 
 uint8_t little_to_big32(uint32_t * data, uint32_t length) /*Loop for converting little to big endian*/
 {
 	uint16_t i,j;
+        if (* data != NULL)
+        {
 	for(i=0;i<length;i++)
 	{	
 		uint32_t temp=0;
@@ -401,6 +427,7 @@ uint8_t little_to_big32(uint32_t * data, uint32_t length) /*Loop for converting 
 		}
 			*(data+i)=temp;
 	}
+        }
 	return '1';
 }
 
