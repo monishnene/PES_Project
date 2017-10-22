@@ -1,77 +1,120 @@
-ifeq	($(PLATFORM),HOST)
-	CC=gcc
-	flags=	
-endif
+	
+	PROJECT=PROJECT1  
+	
+	common_sources=	main.c \
+			project1.c \
+			conversion.c \
+			debug.c	\
+			memory.c	
+	
+	common_includes= -I ../include/common
+
+	objects=main.o \
+		memory.o \
+		debug.o \
+		conversion.o \
+		project1.o		
+
+	common_flags=	-D$(PROJECT) \
+			-Wall \
+			-Werror \
+			-g \
+			-O0 \
+			-std=c99 \
+			-DVERBOSE \
+	       		-lc 
+
+	objdir=../object
+	srcdir=../src
+	bindir=../bin
+	asmdir=../asm
+	depdir=../dep
+	headdir=../header
 
 ifeq	($(PLATFORM),BBB)
 	CC=arm-linux-gnueabihf-gcc
-	flags=	
+	flags=	$(common_flags) \
+		-mcpu=cortex-a8 \
+		-mthumb \	
+		-mfloat-abi=hard
+	sources =	$(common_sources)
+	includes =	$(common_includes)		
 endif
 
 ifeq	($(PLATFORM),KL25Z)
 	CC=arm-none-eabi-gcc
-	flags=	-mthumb	-mfpu=fpv4-sp-d16	-specs=nosys.specs	-mcpu=cortex-m0	-march=armv6-m	-mfloat-abi=soft		
-endif	
+	flags=	$(common_flags) \
+		-mthumb \
+		-mfpu=fpv4-sp-d16 \
+		-specs=nosys.specs \
+	 	-mcpu=cortex-m0 \
+		-march=armv6-m	\
+		-mfloat-abi=soft
+		-Wl
+		-Map=project1.map 
+		-T ../platform/MKL25Z128xxx4_flash.ld	
+	c_sources =	$(common_sources) \
+			-system_MKL25Z4.c
+	s_sources =	-startup_MKL25Z4.S
+	sources =	$(c_sources) \
+			$(s_sources)
+	includes =	$(common_includes) \
+			-I ../include/CMSIS\
+			-I ../include/kl25z	
 
-	cfiles=	main.c	project1.c	conversion.c	debug.c	memory.c	
+endif
 
-	CCFLAGS=	$(flags)	-DPROJECT1	-Wall	-Werror	-g	-O0	-std=c99	-I /home/monish/PES_Project1  -lc	
+ifeq	($(PLATFORM),HOST)
+	CC=gcc
+	flags=	$(common_flags)
+	sources =	$(common_sources)
+	includes =	$(common_includes)
+else
+	CC=gcc
+	flags=	$(common_flags)
+	sources =	$(common_sources)
+	includes =	$(common_includes)
+	
+endif
 
-build:	main.o	memory.o	debug.o	conversion.o	project1.o
-	$(CC)	-o	project1	main.o	memory.o	debug.o	conversion.o	project1.o	$(CCFLAGS)
+ifeq ($(PLATFORM),KL25Z)
+	OBJS:= $(c_sources:.c=.o) $(s_sources:.S=.o)
+	C_DEPS:= $(c_sources:.c=.d) $(s_sources:.S=.d)
+else
+	objects:= $(sources:.c=.o)
+	deps:= $(sources:.c=.d)	
+endif
 
-compile-all:	$(cfiles)	
-	$(CC)	-c	$(cfiles)	$(CCFLAGS)
+.PHONY:	compile-all \
+	clean \
+	build \
+	upload	
 
-main.o:	main.c	project1.h	conversion.h	debug.h	memory.h	platform.h	
-	$(CC)	-c	main.c	$(CCFLAGS)	
+%.i:%.c	
+	$(CC)	$(flags)	$(includes)	-E	$<	-o	$@
 
-project1.o:	project1.c	debug.c	conversion.h	debug.h	memory.h	platform.h
-	$(CC)	-c	project1.c	debug.c	$(CCFLAGS)	
+%.asm:%.c	
+	$(CC)	$(flags)	$(includes)	-S	$<	-o	$@
 
-conversion.o:	conversion.c	platform.h
-	$(CC)	-c	conversion.c	$(CCFLAGS)	 
+%.o:%.c	
+	$(CC)	$(flags)	$(includes)	-c	$<	-o	$@
 
-memory.o:	memory.c	platform.h
-	$(CC)	-c	memory.c	$(CCFLAGS)	
+%.o:%.s	
+	$(CC)	$(flags)	$(includes)	-c	$<	-o	$@
 
-debug.o:	debug.c	platform.h
-	$(CC)	-c	debug.c	$(CCFLAGS)	
+%.d:%.c	
+	$(CC)	$(flags)	$(includes)	-M	$<	-o	$@
 
-main.i:	main.c	project1.h	conversion.h	debug.h	memory.h	platform.h	
-	$(CC)	-E	main.c	$(CCFLAGS)	
+%.d:%.s	
+	$(CC)	$(flags)	$(includes)	-M	$<	-o	$@
 
-project1.i:	project1.c	debug.c	conversion.h	debug.h	memory.h	platform.h
-	$(CC)	-E	project1.c	debug.c	$(CCFLAGS)	
+build:	$(objects)	$(deps)
+	$(CC) $(flags) $(includes)	-o	project1.elf	$(objects)
 
-conversion.i:	conversion.c	memory.h	platform.h
-	$(CC)	-E	conversion.c	$(CCFLAGS)	
+compile-all:	$(objects)
 
-memory.i:	memory.c	platform.h
-	$(CC)	-E	memory.c	$(CCFLAGS)	
-
-debug.i:	debug.c	platform.h
-	$(CC)	-E	debug.c	$(CCFLAGS)	
-
-main.asm:	main.c	project1.h	conversion.h	debug.h	memory.h	platform.h	
-	$(CC)	-S	main.c	$(CCFLAGS)	
-
-project1.asm:	project1.c	debug.c	conversion.h	debug.h	memory.h	platform.h
-	$(CC)	-S	project1.c	debug.c	$(CCFLAGS)	
-
-conversion.asm:	conversion.c	memory.h	platform.h
-	$(CC)	-S	conversion.c	$(CCFLAGS)	
-
-memory.asm:	memory.c	platform.h
-	$(CC)	-S	memory.c	$(CCFLAGS)	
-
-debug.asm:	debug.c	platform.h
-	$(CC)	-S	debug.c	$(CCFLAGS)	
-
-.PHONY:	conversiontest.c	memory.c	debug.c		conversion.c	project1.c	main.c		
-
-compile-all:
-
+upload: 
+	scp	project1.elf	root@192.168.7.2:~/home
 
 clean :
-	rm	-f	*.o	*.s	*.e	
+	rm	-f	*.o	*.s	*.i	*.o	*.d	*.elf

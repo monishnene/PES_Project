@@ -133,17 +133,14 @@ uint8_t* my_reverse(uint8_t* src, size_t length) /*Function for reversing bytes*
 
 int32_t* reserve_words(size_t length)
 {
-  if(length >0)
- {
-   int32_t* src;
-   src=malloc(((sizeof(int32_t))*length)); /*To reserve words = length in memory*/
- }
-else
+  int32_t* src;
+  src=malloc(((sizeof(int32_t))*length)); /*To reserve words = length in memory*/
+  if (src != NULL)
   {
-     /* Null Pointer*/
-    src=NULL;	
+     return src;	
   }
-   return src;
+  else
+     return src;
 }
 
 void free_words(uint32_t* src) /*Function to free memory*/
