@@ -1,28 +1,34 @@
-/*
+/**
+ * @file conversion.c
+ * @brief This file contains data conversion functions from one type to another.
+ * @author monish and sanika
+ * @date Sep 29, 2017
+ *
  * conversion.c
-Long description:-
-
- The conversion.c is used for making different conversions like:-
-1) Integer to Ascii
-2) Ascii to integer 
-3) big to little endian and little to big endian
-Integer to Ascii uses my_itoa function that handles cases for base 2 to base 16. For base2, if the data is negative, it converts int to char and then converts the negative number into a positive number.The function i2a is then called on which converts the integer to binary values and then reverse function is being called upon to reverse the bits for proper representation of the bits. The compli function is then called which takes the 2's complement of the number and the final answer we get are the binary values for int number. Incase, the number is positive the same logic is applied except that the 2's complement is not required to be taken. For base 8, the binary values for number has been found out and arranged in groups of 3 and for each group respective powers of 2 have been multiplied to get the final answer. For base 10, incrementing the pointer so that it points to the signed bit in case of negative number.The negative number is converted to positive and then converted into bits which are then represented properly. For positive values, the same logic has been used as above.For base 16, the binary values for number has been found out and arranged in groups of 4 and for each group respective power of 2 has been multiplied to get the final answer.
-
-Ascii to integer uses my_atoi function that handles cases for base 2 to base 16. If msb is 1, flag is set to 1 and then negative number is first converted into positive. A function call is used to find the numvalue and then loop would be used for adjusting the value into integer. Similar logic is used for positive number. For base 8, if MSB is 4 or above flag is set to 1. Then, function call is used to find the numvalue and then loop is used for adjusting the value into integer. For base 10, if it has a negative sign, if flag =1, convert negative to positive.Then, the function call numvalue is used to find the numvalue.For, base 16, if MSB is 8 or above, then use the functioncall to find the numvalue. Loop for adjusting the value into integer is used. For all other cases the default condition is that the base is invalid.
-
-For  converting big to little endian, Remainder of data with 16 (for hex) is taken and is being multiplied by 16 for each iteration.After this operation, the MSB and LSB is being swapped  and the middle bytes remain the same. The little to big endian conversion uses the same logic the MSB gets stored first and then the middle bytes and LSB at the last.
-
+ *@Long description:-
  *
- *  Created on: Sep 29, 2017
- *      Author: monish and sanika
+ * The conversion.c is used for making different conversions like:-
+ *1) Integer to Ascii
+ *2) Ascii to integer 
+ *3) big to little endian and little to big endian
+ *Integer to Ascii uses my_itoa function that handles cases for base 2 to base 16. For base2, if the data is negative, it converts int to char and then converts the negative number into a positive number.The function i2a is then called on which converts the integer to binary values and then reverse function is being called upon to reverse the bits for proper representation of the bits. The compli function is then called which takes the 2's complement of the number and the final answer we get are the binary values for int number. Incase, the number is positive the same logic is applied except that the 2's complement is not required to be taken. For base 8, the binary values for number has been found out and arranged in groups of 3 and for each group respective powers of 2 have been multiplied to get the final answer. For base 10, incrementing the pointer so that it points to the signed bit in case of negative number.The negative number is converted to positive and then converted into bits which are then represented properly. For positive values, the same logic has been used as above.For base 16, the binary values for number has been found out and arranged in groups of 4 and for each group respective power of 2 has been multiplied to get the final answer.
  *
- *  Created on: Sep 29, 2017
- *      Author: monish and sanika
+ *Ascii to integer uses my_atoi function that handles cases for base 2 to base 16. If msb is 1, flag is set to 1 and then negative number is first converted into positive. A function call is used to find  the numvalue and then loop would be used for adjusting the value into integer. Similar logic is used for positive number. For base 8, if MSB is 4 or above flag is set to 1. Then, function call is used to find the numvalue and then loop is used for adjusting the value into integer. For base 10, if it has a negative sign, if flag =1, convert negative to positive.Then, the function call numvalue is used to find the numvalue.For, base 16, if MSB is 8 or above, then use the functioncall to find the numvalue. Loop for adjusting the value into integer is used. For all other cases the default condition is that the base is invalid.
+ *
+ *For  converting big to little endian, Remainder of data with 16 (for hex) is taken and is being multiplied by 16 for each iteration.After this operation, the MSB and LSB is being swapped  and the middle bytes remain the same. The little to big endian conversion uses the same logic the MSB gets stored first and then the middle bytes and LSB at the last.
  */
+
 #include<stdlib.h>
 #include <stdint.h>
 #include<stdio.h>
+#include"memory.h"
 
+/***********************************************************************
+ * @brief c2i()  
+ * This funtion returns corresponding int value for a character  
+ * @a character 
+ * @return int value for the particular character
+ ***********************************************************************/
 uint16_t c2i(int8_t a) /* Function for converting char to Int*/
 {
 if(a=='0')
@@ -60,6 +66,15 @@ else if(a=='F'||a=='f')
 return 0;
 }
 
+/***********************************************************************
+ * @brief numvalue()  
+ * This function finds numerical value of a string
+ * @flag positive or negative
+ * @ptr pointer to string start
+ * @digits length of string
+ * @base base of number
+ * @return int value of the string
+ ***********************************************************************/
 size_t numvalue(uint16_t flag, uint8_t* ptr, uint8_t digits, uint32_t base)
 {       
         
@@ -81,30 +96,12 @@ size_t numvalue(uint16_t flag, uint8_t* ptr, uint8_t digits, uint32_t base)
 	return number;
 }
 
-uint8_t* reverse(uint8_t* src, size_t length) /*Function for reversing bytes*/
-{
-	int8_t temp;
-	size_t i,n;
-        if( src != NULL && length > 0)
-        {
-	if(length%2==0) /*If the length is even*/
-	{
-		n=length/2;
-	}
-	else
-	{
-		n=(length-1)/2; /*If the length is odd*/
-	}
-	for(i=0;i<n;i++) /*Loop for reversing the bytes*/
-	{
-		temp = *(src+i);
-		 *(src+i) = *(src+length-i-1);
-		 *(src+length-i-1) = temp;
-	}
-        }
-	return src;
-}
-
+/***********************************************************************
+ * @brief i2c()  
+ * This function returns character corresponding to int
+ * @temp number to be converted to character
+ * @return character for corresponding int
+ ***********************************************************************/
 int8_t i2c(int temp)           /*Function that includes switch statement for hex definition*/
 {
 	switch(temp)            /*switch case for defining hex characters above 9 i.e. 'A' to 'F'*/
@@ -162,6 +159,15 @@ int8_t i2c(int temp)           /*Function that includes switch statement for hex
 return '0';
 }
 
+/***********************************************************************
+ * @brief i2a()  
+ * This function coverts int to string 
+ * @i initial offset
+ * @ptr pointer to string start
+ * @data number to be converted
+ * @base base of number
+ * @return string length
+ ***********************************************************************/
 uint8_t i2a(uint16_t i, uint32_t data, uint8_t* ptr, uint32_t base)
 {       
         if( ptr != NULL )
@@ -182,6 +188,12 @@ uint8_t i2a(uint16_t i, uint32_t data, uint8_t* ptr, uint32_t base)
 	return i;
 }
 
+/***********************************************************************
+ * @brief compli()  
+ * This function finds 2's compliment of a string and saves it
+ * @ptr pointer to string start
+ * @i length of string
+ ***********************************************************************/
 void compli(uint8_t* ptr,uint16_t i) /*Function to find 2's complement for negative numbers*/
 {	uint16_t j,c1=1,c2,temp;
 	if ( ptr!= NULL)
@@ -203,6 +215,14 @@ void compli(uint8_t* ptr,uint16_t i) /*Function to find 2's complement for negat
 	return;
 }
 
+/***********************************************************************
+ * @brief my_itoa()  
+ * This function converts integer to string
+ * @ptr pointer to string start
+ * @data number to be converted
+ * @base base of number
+ * @return length of string with \0
+ ***********************************************************************/
 uint8_t my_itoa(int32_t data, uint8_t* ptr, uint32_t base) /*Function for converting integer to ascii*/
 {	
 	uint16_t i=0,j,k,l=0,a=0,b=0,c=0,d=0;
@@ -328,6 +348,14 @@ uint8_t my_itoa(int32_t data, uint8_t* ptr, uint32_t base) /*Function for conver
 	return 0;
 }
 
+/***********************************************************************
+ * @brief my_atoi()  
+ * This function converts string to integer
+ * @ptr pointer to string start
+ * @digits length of string
+ * @base base of number
+ * @return int value of the string
+ ***********************************************************************/
 int32_t my_atoi(uint8_t* ptr, uint8_t digits, uint32_t base) /*Function for converting ascii to int values*/
 {	uint16_t i,flag=0;
 	size_t number=0,power=1;
@@ -397,6 +425,13 @@ int32_t my_atoi(uint8_t* ptr, uint8_t digits, uint32_t base) /*Function for conv
 	return 0;
 }
 
+/***********************************************************************
+ * @brief big_to_little()  
+ * This function converts big endian data to little endian
+ * @data pointer to data array beginning
+ * @length length of array
+ * @return success or fail
+ ***********************************************************************/
 uint8_t  big_to_little32(uint32_t* data, uint32_t length) /*Loop for converting big to little endian*/
 {
 	uint16_t i,j;
@@ -407,7 +442,7 @@ uint8_t  big_to_little32(uint32_t* data, uint32_t length) /*Loop for converting 
 		uint32_t temp=0;
 		for(j=0;j<4;j++)
 		{
-			temp = 16*temp + (*(data+i)%16); /*Taking remainder and multiplying it by 16 for each iteration*/ 				 
+			temp = 256*temp + (*(data+i)%256); /*Taking remainder and multiplying it by 256 for each iteration*/ 				 
 			*(data+i)= *(data+i)/16;
 		}
 			*(data+i)=temp;
@@ -416,6 +451,13 @@ uint8_t  big_to_little32(uint32_t* data, uint32_t length) /*Loop for converting 
 	return '1';
 }
 
+/***********************************************************************
+ * @brief little_to_big()  
+ * This function converts little endian data to big endian
+ * @data pointer to data array beginning
+ * @length length of array
+ * @return success or fail
+ ***********************************************************************/
 uint8_t little_to_big32(uint32_t * data, uint32_t length) /*Loop for converting little to big endian*/
 {
 	uint16_t i,j;
@@ -426,7 +468,7 @@ uint8_t little_to_big32(uint32_t * data, uint32_t length) /*Loop for converting 
 		uint32_t temp=0;
 		for(j=0;j<4;j++)
 		{
-			temp = 16*temp + (*(data+i)%16);  /*Taking remainder and multiplying it by 16 for each iteration*/ 					 
+			temp = 256*temp + (*(data+i)%256);  /*Taking remainder and multiplying it by 256 for each iteration*/ 					 
 			*(data+i)=*(data+i)/16;
 		}
 			*(data+i)=temp;

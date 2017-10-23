@@ -1,7 +1,11 @@
-/*
+/**
+ * @file memory.c
+ * @brief This file contains memory manipulation functions.
+ * @author monish and sanika
+ * @date Sep 29, 2017
+ *
  * memory.c
-Long Description:-
-
+ *@Long description:-
 It has various memory functions like:-
 1)my_memmove:- memmove takes 1 byte pointers source and destination and copies a length of bytes from source to destination location without any overalp. If flag =1 , if end of destination adresses intersects at start of source address then we start copying from the begining to handle overlap condition and if the start of destination location intersects at the end of source location then we start copying from the end to handle the overlap condition. If there is no overlap, then flag is zero. Destination is being returned.
 
@@ -16,12 +20,19 @@ It has various memory functions like:-
 6)reserve_words:- Malloc function that contatins the size of operator is used to reserve words in the source. This function returns source. 
 
 7)free_words:-  It is used to free dynamic memory location.
- *  Created on: Sep 29, 2017
- *      Author: monish and sanika
  */
 #include <stdint.h>
 #include<stdlib.h>
 #include<stdio.h>
+
+/***********************************************************************
+ * @brief my_memmove()  
+ * copies a length of bytes from source to destination location without any overalp.
+ * @src source pointer
+ * @dst destination pointer
+ * @length length of data to be transferred
+ * @return destination pointer
+ ***********************************************************************/
 uint8_t* my_memmove(uint8_t* src, uint8_t* dst, size_t length)
 { uint8_t flag=0,i;
   if( (src !=NULL) && (dst !=NULL) && (length >=0) )
@@ -62,6 +73,14 @@ uint8_t* my_memmove(uint8_t* src, uint8_t* dst, size_t length)
       
 }
 
+/***********************************************************************
+ * @brief my_memcpy()  
+ * copies a length of bytes from source to destination location and it may or maynot corrupt the data. 
+ * @src source pointer
+ * @dst destination pointer
+ * @length length of data to be transferred
+ * @return destination pointer
+ ***********************************************************************/
 uint8_t* my_memcpy(uint8_t* src, uint8_t* dst, size_t length)
 {   uint8_t i;
     if( (src !=NULL) && (dst !=NULL) && (length >=0) )
@@ -76,6 +95,14 @@ uint8_t* my_memcpy(uint8_t* src, uint8_t* dst, size_t length)
 	return dst;
 }
 
+/***********************************************************************
+ * @brief my_memset()  
+ * sets a value to all the addresses given
+ * @src source pointer
+ * @value vallue to be set
+ * @length length of data to be set
+ * @return source pointer
+ ***********************************************************************/
 uint8_t* my_memset(uint8_t* src, size_t length, uint8_t value)
 {
 	uint8_t i;
@@ -90,6 +117,13 @@ uint8_t* my_memset(uint8_t* src, size_t length, uint8_t value)
 	return src;
 }
 
+/***********************************************************************
+ * @brief my_memzero()  
+ * initializes 0 to all the addresses given
+ * @src source pointer
+ * @length length of data to be set 0
+ * @return source pointer
+ ***********************************************************************/
 uint8_t* my_memzero(uint8_t* src, size_t length)
 {
 	uint8_t i;
@@ -104,7 +138,13 @@ uint8_t* my_memzero(uint8_t* src, size_t length)
 	return src;
 }
 
-
+/***********************************************************************
+ * @brief my_reverse()  
+ * reversing the bytes in a memory.
+ * @src source pointer
+ * @length length of data to be reversed
+ * @return source pointer
+ ***********************************************************************/
 uint8_t* my_reverse(uint8_t* src, size_t length) /*Function for reversing bytes*/
 {
 	int8_t temp;
@@ -131,6 +171,12 @@ uint8_t* my_reverse(uint8_t* src, size_t length) /*Function for reversing bytes*
       
 }
 
+/***********************************************************************
+ * @brief reserve_words()  
+ * allocate memory dynamically in heap
+ * @length length of data to be allocated dynamically
+ * @return pointer to starting address of the allocated memory
+ ***********************************************************************/
 int32_t* reserve_words(size_t length)
 {
   int32_t* src;
@@ -143,6 +189,11 @@ int32_t* reserve_words(size_t length)
      return src;
 }
 
+/***********************************************************************
+ * @brief free_words()  
+ * deallocate memory allocated o a pointer
+ * @src pointer whose dynamic memory is to be deallocated
+ ***********************************************************************/
 void free_words(uint32_t* src) /*Function to free memory*/
 {
  if(src != NULL)
