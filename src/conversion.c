@@ -238,7 +238,7 @@ uint8_t my_itoa(int32_t data, uint8_t* ptr, uint32_t base) /*Function for conver
 			    	ptr++;       /*Incrementing the pointer so that it points at the negative sign of the negative integer*/
 			    	data *= -1;   /*converting negative to positive integer*/
 			    	i=i2a(i,data,ptr,base); /*Function call for converting integer to binary values*/	
-				reverse(ptr,i-1);    /*Reversing the bits for proper representation*/		    	
+				my_reverse(ptr,i-1);    /*Reversing the bits for proper representation*/		    	
 				compli(ptr,i);         /*Function call to find 2's complement */
 		         	i++;
 				return i;
@@ -247,7 +247,7 @@ uint8_t my_itoa(int32_t data, uint8_t* ptr, uint32_t base) /*Function for conver
 			*(ptr)=0;                      /*For positive integers*/
 			ptr++;
 			i= i2a(i,data,ptr,base);      /*Function call for converting integer to binary values*/
-			ptr=reverse(ptr,i-1);          /*Reversing the bits for proper representation*/
+			ptr=my_reverse(ptr,i-1);          /*Reversing the bits for proper representation*/
 			i++;                          
 			return i;
 
@@ -294,12 +294,12 @@ uint8_t my_itoa(int32_t data, uint8_t* ptr, uint32_t base) /*Function for conver
 				ptr++;      /*Incrementing the pointer so that it points at the negative sign of the negative integer*/
 				data *= -1;  /*converting negative to positive integer*/
 				i=i2a(i,data,ptr,base); /*Function call for converting integer to binary values*/
-				reverse(ptr,i-1);    /*Reversing the bits for proper representation*/
+				my_reverse(ptr,i-1);    /*Reversing the bits for proper representation*/
 				i++;                 
 				return i;
 			}                               /*For positive integers*/
 			i= i2a(i,data,ptr,base);       /*Function call for converting integer to binary values*/ 
-			reverse(ptr,i-1);           /*Reversing the bits for proper representation*/
+			my_reverse(ptr,i-1);           /*Reversing the bits for proper representation*/
 			return i;
 
 		case 16:
