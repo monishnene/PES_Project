@@ -1,28 +1,26 @@
 	
-	PROJECT=PROJECT1  
-	
-	common_sources=	main.c \
+	defined = -DPROJECT1	-DCMOCKA 
+
+	common_sources= main.c \
 			project1.c \
 			conversion.c \
 			debug.c	\
-			memory.c	
+			memory.c\
+			circbuf.c	
 	
-	common_includes= -I ../include/common
+	common_includes= -I ../include/common\
+			$(cmocka_includes)
 
-	objects=main.o \
-		memory.o \
-		debug.o \
-		conversion.o \
-		project1.o		
 
-	common_flags=	-D$(PROJECT) \
+	common_flags=	$(defined) \
 			-Wall \
 			-Werror \
 			-g \
 			-O0 \
 			-std=c99 \
 			-DVERBOSE \
-	       		-lc 
+	       		-lc\
+			$(cmocka_flags) 
 
 	objdir=../object
 	srcdir=../src
@@ -88,10 +86,8 @@ endif
 .PHONY:	compile-all \
 	clean \
 	build \
-	upload	
-
-%.i:%.c	
-	$(CC)	$(flags)	$(includes)	-E	$<	-o	$@
+	upload\
+	cmocka_test	(CC)	$(flags)	$(includes)	-E	$<	-o	$@
 
 %.asm:%.c	
 	$(CC)	$(flags)	$(includes)	-S	$<	-o	$@
@@ -116,5 +112,8 @@ compile-all:	$(objects)
 upload: 
 	scp	project1.elf	root@192.168.7.2:~/home
 
+cmocka_test:$(objects)	$(deps)
+	$(CC)	cmocka_test.c	-lcmocka -o cmockatest $(includes) 
+ 
 clean :
-	rm	-f	*.o	*.s	*.i	*.o	*.d	*.elf
+	rm	-f	*.o	*.s	*.i	*.o	*.d	*.elf *.swp

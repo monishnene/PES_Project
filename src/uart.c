@@ -18,7 +18,7 @@ void init_uart0(void){
 	UART0_C3 = 0;
 	UART0_S2 = 0;
 	//calculate baudrate value
-	ubd = (uint16_t)((48000*1000)/(57600 * 16));
+	ubd = (uint16_t)((48000*1000)/(57600 * 16));//change to 20k approx
 	//set oversampling ratio to 16 times
 	UART0_C4 = UARTLP_C4_OSR(16 - 1);
         UART0_BDH = (ubd >> 8) & UARTLP_BDH_SBR_MASK;
