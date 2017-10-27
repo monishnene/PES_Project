@@ -19,7 +19,7 @@
  * @data value to be stored in circular buffer
  * @return error in form of enum defined in structure.h
  ***********************************************************************/
-uint8_t CB_buffer_add_item(CB_t* cbptr,int32_t data)
+uint8_t CB_buffer_add_item(CB_t* cbptr,int8_t* data)
 {
 if(cbptr == NULL)
 	{return Null_Error;}
@@ -34,7 +34,7 @@ else
 			{cbptr-> head = 0;}
 		else		
 			{cbptr-> head++;}
-		*((cbptr-> buffptr)+(cbptr-> head)) = data;
+		*((cbptr-> buffptr)+(cbptr-> head)) = *data;
 		if((cbptr-> head)>=(cbptr-> tail))
 			{(cbptr-> count)= (cbptr-> head)-(cbptr-> tail);}
 		else
@@ -51,12 +51,12 @@ else
  * @store pointer to the location where the data is supposed to be stored
  * @return error in form of enum defined in structure.h
  ***********************************************************************/
-uint8_t CB_buffer_remove_item(CB_t* cbptr,int32_t* store)
+uint8_t CB_buffer_remove_item(CB_t* cbptr,int8_t* store)
 {
 if(cbptr == NULL)
 {return Null_Error;}
 else
-{
+.{
 	uint8_t i=CB_is_empty(cbptr);
 	if(i == Buffer_Empty)
 		{return Buffer_Empty;}
@@ -123,7 +123,7 @@ else
  * @store pointer to the location where the data is supposed to be stored
  * @return error in form of enum defined in structure.h
  ***********************************************************************/
-uint8_t CB_peek(CB_t* cbptr,uint8_t position, uint32_t* store)
+uint8_t CB_peek(CB_t* cbptr,uint8_t position, uint8_t* store)
 {
 if(cbptr == NULL)
 	{return Null_Error;}
@@ -148,7 +148,7 @@ else
  * @length length of the circular buffer
  * @return error in form of enum defined in structure.h
  ***********************************************************************/
-uint8_t CB_init(CB_t* cbptr,uint32_t length)
+uint8_t CB_init(CB_t* cbptr,uint8_t length)
 {
 if(cbptr == NULL)
 	{return Null_Error;}

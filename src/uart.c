@@ -1,13 +1,27 @@
-
+/**
+ * @file circbuf.c
+ * @brief This file contains circular buffer operation functions.
+ * @author monish and sanika
+ * @date oct 25s, 2017
+ *
+ * circbuf.c
+ * @Long description:-
+ */
 #include "system_MKL25Z4.h"
 #include "MKL25Z4.h"
-
+#include "uart.h"
+#include "circbuf.h"
 #define CLOCK_SETUP = 1 
 
-#include "uart.h"
-//configure UART
-void init_uart0(void){
-	uint16_t ubd;//baud value holder
+
+
+/***********************************************************************
+ * @brief UART_configure()  
+ * This function configures the UART
+ ***********************************************************************/
+void UART_configure(void){
+	uint8_t length = 8; 
+	uint16_t baud_rate;//baud value holder
 	//configure PTA1 & PTA2 as alt2=uart0
 	PORTA_PCR1 |= PORT_PCR_MUX(2);
 	PORTA_PCR2 |= PORT_PCR_MUX(2);
@@ -18,14 +32,16 @@ void init_uart0(void){
 	UART0_C3 = 0;
 	UART0_S2 = 0;
 	//calculate baudrate value
-	ubd = (uint16_t)((48000*1000)/(57600 * 16));//change to 20k approx
+	baud_rate = (uint16_t)((48000*1000)/(115200 * 16));//change to 20k approx
 	//set oversampling ratio to 16 times
 	UART0_C4 = UARTLP_C4_OSR(16 - 1);
-        UART0_BDH = (ubd >> 8) & UARTLP_BDH_SBR_MASK;
-	UART0_BDL = (ubd & UARTLP_BDL_SBR_MASK);
+        UART0_BDH = (baud_rate >> 8) & UARTLP_BDH_SBR_MASK;
+	UART0_BDL = (baud_rate & UARTLP_BDL_SBR_MASK);
 	//Initialize transmit and receive circular buffers
-	buf_reset(tx_buffer1,BUFLEN);
-	buf_reset(rx_buffer,BUFLEN);
+	CB_t* tx_buffer;
+	CB_t* rx_buffer;
+	CB_init(CB_t* tx_circbuf,length);
+ 	CB_init(CB_t* rx_circbuf,length);
 	UART0_C2 |= (uint32_t)(UARTLP_C2_RE_MASK | UARTLP_C2_TE_MASK | UARTLP_C2_RIE_MASK);
 	//enable receiver interrupts
 	NVIC_ICPR |= (uint32_t)(1<<(INT_UART0-16));//clear pending UART0 interrupts
@@ -33,43 +49,79 @@ void init_uart0(void){
 }
 
 
-void uart_putchar (uint8_t ch){
-	/* Wait until space is available in the FIFO */
-	while(!(UART0_S1 & (1<<8))==(1<<8));
-	/* Send the character */
-	UART0_D = (uint8_t)ch;
+/***********************************************************************
+ * @brief UART_send()  
+ * This function stores the value to be transmitted in transmit circular buffer
+ * @tx_circbuf pointer to circular buffer
+ ***********************************************************************/
+void UART_send (CB_t* tx_circbuf)
+{
+uint8_t* temp;
+CB_buffer_remove_item(tx_circbuf,temp);
+while(!((UART0_S1 & 0x80)==0x80)); 
+UART0_D = *temp;
+}
+ 
+/***********************************************************************
+ * @brief UART_send_n()  
+ * This function stores values from a certain memory location to be transmitted in transmit circular buffer
+ * @tx_circbuf pointer to circular buffer
+ * @length length of data
+ ***********************************************************************/
+void UART_send_n(CB_t* tx_circbuf,uint8_t length) 
+{
+uint8_t* temp;
+uint8_t i;
+for(i=0;i<length;i++)
+{
+	CB_buffer_remove_item(tx_circbuf,temp);
+	while(!((UART0_S1 & 0x80)==0x80)); 
+	UART0_D = *temp; 
+}
 }
 
-//UART0 brief interrupt handler
-void UART0_IRQHandler(){
-	if((UART0_S1 & UART_S1_RDRF_MASK)==UART_S1_RDRF_MASK){
-		data = (uint8_t)UART0_D;
-		data_available=1;
-	}
+
+/***********************************************************************
+ * @brief UART_receive()  
+ * This function stores a from receive circular buffer to  a certain memory location
+ * @rx_circbuf pointer to circular buffer
+ ***********************************************************************/
+uint8_t UART_receive(CB_t* rx_circbuf) 
+{
+uint8_t* temp;
+while(!((UART0_S1 & 0x20)==0x20)); 
+*temp = UART0_D;
+CB_buffer_add_item(rx_circbuf,temp);
+return Success;
 }
-<type> ​ ​ UART_configure ​ ​ ();
-1. Configures​ ​ UART​ ​ to​ ​ the​ ​ given​ ​ settings.
-62. No hardcoded configurations may be used. All settings need to use predefined Bit Masks and
-macro​ ​ functions​ ​ to​ ​ help​ ​ determine​ ​ calculated​ ​ values
-<type> ​ ​ UART_send ​ ​ ( ​ ​ <data-to-send> ​ ​ );
-1. This​ ​ function​ ​ will​ ​ send​ ​ a ​ ​ single​ ​ byte​ ​ down​ ​ a ​ ​ specific​ ​ UART​ ​ device
-2. The​ ​ function​ ​ will​ ​ take​ ​ 1 ​ ​ argument:
-a. Pointer​ ​ to​ ​ the​ ​ data​ ​ item​ ​ to​ ​ send
-3. This​ ​ function​ ​ should​ ​ block​ ​ on​ ​ transmitting​ ​ data
-<type> ​ ​ UART_send_n ​ ​ ( ​ ​ <data-to-send>, ​ ​ <length-of-data> ​ ​ );
-1. Function​ ​ takes​ ​ 2 ​ ​ arguments
-a. Pointer​ ​ to​ ​ a ​ ​ contiguous​ ​ block​ ​ of​ ​ data​ ​ that​ ​ needs​ ​ to​ ​ be​ ​ transmitted
-b. Number​ ​ of​ ​ items​ ​ to​ ​ transmit
-2. This​ ​ function​ ​ should​ ​ block​ ​ on​ ​ transmitting​ ​ data
-<type> ​ ​ UART_receive( ​ ​ <received-data> ​ ​ );
-1. This​ ​ function​ ​ should​ ​ return​ ​ a ​ ​ received​ ​ byte​ ​ on​ ​ the​ ​ UART​ ​ using​ ​ an​ ​ input​ ​ parameter​ ​ pointer.
-2. This​ ​ function​ ​ should​ ​ block​ ​ until​ ​ a ​ ​ character​ ​ has​ ​ been​ ​ received.
-<type> ​ ​ UART_receive_n ​ ​ ( ​ ​ <received-data>, ​ ​ <length-of-data-to-receive> ​ ​ );
-1. This​ ​ function​ ​ should​ ​ receive​ ​ a ​ ​ number​ ​ of​ ​ bytes​ ​ on​ ​ the​ ​ UART.
-2. Function​ ​ takes​ ​ 2 ​ ​ arguments
-a. Pointer​ ​ to​ ​ a ​ ​ memory​ ​ location​ ​ to​ ​ place​ ​ data​ ​ that​ ​ is​ ​ being​ ​ received
-b. Number​ ​ of​ ​ items​ ​ to​ ​ receive
-3. This​ ​ function​ ​ should​ ​ block​ ​ until​ ​ a ​ ​ number​ ​ of​ ​ characters​ ​ have​ ​ been​ ​ received.
+/***********************************************************************
+ * @brief UART_receive_n()  
+ * This function stores multiple values from receive circular buffer to  a certain memory location
+ * @rx_circbufpointer to circular buffer
+ * @length length of data
+ ***********************************************************************/
+uint8_t UART_receive_n(CB_t* rx_circbuf,uint8_t length)
+{
+uint8_t* temp;
+uint8_t i;
+for(i=0;i<length;i++)
+{
+	while(!((UART0_S1 & 0x20)==0x20)); 
+	*temp = UART0_D;
+	CB_buffer_add_item(rx_circbuf,temp);
+}
+return Success;
+}
+
+/***********************************************************************
+ * @brief UART0_IRQHandler()
+ * This function checks the register values after interrupt occurs and sends or receives data by UART
+ ***********************************************************************/
+void UART0_IRQHandler()
+{
+uint8_t* temp;
+}
+
 void ​ ​ UART0_IRQHandler();
 1. This​ ​ function​ ​ is​ ​ the​ ​ IRQ​ ​ handler​ ​ for​ ​ the​ ​ UART.
 2. You​ ​ will​ ​ need​ ​ to​ ​ handle​ ​ two​ ​ types​ ​ of​ ​ interrupts​ ​ in​ ​ this​ ​ function
