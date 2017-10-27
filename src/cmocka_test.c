@@ -27,6 +27,9 @@
 #include "memory.h"
 #include <stdlib.h>
 
+uint8_t * src, dst,store,cbptr,data;
+uint8_t length,position,value;
+
 static int setup(void **state) {
     int *answer = malloc(sizeof(int));
 
@@ -52,9 +55,9 @@ static void null_test_success(void **state) {
 
 static void memmove_null_pointer_test(void **state) 
 {
-uint32_t* src = NULL;
-uint32_t* dst = NULL;
-uint32_t length=3;
+src = NULL;
+dst = NULL;
+length=3;
 src = my_memmove(src,dst,length);
 if(src == NULL)
 printf("Null Pointer Detected");
@@ -78,92 +81,92 @@ my_memmove(src,dst,length);
 }
 static void memset_null_pointer_test(void **state) {
 (void) state;
-my_memset(src,length,value)
+my_memset(src,length,value);
 }
 static void memset_check_region_set(void **state) {
 (void) state;
-my_memset(src,length,value)
+my_memset(src,length,value);
 }
 static void memzero_null_pointer_test(void **state) {
 (void) state;
-my_memzero(src,length)
+my_memzero(src,length);
 }
 static void memzero_check_region_zero(void **state) {
 (void) state;
-my_memzero(src,length)
+my_memzero(src,length);
 }
 static void reverse_null_pointer_test(void **state) {
 (void) state;
-my_reverse(src,length) 
+my_reverse(src,length); 
 }
 static void reverse_check_odd(void **state) {
 (void) state;
-my_reverse(src,length) 
+my_reverse(src,length);
 }
 static void reverse_check_even(void **state) {
 (void) state;
-my_reverse(src,length) 
+my_reverse(src,length); 
 }
 static void reverse_check_all_chars(void **state) {
 (void) state;
-my_reverse(src,length) 
+my_reverse(src,length);
 }
 static void big_to_litte_null_pointer_test(void **state) {
 (void) state;
-big_to_little32(data,length)
+big_to_little32(data,length);
 }
 static void big_to_litte_conversion_test(void **state) {
 (void) state;
-big_to_little32(data,length)
+big_to_little32(data,length);
 }
 static void little_to_big_null_pointer_test(void **state) {
 (void) state;
-uint8_t little_to_big32(uint32_t * data, uint32_t length)
+uint8_t little_to_big32(uint32_t * data, uint32_t length);
 }
 static void little_to_big_conversion_test(void **state) {
 (void) state;
-little_to_big32(data,length)
+little_to_big32(data,length);
 }
 static void create_cicular_buffer(void **state) {
 (void) state;
-CB_init(cbptr,length)
+CB_init(cbptr,length);
 }
 static void circular_buffer_null_pointer_test(void **state) {
-CB_peek(cbptr,position,store)
+CB_peek(cbptr,position,store);
 (void) state;
 }
 static void circular_buffer_initialized_test(void **state) {
-CB_peek(cbptr,position,store)
+CB_peek(cbptr,position,store);
 (void) state;
 }
 static void circular_buffer_add_remove_test(void **state) {
 (void) state;
-CB_buffer_add_item(cbptr,data)
-CB_buffer_remove_item(cbptr,store)
+CB_buffer_add_item(cbptr,data);
+CB_buffer_remove_item(cbptr,store);
 }
 static void circular_buffer_full_test(void **state) {
-CB_is_full(cbptr)
+CB_is_full(cbptr);
 (void) state;
 }
 static void circular_buffer_empty_test(void **state) {
 (void) state;
-CB_is_empty(cbptr)
+CB_is_empty(cbptr);
 }
 static void circular_buffer_wrap_add_test(void **state) {
 (void) state;
-CB_buffer_add_item(cbptr,data)
+CB_buffer_add_item(cbptr,data);
 }
 static void circular_buffer_wrap_remove_test(void **state) {
 (void) state;
-CB_buffer_remove_item(cbptr,store)
+CB_buffer_remove_item(cbptr,store);
 }
 static void circular_buffer_overfill_test(void **state) {
 (void) state;
-CB_buffer_add_item(cbptr,data)
+CB_buffer_add_item(cbptr,data);
 }
 static void circular_buffer_overempty_test (void **state) {
 (void) state;
-CB_buffer_remove_item(cbptr,store)
+CB_buffer_remove_item(cbptr,store);
 }
 
 /* A test case that does check if an int is equal. */
@@ -172,8 +175,6 @@ static void int_test_success(void **state) {
     
     assert_int_equal(*answer, 1);
 }
-
-
 
 int main(void) {
     const struct CMUnitTest tests[] = 
