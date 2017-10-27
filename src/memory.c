@@ -66,11 +66,18 @@ uint8_t* my_memmove(uint8_t* src, uint8_t* dst, size_t length)
 		{
 			*(dst+length-1-i)=*(src+length-i-1); /*Copies from source to destination for every iteration*/
 		}
-	 }
-      }
-
-	return dst;
-      
+	}
+   
+   return dst;	
+   }
+   else if (src == NULL)
+   {
+   return src;
+   }
+   else
+   {
+   return dst;
+   }
 }
 
 /***********************************************************************

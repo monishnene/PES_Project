@@ -56,7 +56,7 @@ uint8_t CB_buffer_remove_item(CB_t* cbptr,int8_t* store)
 if(cbptr == NULL)
 {return Null_Error;}
 else
-.{
+{
 	uint8_t i=CB_is_empty(cbptr);
 	if(i == Buffer_Empty)
 		{return Buffer_Empty;}
