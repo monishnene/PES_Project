@@ -60,11 +60,15 @@ dst = NULL;
 length=3;
 src = my_memmove(src,dst,length);
 if(src == NULL)
+{
 printf("Null Pointer Detected");
 assert_int_equal(*answer, 1);
+}
 else
+{
 printf("No Null pointer");
 assert_int_equal(*answer, 1);
+}
 }
 
 static void memmove_no_overlap(void **state) {
