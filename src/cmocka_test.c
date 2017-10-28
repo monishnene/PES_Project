@@ -68,7 +68,8 @@ assert_int_equal(*answer, 1);
 }
 
 static void memmove_no_overlap(void **state) {
-(void) state;
+
+
 my_memmove(src,dst,length);
 }
 static void memmove_SRC_in_DST(void **state) {
@@ -80,27 +81,52 @@ static void memmove_DST_in_SRC(void **state) {
 my_memmove(src,dst,length);
 }
 static void memset_null_pointer_test(void **state) {
-(void) state;
-my_memset(src,length,value);
+src = NULL;
+dst = NULL;
+length = 3;
+src = my_memset(src,length,value);
+if(src == NULL)
+printf("Null pointer Detected");
+assert_int_equal(*answer, 1);
+else
+printf("No Null pointer");
+assert_int_equal(*answer, 1);
 }
+
 static void memset_check_region_set(void **state) {
 (void) state;
 my_memset(src,length,value);
 }
 static void memzero_null_pointer_test(void **state) {
-(void) state;
-my_memzero(src,length);
+src = NULL;
+dst = NULL;
+length = 3;
+src = my_memzero(src,length);
+if(src == NULL)
+printf("Null pointer Detected");
+assert_int_equal(*answer, 1);
+else
+printf("No Null pointer");
+assert_int_equal(*answer, 1);
 }
 static void memzero_check_region_zero(void **state) {
 (void) state;
 my_memzero(src,length);
 }
 static void reverse_null_pointer_test(void **state) {
-(void) state;
-my_reverse(src,length); 
+src = NULL;
+dst = NULL;
+length = 3;
+src = my_reverse(src,length); 
+if(src == NULL)
+printf("Null pointer Detected");
+assert_int_equal(*answer, 1);
+else
+printf("No Null pointer");
+assert_int_equal(*answer, 1);
 }
 static void reverse_check_odd(void **state) {
-(void) state;
+
 my_reverse(src,length);
 }
 static void reverse_check_even(void **state) {
@@ -112,16 +138,30 @@ static void reverse_check_all_chars(void **state) {
 my_reverse(src,length);
 }
 static void big_to_litte_null_pointer_test(void **state) {
-(void) state;
-big_to_little32(data,length);
+src = big_to_little32(data,length);
+
 }
 static void big_to_litte_conversion_test(void **state) {
-(void) state;
-big_to_little32(data,length);
+data = NULL;
+length = 4;
+data = big_to_little32(data,length);
+if (data == NULL)
+printf("Null pointer Detected");
+assert_int_equal(*answer,1);
+else
+printf("No Null pointer");
+assert_int_equal(*answer,1);
 }
 static void little_to_big_null_pointer_test(void **state) {
-(void) state;
-uint8_t little_to_big32(uint32_t * data, uint32_t length);
+data = NULL;
+length = 4;
+data = little_to_big32(data,length);
+if (data == NULL)
+printf("Null pointer Detected");
+assert_int_equal(*answer,1);
+else
+printf("No Null pointer");
+assert_int_equal(*answer,1);
 }
 static void little_to_big_conversion_test(void **state) {
 (void) state;
