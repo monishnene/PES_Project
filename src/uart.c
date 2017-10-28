@@ -32,7 +32,7 @@ void UART_configure(void){
 	UART0_C3 = 0;
 	UART0_S2 = 0;
 	//calculate baudrate value
-	baud_rate = (uint16_t)((48000*1000)/(115200 * 16));//change to 20k approx
+	baud_rate = (uint16_t)((48000*1000*1000115200 * 16));//change to 20k approx
 	//set oversampling ratio to 16 times
 	UART0_C4 = UARTLP_C4_OSR(16 - 1);
         UART0_BDH = (baud_rate >> 8) & UARTLP_BDH_SBR_MASK;
@@ -40,8 +40,8 @@ void UART_configure(void){
 	//Initialize transmit and receive circular buffers
 	CB_t* tx_buffer;
 	CB_t* rx_buffer;
-	CB_init(CB_t* tx_circbuf,length);
- 	CB_init(CB_t* rx_circbuf,length);
+	CB_init(tx_circbuf,length);
+ 	CB_init(rx_circbuf,length);
 	UART0_C2 |= (uint32_t)(UARTLP_C2_RE_MASK | UARTLP_C2_TE_MASK | UARTLP_C2_RIE_MASK);
 	//enable receiver interrupts
 	NVIC_ICPR |= (uint32_t)(1<<(INT_UART0-16));//clear pending UART0 interrupts
@@ -60,6 +60,7 @@ uint8_t* temp;
 CB_buffer_remove_item(tx_circbuf,temp);
 while(!((UART0_S1 & 0x80)==0x80)); 
 UART0_D = *temp;
+return;
 }
  
 /***********************************************************************
@@ -78,6 +79,8 @@ for(i=0;i<length;i++)
 	while(!((UART0_S1 & 0x80)==0x80)); 
 	UART0_D = *temp; 
 }
+
+return;
 }
 
 

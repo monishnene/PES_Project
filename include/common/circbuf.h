@@ -11,12 +11,14 @@
 
 typedef struct
 {
-uint8_t* buffptr;//base
-uint8_t head;//in
-uint8_t tail;//out
-uint8_t size;//limit
-uint8_t count;//used		
+int32_t* buffptr;//base
+uint32_t head;//in
+uint32_t tail;//out
+uint32_t size;//limit
+uint32_t count;//used		
 }CB_t;
+
+extern CB_t cbvalues;
 
 typedef enum
 {
