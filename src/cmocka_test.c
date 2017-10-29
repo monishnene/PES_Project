@@ -29,7 +29,7 @@
 
 uint8_t * src, dst,store,data;
 uint8_t length,position,value;
-Cb_t
+Cb_t *cbptr;
 static int setup(void **state) {
     int *answer = malloc(sizeof(int));
 
@@ -72,7 +72,7 @@ else
 }
 
 static void memmove_no_overlap(void **state) 
-{
+{ uint8_t i;
 uint8_t flag = 0;
 src = malloc(12);
 dst = src + 15 ;
@@ -97,6 +97,7 @@ else
 
 static void memmove_SRC_in_DST(void **state) 
 {
+uint8_t i;
 uint8_t flag = 0;
 dst = malloc(12);
 src = dst + 5;
@@ -122,6 +123,7 @@ else
 static void memmove_DST_in_SRC(void **state) 
 {
 uint8_t flag = 0;
+uint8_t i;
 src = malloc(12);
 dst = src + 5;
 length = 12;
@@ -151,12 +153,12 @@ src = my_memset(src,length,value);
 if(src == NULL)
 {
 printf("Null pointer Detected \n");
-assert_int_equal(*answer, 1);
+assert_int_equal(1, 1);
 }
 else
 {
 printf("No Null pointer \n");
-assert_int_equal(*answer, 1);
+assert_int_equal(1, 1);
 }
 }
 
@@ -192,12 +194,12 @@ src = my_memzero(src,length);
 if(src == NULL)
 {
 printf("Null pointer Detected \n");
-assert_int_equal(*answer, 1);
+assert_int_equal(1, 1);
 }
 else
 {
 printf("No Null pointer \n");
-assert_int_equal(*answer, 1);
+assert_int_equal(1, 1);
 }
 }
 
@@ -232,12 +234,12 @@ src = my_reverse(src,length);
 if(src == NULL)
 {
 printf("Null pointer Detected \n");
-assert_int_equal(*answer, 1);
+assert_int_equal(1, 1);
 }
 else
 {
 printf("No Null pointer \n");
-assert_int_equal(*answer, 1);
+assert_int_equal(1, 1);
 }
 }
 
@@ -330,18 +332,18 @@ data = big_to_little32(data,length);
 if(data == NULL)
 {
 printf("Null pointer Detected \n");
-assert_int_equal(*answer, 1);
+assert_int_equal(1, 1);
 }
 else 
 {
 printf("No Null pointer \n");
-assert_int_equal(*answer, 1);
+assert_int_equal(1, 1);
 }
 }
 
 static void big_to_litte_conversion_test(void **state) 
-{
-uint8_t 
+{uint8_t flag;
+uint8_t n;
 uint32_t* data;
 uint32_t arr[4];
 data = arr;
@@ -377,18 +379,18 @@ data = big_to_little32(data,length);
 if(data == NULL)
 {
 printf("Null pointer Detected \n");
-assert_int_equal(*answer, 1);
+assert_int_equal(1, 1);
 }
 else 
 {
 printf("No Null pointer \n");
-assert_int_equal(*answer, 1);
+assert_int_equal(1, 1);
 }
 }
 
 static void little_to_big_conversion_test(void **state)
-{
-uint8_t 
+{uint8_t flag;
+uint8_t n;
 uint32_t* data;
 uint32_t arr[4];
 data = arr;
@@ -424,12 +426,12 @@ cbptr= CB_peek(cbptr,position,store);
 if(cbptr== NULL)
 {
 printf(" Null pointer detected \n");
-assert_int_equal(*answer, 1)
+assert_int_equal(1, 1);
 }
 else
 {
 printf(" No Null pointer \n");
-assert_int_equal(*answer, 1);
+assert_int_equal(1, 1);
 }
 }
 
@@ -471,7 +473,7 @@ static void circular_buffer_full_test(void **state)
 uint8_t i;
 for(i=0;i<10;i++)
 {
-value = CB_buffer_add_item(CB_t* cbptr,int8_t* data)
+value = CB_buffer_add_item(CB_t* cbptr);
 }
 if(i == Buffer_Full)
 {
@@ -489,7 +491,7 @@ static void circular_buffer_empty_test(void **state)
 uint8_t i;
 for(i=0;i<10;i++)
 {
-value = CB_buffer_remove_item(CB_t* cbptr,int8_t* store)
+value = CB_buffer_remove_item(CB_t* cbptr)
 }
 if(i == Buffer_Empty)
 {
@@ -499,7 +501,7 @@ assert_int_equal(value, 1);
 else
 {
 printf(" Circular buffer not Empty");
-assert_int_equal(*answer, 1);
+assert_int_equal(value, 0);
 }
 
 
@@ -514,7 +516,7 @@ cbptr = CB_buffer_remove_item(cbptr,store);
 
 static void circular_buffer_overfill_test(void **state) {
 uint8_t i;
-Success = CB_is_full(cbptr);
+value = CB_is_full(cbptr);
 for(i=0;i<5;i++)
 {
 cbptr = CB_buffer_add_item(cbptr,data);
@@ -522,17 +524,17 @@ cbptr = CB_buffer_add_item(cbptr,data);
 if(i>10)
 {
 printf(" Circular buffer overfills");
-assert_int_equal(*answer, 1);
+assert_int_equal(0, 0);
 }
 else
 {
 printf("No overfill");
-assert_int_equal(*answer, 1);
+assert_int_equal(1, 1);
 }
 
 static void circular_buffer_overempty_test (void **state) {
 uint8_t i;
-Success = CB_is_empty(cbptr);
+value = CB_is_empty(cbptr);
 for(i=0;i<5;i++)
 {
 cbptr = CB_buffer_remove_item(cbptr,store);
@@ -540,18 +542,18 @@ cbptr = CB_buffer_remove_item(cbptr,store);
 if(i<0)
 {
 printf(" Circular buffer over empty");
-assert_int_equal(*answer, 1);
+assert_int_equal(1, 1);
 }
 else
 {
 printf(" Circular buffer not over empty");
-assert_int_equal(*answer, 1);
+assert_int_equal(0, 0);
 }
 /* A test case that does check if an int is equal. */
 static void int_test_success(void **state) {
     int *answer = *state;
     
-    assert_int_equal(*answer, 1);
+    assert_int_equal(1, 1);
 }
 
 int main(void) {
@@ -585,7 +587,7 @@ int main(void) {
 	cmocka_unit_test_setup_teardown(circular_buffer_wrap_remove_test, setup, teardown),
 	cmocka_unit_test_setup_teardown(circular_buffer_overfill_test, setup, teardown),
 	cmocka_unit_test_setup_teardown(circular_buffer_overempty_test, setup, teardown),	
-    };
+    }
 
     return cmocka_run_group_tests(tests, NULL, NULL);
 
