@@ -61,79 +61,85 @@ length=3;
 src = my_memmove(src,dst,length);
 if(src == NULL)
 {
-  printf("Null Pointer Detected");
-  assert_int_equal(*answer, 1);
+  printf("Null Pointer Detected \n");
+  assert_int_equal(1, 1);
 }
 else
 {
-  printf("No Null pointer");
-  assert_int_equal(*answer, 1);
+  printf("No Null pointer \n");
+  assert_int_equal(1, 1);
 }
 }
 
-static void memmove_no_overlap(void **state) {
-int arr[8];
-length = 8;
-src = arr[0];
-dst = arr[5];
+static void memmove_no_overlap(void **state) 
+{
+uint8_t flag = 0;
+src = malloc(12);
+dst = src + 15 ;
+length = 12;
 dst= my_memmove(src,dst,length);
 for(i=0;i<length-1;i++)
 {
-src+length = dst;
+ if(*(src+i) != *(dst+i))
+ {flag = 1;}
 }
-if( src!= dst)
+if(flag == 0 )
 {
-  printf("No overlap observed");
-  assert_int_equal(*answer, 1);
+  printf("Data moved without error \n");
+  assert_int_equal(flag, 0);
 }
 else 
 {
-  printf("Overlap observed");
-  assert_int_equal(*answer, 1);
+  printf("Data not moved properly \n");
+  assert_int_equal(flag, 1);
 }
 }
-static void memmove_SRC_in_DST(void **state) {
-uint8_t flag = 0;
-src = arr[0];
-dst = arr[7];
-length = 8;
-dst = my_memmove(src,dst,length);
-flag=1;
-for(i=0; i<length-1; i++)
-{ 
-  *(dst+length-1-i) = *(src+length-1-i);
-}
-if(dst == src+i)
+
+static void memmove_SRC_in_DST(void **state) 
 {
-printf("Source moved in destination");
-assert_int_equal(*answer, 1);
-}
-else
-{
-printf("Source not moved in Destination");
-assert_int_equal(*answer, 1);
-}
-}
-static void memmove_DST_in_SRC(void **state) {
 uint8_t flag = 0;
-src = arr[0];
-dst = arr[7];
-length = 8;
+dst = malloc(12);
+src = dst + 5;
+length = 12;
 dst= my_memmove(src,dst,length);
-flag=0;
-for(i=0; i<length-1; i++)
+for(i=0; i<length; i++)
 { 
-  *(dst+i)=*(src+i);
+  if(*(dst+i) == *(src+i))
+	{flag=1;}
 }
-if(dst+length-1==src+i) 
+if(flag == 0 )
 {
-printf("Destination moved in source");
-assert_int_equal(*answer, 1);
+  printf("Data moved without error overlap handled \n");
+  assert_int_equal(flag, 0);
 }
-else
+else 
 {
-printf("Destination not moved in source");
-assert_int_equal(*answer, 1);
+  printf("Data not moved properly \n");
+  assert_int_equal(flag, 1);
+}
+}
+
+static void memmove_DST_in_SRC(void **state) 
+{
+uint8_t flag = 0;
+src = malloc(12);
+dst = src + 5;
+length = 12;
+dst= my_memmove(src,dst,length);
+for(i=0; i<length; i++)
+{ 
+  if(*(dst+i) == *(src+i))
+	{flag=1;}
+}
+if(flag == 0 )
+{
+  printf("Data moved without error overlap handled \n");
+  assert_int_equal(flag, 0);
+}
+else 
+{
+  printf("Data not moved properly \n");
+  assert_int_equal(flag, 1);
 }
 }
 
@@ -144,39 +150,37 @@ length = 3;
 src = my_memset(src,length,value);
 if(src == NULL)
 {
-printf("Null pointer Detected");
+printf("Null pointer Detected \n");
 assert_int_equal(*answer, 1);
 }
 else
 {
-printf("No Null pointer");
+printf("No Null pointer \n");
 assert_int_equal(*answer, 1);
 }
 }
 
-static void memset_check_region_set(void **state) {
-
-short i;
-val = 0x80;
-src = val;
+static void memset_check_region_set(void **state) 
+{
+uint8_t i,flag=0;
+value = 0x80;
 length = 4;
+src = malloc(length);
 src= my_memset(src,length,value);
 for(i=0;i<length;i++)
 {
-  *(src+0) = 4;
-  *(src+1) = 6;
-  *(src+2) = 2;
-  *(src+3) = 3;
+  if(*(src+i) != value)
+	{flag=1;}
 }
-if(*src==4623)
+if(flag==0)
 {
-printf("The value is set to the memory location");
-assert_int_equal(*answer, 1);
+ printf("The value is set to the memory location \n");
+ assert_int_equal(flag, 0);
 }
 else
 {
-printf("The value is not set to the memory location");
-assert_int_equal(*answer, 1);
+ printf("The value is not set to the memory location \n");
+ assert_int_equal(flag, 1);
 }
 }
 
@@ -187,40 +191,39 @@ length = 3;
 src = my_memzero(src,length);
 if(src == NULL)
 {
-printf("Null pointer Detected");
+printf("Null pointer Detected \n");
 assert_int_equal(*answer, 1);
 }
 else
 {
-printf("No Null pointer");
+printf("No Null pointer \n");
 assert_int_equal(*answer, 1);
 }
 }
-static void memzero_check_region_zero(void **state) {
-uint8_t i;
-uint8_t val = 0x40;
-*src = 0;
-src = val;
+
+static void memzero_check_region_zero(void **state) 
+{
+uint8_t i,flag=0;
 length = 4;
-src = my_memzero(src,length);
+src = malloc(length);
+src= my_memzero(src,length);
 for(i=0;i<length;i++)
 {
-  *(src+0)= 0;
-  *(src+1)= 0;
-  *(src+2)= 0;
-  *(src+3)= 0;
+  if(*(src+i) != 0)
+  {flag=1;}
 }
-if(*src==0)
+if(flag==0)
 {
-printf("Memory location is cleared");
-assert_int_equal(*answer, 1);
+ printf("The memory locations are 0 \n");
+ assert_int_equal(flag, 0);
 }
-else 
+else
 {
-printf("Memory location is not cleared");
-assert_int_equal(*answer, 1);
+ printf("The memory locations are not 0 \n");
+ assert_int_equal(flag, 1);
 }
 }
+
 static void reverse_null_pointer_test(void **state) {
 src = NULL;
 dst = NULL;
@@ -228,238 +231,270 @@ length = 3;
 src = my_reverse(src,length); 
 if(src == NULL)
 {
-printf("Null pointer Detected");
+printf("Null pointer Detected \n");
 assert_int_equal(*answer, 1);
 }
 else
 {
-printf("No Null pointer");
+printf("No Null pointer \n");
 assert_int_equal(*answer, 1);
 }
 }
-static void reverse_check_odd(void **state) {
-short i;
+
+static void reverse_check_odd(void **state) 
+{ 
 length = 3;
-uint8_t arr[50];
+uint8_t i,arr[3],flag=0;
 src = &arr;
 for(i=0;i<3;i++)
 {
- *(src+i) = 9;
- *(src+i) = 6;
- *(src+i) = 7;
+ *(src+i) = i;
 }
 src = my_reverse(src,length);
-if( *((src+i))==769)
+for(i=0;i<length;i++)
 {
-printf("Odd string reversed");
-assert_int_equal(*answer, 1);
+  if(*(src+length-i) != i)
+  {flag=1;}
 }
-else 
-{
-printf("Odd string not reversed");
-assert_int_equal(*answer, 1);
-}
-}
-static void reverse_check_even(void **state) {
-short i;
-length = 4;
-uint8_t arr[50];
-src = &arr;
-for(i=0;i<4;i++)
-{
-*(src+i) = 9;
-*(src+i) = 6;
-*(src+i) = 7;
-*(src+i) = 5;
-}
-src = my_reverse(src,length);
-if( *((src+i))==5769)
-{
-printf("Even string reversed");
-assert_int_equal(*answer, 1);
+if(flag==0)
+{ 
+ printf("The memory is reversed \n");
+ assert_int_equal(flag, 0);
 }
 else
 {
-printf("Even string not reversed");
-assert_int_equal(*answer, 1);
+ printf("The memory is not reversed \n");
+ assert_int_equal(flag, 1);
 }
 }
-static void reverse_check_all_chars(void **state) {
-short i;
+
+static void reverse_check_even(void **state) 
+{
 length = 4;
-uint8_t arr[50];
+uint8_t i,arr[3],flag=0;
 src = &arr;
 for(i=0;i<3;i++)
 {
-*(src+i) = a;
-*(src+i) = b;
-*(src+i) = c;
+ *(src+i) = i;
 }
 src = my_reverse(src,length);
-if( *((src+i))==cba)
+for(i=0;i<length;i++)
 {
-printf("Char string reversed");
-assert_int_equal(*answer, 1);
+  if(*(src+length-i) != i)
+  {flag=1;}
+}
+if(flag==0)
+{
+ printf("The memory is reversed \n");
+ assert_int_equal(flag, 0);
 }
 else
 {
-printf("Char string not reversed");
-assert_int_equal(*answer, 1);
+ printf("The memory is not reversed \n");
+ assert_int_equal(flag, 1);
 }
 }
-static void big_to_litte_null_pointer_test(void **state) {
+
+static void reverse_check_all_chars(void **state) 
+{
+length = 3;
+uint8_t i,flag=0,arr[3];
+src = arr;
+*(src)= '\n';
+*(src+1) = '\0';
+*(src+2) = '\t';
+src = my_reverse(src,length);
+if( *(src)!='\t')
+{flag=1;}
+if( *(src+1)!='\0')
+{flag=1;}
+if( *(src+2)!='\n')
+{flag=1;}
+if(flag==0)
+{
+ printf("The memory is reversed \n");
+ assert_int_equal(flag, 0);
+}
+else
+{
+ printf("The memory is not reversed \n");
+ assert_int_equal(flag, 1);
+}
+}
+
+static void big_to_litte_null_pointer_test(void **state) 
+{
 data = NULL;
 length = 4;
 data = big_to_little32(data,length);
 if(data == NULL)
 {
-printf("Null pointer Detected");
+printf("Null pointer Detected \n");
 assert_int_equal(*answer, 1);
 }
 else 
 {
-printf("No Null pointer");
+printf("No Null pointer \n");
 assert_int_equal(*answer, 1);
 }
 }
-static void big_to_litte_conversion_test(void **state) {
-short i;
-int n;
-unsigned int* data;
-unsigned int arr[50];
-data = &arr;
-for(i=0;i<4;i++)
+
+static void big_to_litte_conversion_test(void **state) 
 {
-*(data+0) = 0;
+uint8_t 
+uint32_t* data;
+uint32_t arr[4];
+data = arr;
+*(data) = 0;
 *(data+1)=  2;
 *(data+2) = 8;
 *(data+3) = 7;
-}
 n= big_to_little32(data,4);
-if( *((data+i))== 287)
+if( *(src)!=0x00000000)
+{flag=1;}
+if( *(src+1)!=0x02000000)
+{flag=1;}
+if( *(src+2)!=0x08000000)
+{flag=1;}
+if( *(src+3)!=0x07000000)
+{flag=1;}
+if(flag==0)
 {
-printf("Big to little converted");
-assert_int_equal(*answer, 1);
+ printf("Big endian to little endian done \n");
+ assert_int_equal(flag, 0);
 }
-else 
+else
 {
-printf("Big to little not converted");
-assert_int_equal(*answer, 1);
+ printf("Big endian to little endian not done \n");
+ assert_int_equal(flag, 1);
 }
 }
 
 static void little_to_big_null_pointer_test(void **state) {
- data = NULL;
+data = NULL;
 length = 4;
 data = big_to_little32(data,length);
 if(data == NULL)
 {
-printf("Null pointer Detected");
+printf("Null pointer Detected \n");
 assert_int_equal(*answer, 1);
 }
 else 
 {
-printf("No Null pointer");
+printf("No Null pointer \n");
 assert_int_equal(*answer, 1);
 }
 }
-static void little_to_big_conversion_test(void **state) {
-short i;
-int n;
-unsigned int arr[50];
-unsigned int* data = arr;
-for(i=0;i<4;i++)
-{
-*(data+i) = 0;
-*(data+i )= 2;
-*(data+i) = 8;
-*(data+i) = 7;
-}
-n= big_to_little32(data,4);
-if( *((data+i)) == 000000000 20000000 80000000 70000000)
-{
-printf("little to big converted");
-assert_int_equal(*answer, 1);
-}
-else
-{
-printf("Little to big not converted");
-}
-} 
 
-static void create_cicular_buffer(void **state) {
-length = 10;
-cbptr=CB_init(cbptr, 10);
-if(cbptr != NULL)
+static void little_to_big_conversion_test(void **state)
 {
-printf("Circular buffer initialized");
-assert_int_equal(*answer, 1);
+uint8_t 
+uint32_t* data;
+uint32_t arr[4];
+data = arr;
+*(data) = 0;
+*(data+1)=  2;
+*(data+2) = 8;
+*(data+3) = 7;
+n= big_to_little32(data,4);
+if( *(src)!=0x00000000)
+{flag=1;}
+if( *(src+1)!=0x02000000)
+{flag=1;}
+if( *(src+2)!=0x08000000)
+{flag=1;}
+if( *(src+3)!=0x07000000)
+{flag=1;}
+if(flag==0)
+{
+ printf("Little endian to big endian done \n");
+ assert_int_equal(flag, 0);
 }
 else
 {
-printf(" Circular buffer not initialized");
-assert_int_equal(*answer, 1);
+ printf("Little endian to big endian not done \n");
+ assert_int_equal(flag, 1);
 }
 }
-static void circular_buffer_null_pointer_test(void **state) {
+
+static void circular_buffer_null_pointer_test(void **state) 
+{
 cbptr == NULL;
 cbptr= CB_peek(cbptr,position,store);
 if(cbptr== NULL)
 {
-printf(" Null pointer detected");
+printf(" Null pointer detected \n");
 assert_int_equal(*answer, 1)
 }
 else
 {
-printf(" No Null pointer");
+printf(" No Null pointer \n");
 assert_int_equal(*answer, 1);
-
 }
-static void circular_buffer_initialized_test(void **state) {
+}
 
-cbptr = CB_peek(cbptr,12,store);
-if(cbptr== Success)
+static void circular_buffer_initialized_test(void **state) 
+{
+value = CB_peek(cbptr,12,store);
+if(value == Success)
 {
 printf(" Circular buffer initialized");
-assert_int_equal(*answer, 1);
+assert_int_equal(value, 3);
 }
 else
 {
 printf("Circular buffer not initialized");
-assert_int_equal(*answer, 1);
+assert_int_equal(1, 1);00000
 }
 
-static void circular_buffer_add_remove_test(void **state) {
-cbptr = CB_buffer_add_item(cbptr,data);
-cbptr = CB_buffer_remove_item(cbptr,store);
+static void circular_buffer_add_remove_test(void **state) 
+{
+value = CB_buffer_add_item(cbptr,data);
+if(value == Success)
+{
+value = CB_buffer_remove_item(cbptr,store);
+if(value == Success)
+{
+printf(" Add and Remove successful");
+assert_int_equal(value, 3);
 }
-static void circular_buffer_full_test(void **state) {
+}
+else
+{
+printf(" Add and Remove failed");
+assert_int_equal(1, 1);
+}
+}
+
+static void circular_buffer_full_test(void **state) 
+{
 uint8_t i;
 for(i=0;i<10;i++)
 {
-cbptr = CB_buffer_add_item(CB_t* cbptr,int8_t* data)
+value = CB_buffer_add_item(CB_t* cbptr,int8_t* data)
 }
 if(i == Buffer_Full)
 {
 printf("Circular buffer full");
-assert_int_equal(*answer, 1);
+assert_int_equal(value, 0);
 }
 else
 {
 printf(" Circular buffer not full");
-assert_int_equal(*answer, 1);
+assert_int_equal(1, 1);
 }
 
-static void circular_buffer_empty_test(void **state) {
+static void circular_buffer_empty_test(void **state) 
+{
 uint8_t i;
 for(i=0;i<10;i++)
 {
-cbptr = CB_buffer_remove_item(CB_t* cbptr,int8_t* store)
+value = CB_buffer_remove_item(CB_t* cbptr,int8_t* store)
 }
 if(i == Buffer_Empty)
 {
 printf("Circular buffer Empty");
-assert_int_equal(*answer, 1);
+assert_int_equal(value, 1);
 }
 else
 {
@@ -468,13 +503,15 @@ assert_int_equal(*answer, 1);
 }
 
 
-static void circular_buffer_wrap_add_test(void **state) {
-
+static void circular_buffer_wrap_add_test(void **state) 
+{
 cbptr = CB_buffer_add_item(cbptr,data);
 }
+
 static void circular_buffer_wrap_remove_test(void **state) {
 cbptr = CB_buffer_remove_item(cbptr,store);
 }
+
 static void circular_buffer_overfill_test(void **state) {
 uint8_t i;
 Success = CB_is_full(cbptr);
