@@ -444,7 +444,7 @@ assert_int_equal(value, 3);
 else
 {
 printf("Circular buffer not initialized");
-assert_int_equal(1, 1);00000
+assert_int_equal(1, 1);
 }
 
 static void circular_buffer_add_remove_test(void **state) 
