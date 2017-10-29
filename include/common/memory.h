@@ -9,7 +9,7 @@
 #define MEMORY_H_
 #include <stdint.h>
 
-unsigned char* my_memmove(unsigned char* src, unsigned char* dst, int length);
+uint8_t* my_memmove(unsigned char* src, unsigned char* dst, int length);
 unsigned char* my_memcpy(unsigned char* src, unsigned char* dst, int length);
 unsigned char* my_memset(unsigned char* src, int length, unsigned char value);
 unsigned char* my_memzero(unsigned char* src, int length);

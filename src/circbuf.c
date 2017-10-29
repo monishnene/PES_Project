@@ -34,7 +34,7 @@ else
 			{cbptr-> head = 0;}
 		else
 			{cbptr-> head++;}
-		*((cbptr-> buffptr)+(cbptr-> head)) = *data;
+		   *((cbptr-> buffptr)+(cbptr-> head)) = *data;
 		if((cbptr-> head)>=(cbptr-> tail))
 			{(cbptr-> count)= (cbptr-> head)-(cbptr-> tail);}
 		else
