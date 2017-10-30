@@ -19,8 +19,8 @@
 #include "uart.h"
 #include "circbuf.h"
 #define baud_rate  38400
-#define size (100)
-extern CB_t buffer;
+#define size (1000)
+
 
 /***********************************************************************
  * @brief UART_configure()
@@ -28,7 +28,7 @@ extern CB_t buffer;
  ***********************************************************************/
 void UART_configure(void)
 {
-
+	uint8_t i;
 	uint16_t baud = (uint16_t)(SystemCoreClock/(baud_rate*16));
 	SIM_SCGC5 |= SIM_SCGC5_PORTA_MASK;
 	SIM_SCGC4 |= SIM_SCGC4_UART0_MASK;
@@ -46,7 +46,7 @@ void UART_configure(void)
 	UART0->C5 = 0X00;
 	UART0_BDL |= (uint8_t)(baud & UART0_BDL_SBR_MASK);
 	UART0_BDH |= (uint8_t)((baud >>8 ) & UART0_BDH_SBR_MASK);
-	CB_init(buffer,size);
+	i = CB_init(&buffer,size);
 	return;
 }
 
@@ -55,7 +55,7 @@ void UART_configure(void)
  * This function stores the value to be transmitted in transmit circular buffer
  * @tx_circbuf pointer to circular buffer
  ***********************************************************************/
-void UART_send (CB_t tx_circbuf)
+void UART_send (CB_t* tx_circbuf)
 {
 uint8_t* temp;
 CB_buffer_remove_item(tx_circbuf,temp);
@@ -64,14 +64,14 @@ UART0_D = *temp;
 return;
 }
 
-void UART_send_test(void)
+/*void UART_send_test(void)
 {
 	uint8_t i = 65;
 	while((UART0_S1 & UART_S1_TDRE_MASK)==0);
-	/* Send the character */
+	/* Send the character
 	UART0_D = i;
 return;
-}
+}*/
 
 /***********************************************************************
  * @brief UART_send_n()
@@ -79,7 +79,7 @@ return;
  * @tx_circbuf pointer to circular buffer
  * @length length of data
  ***********************************************************************/
-void UART_send_n(CB_t tx_circbuf,uint8_t length)
+void UART_send_n(CB_t* tx_circbuf,uint8_t length)
 {
 uint8_t* temp;
 uint8_t i;
@@ -99,12 +99,11 @@ return;
  * This function stores a from receive circular buffer to  a certain memory location
  * @rx_circbuf pointer to circular buffer
  ***********************************************************************/
-uint8_t UART_receive(CB_t rx_circbuf)
+uint8_t UART_receive(CB_t* rx_circbuf)
 {
-uint8_t* temp;
-while((UART0_S1 & UART_S1_RDRF_MASK)==0);
-*temp = UART0_D;
-CB_buffer_add_item(rx_circbuf,temp);
+uint8_t i,temp;
+temp = UART0_D;
+i = CB_buffer_add_item(rx_circbuf,temp);
 return Success;
 }
 /***********************************************************************
@@ -113,15 +112,14 @@ return Success;
  * @rx_circbufpointer to circular buffer
  * @length length of data
  ***********************************************************************/
-uint8_t UART_receive_n(CB_t rx_circbuf,uint8_t length)
+uint8_t UART_receive_n(CB_t* cbptr,uint8_t length)
 {
-uint8_t* temp;
-uint8_t i;
+uint8_t temp,i;
 for(i=0;i<length;i++)
 {
 	while((UART0_S1 & UART_S1_RDRF_MASK)==0);
-	*temp = UART0_D;
-	CB_buffer_add_item(rx_circbuf,temp);
+	temp = UART0_D;
+	CB_buffer_add_item(cbptr,temp);
 }
 return Success;
 }
@@ -131,11 +129,6 @@ return Success;
  * This function checks the register values after interrupt occurs and sends or receives data by UART
  ***********************************************************************/
 void UART0_IRQHandler(void)
-{
-uint8_t i,buffstatus;
-buffstatus = CB_is_full(buffer);
-if((UART0_S1 & UART0_S1_RDRF_MASK) && buffstatus != Buffer_Full)
-{
-i=UART_receive_n(buffer,100);
+{ uint8_t i;
+	i=UART_receive(&buffer);
 }
-}0
