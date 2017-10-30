@@ -422,10 +422,10 @@ else
 }
 }
 int create_cicular_buffer(void **state) 
-{
+{ uint8_t i;
 CB_t circular_buffer;
 CB_t cbptr = circular_buffer;
-CB_init(cbptr,length);
+i =CB_init( sizeof(cbptr),malloc(length));
 }
 
 
