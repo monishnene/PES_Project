@@ -11,6 +11,8 @@
 #include <stdint.h>
 #include "memory.h"
 #include "circbuf.h"
+#include "system_MKL25Z4.h"
+#include "MKL25Z4.h"
 #include "uart.h"
 
 /***********************************************************************
@@ -34,7 +36,7 @@ uint8_t CB_buffer_add_item(CB_t* cbptr,uint8_t data)
 			cbptr->head++;
 			(cbptr->count++);
 			}
-	
+		(cbptr->head) = data;
 		return Success;
 	}
 }
@@ -61,12 +63,9 @@ uint8_t CB_buffer_remove_item(CB_t* cbptr,uint8_t* store)
 			cbptr->tail++;
 			(cbptr->count)--;
 			}
-		*store=*(cbptr->tail);
+		*store = *(cbptr->tail);
 
-             
-
-     }
-       return Success;
+	}
 }
 
 /***********************************************************************
@@ -77,7 +76,6 @@ uint8_t CB_buffer_remove_item(CB_t* cbptr,uint8_t* store)
  ***********************************************************************/
 uint8_t CB_is_full(CB_t* cbptr)
 	{
-
 	if((cbptr->tail)==(cbptr->head)+1)
 		return Buffer_Full;
 	else
@@ -110,15 +108,14 @@ uint8_t CB_is_empty(CB_t* cbptr)
  * @store pointer to the location where the data is supposed to be stored
  * @return error in form of enum defined in structure.h
  ***********************************************************************/
-uint8_t CB_peek(CB_t* cbptr,uint8_t position, uint8_t* store)
+uint8_t CB_my_peek(CB_t* cbptr,uint8_t* store)
 {
 	uint8_t i=CB_is_empty(cbptr);
 	if(i == Buffer_Empty)
 		{return Buffer_Empty;}
 	else
-	{	while(position > cbptr->length)
-		 {position = position - cbptr->length;}
-		*store=*((cbptr->buffptr)+position);
+	{
+		*store=(cbptr->head);
 		return Success;
 	}
 }
