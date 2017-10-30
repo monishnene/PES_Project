@@ -32,7 +32,7 @@ uint8_t CB_buffer_add_item(CB_t* cbptr,uint8_t data);
 uint8_t CB_buffer_remove_item(CB_t* cbptr,uint8_t* store);
 uint8_t CB_is_full(CB_t* cbptr);
 uint8_t CB_is_empty(CB_t* cbptr);
-uint8_t CB_peek(CB_t* cbptr,uint8_t position, uint8_t* store);
+uint8_t CB_my_peek(CB_t* cbptr, uint8_t* store);
 uint8_t CB_init(CB_t* cbptr,uint8_t length);
 uint8_t CB_destroy(CB_t* cbptr);
 #endif /*circbuf.h*/
