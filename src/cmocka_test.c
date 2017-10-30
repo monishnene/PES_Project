@@ -27,9 +27,12 @@
 #include "memory.h"
 #include <stdlib.h>
 
-uint8_t * src, dst,store,data;
-uint8_t length,position,value;
-Cb_t *cbptr;
+uint8_t* src;
+ uint8_t* dst;
+uint8_t* store; 
+uint8_t* data;
+uint8_t length, position, value;
+CB_t cbptr;
 static int setup(void **state) {
     int *answer = malloc(sizeof(int));
 
@@ -418,12 +421,20 @@ else
  assert_int_equal(flag, 1);
 }
 }
-
-static void circular_buffer_null_pointer_test(void **state) 
+int create_cicular_buffer(void **state) 
 {
-cbptr == NULL;
-cbptr= CB_peek(cbptr,position,store);
-if(cbptr== NULL)
+CB_t circular_buffer;
+CB_t cbptr = circular_buffer;
+CB_init(cbptr,length);
+}
+
+
+/*static void circular_buffer_null_pointer_test(void **state) 
+{
+
+value == cbptr;
+value= CB_peek(cbptr,position,store);
+if(value == NULL)
 {
 printf(" Null pointer detected \n");
 assert_int_equal(1, 1);
@@ -433,9 +444,9 @@ else
 printf(" No Null pointer \n");
 assert_int_equal(1, 1);
 }
-}
+}*/
 
-static void circular_buffer_initialized_test(void **state) 
+int circular_buffer_initialized_test(void **state) 
 {
 value = CB_peek(cbptr,12,store);
 if(value == Success)
@@ -449,13 +460,14 @@ printf("Circular buffer not initialized");
 assert_int_equal(1, 1);
 }
 
-static void circular_buffer_add_remove_test(void **state) 
+int circular_buffer_add_remove_test(void **state) 
 {
-value = CB_buffer_add_item(cbptr,data);
+
+value = CB_buffer_add_item(cbptr,src);
 if(value == Success)
 {
-value = CB_buffer_remove_item(cbptr,store);
-if(value == Success)
+value = CB_buffer_remove_item(cbptr,dst);
+if( *dst == *src)
 {
 printf(" Add and Remove successful");
 assert_int_equal(value, 3);
@@ -468,14 +480,16 @@ assert_int_equal(1, 1);
 }
 }
 
-static void circular_buffer_full_test(void **state) 
+int circular_buffer_full_test(void **state) 
 {
 uint8_t i;
 for(i=0;i<10;i++)
 {
-value = CB_buffer_add_item(CB_t* cbptr);
+value = CB_buffer_add_item(cbptr,dst);
 }
-if(i == Buffer_Full)
+value = CB_is_full(cbptr);
+
+if(value == Buffer_Full)
 {
 printf("Circular buffer full");
 assert_int_equal(value, 0);
@@ -486,14 +500,15 @@ printf(" Circular buffer not full");
 assert_int_equal(1, 1);
 }
 
-static void circular_buffer_empty_test(void **state) 
+int circular_buffer_empty_test(void **state) 
 {
 uint8_t i;
 for(i=0;i<10;i++)
 {
-value = CB_buffer_remove_item(CB_t* cbptr)
+value = CB_buffer_remove_item(cbptr,dst);
 }
-if(i == Buffer_Empty)
+value = CB_is_empty(cbptr);
+if(value == Buffer_Empty)
 {
 printf("Circular buffer Empty");
 assert_int_equal(value, 1);
@@ -505,23 +520,68 @@ assert_int_equal(value, 0);
 }
 
 
-static void circular_buffer_wrap_add_test(void **state) 
+int circular_buffer_wrap_add_test(void **state) 
 {
-cbptr = CB_buffer_add_item(cbptr,data);
+ uint8_t i;
+ for(i=0;i<6;i++)
+{
+ value= CB_buffer_add_item(cbptr,dst);
+}
+ for(i=0;i<5;i++)
+{
+ value= CB_buffer_remove_item(cbptr,dst);
+}
+ for(i=0;i<7;i++)
+{
+  value= CB_buffer_add_item(cbptr,dst);
+}
+value = CB_is_full(cbptr);
+if(value == Buffer_Full)
+{
+printf("wrap add successful");
+assert_int_equal(value, 0);
+}
+else
+{
+printf("wrap add not successful");
+assert_int_equal(value,1);
+}
 }
 
-static void circular_buffer_wrap_remove_test(void **state) {
-cbptr = CB_buffer_remove_item(cbptr,store);
+int circular_buffer_wrap_remove_test(void **state) {
+uint8_t i;
+for(i=0;i<6;i++)
+{
+value = CB_buffer_remove_item(cbptr,store);
 }
-
-static void circular_buffer_overfill_test(void **state) {
+for(i=0;i<5;i++)
+{
+value = CB_buffer_add_item(cbptr,dst);
+}
+for(i=0;i<7;i++)
+{
+value= CB_buffer_remove_item(cbptr,store);
+}
+value = CB_is_empty(cbptr);
+if(value== Buffer_Empty)
+{
+printf("wrap remove successful");
+assert_int_equal(value,1);
+}
+else
+{
+printf("wrap remove not successful");
+assert_int_equal(value,0);
+}
+}
+int circular_buffer_overfill_test(void **state) {
 uint8_t i;
 value = CB_is_full(cbptr);
 for(i=0;i<5;i++)
 {
-cbptr = CB_buffer_add_item(cbptr,data);
+value = CB_buffer_add_item(cbptr,dst);
 }
-if(i>10)
+if(value == Success)
 {
 printf(" Circular buffer overfills");
 assert_int_equal(0, 0);
@@ -532,14 +592,14 @@ printf("No overfill");
 assert_int_equal(1, 1);
 }
 
-static void circular_buffer_overempty_test (void **state) {
+int circular_buffer_overempty_test (void **state) {
 uint8_t i;
 value = CB_is_empty(cbptr);
 for(i=0;i<5;i++)
 {
-cbptr = CB_buffer_remove_item(cbptr,store);
+value = CB_buffer_remove_item(cbptr,store);
 }
-if(i<0)
+if(value == Success)
 {
 printf(" Circular buffer over empty");
 assert_int_equal(1, 1);
@@ -550,7 +610,8 @@ printf(" Circular buffer not over empty");
 assert_int_equal(0, 0);
 }
 /* A test case that does check if an int is equal. */
-static void int_test_success(void **state) {
+int int_test_success(void **state) {
+
     int *answer = *state;
     
     assert_int_equal(1, 1);
@@ -559,36 +620,38 @@ static void int_test_success(void **state) {
 int main(void) {
     const struct CMUnitTest tests[] = 
     {
-	cmocka_unit_test(null_test_success),
-        cmocka_unit_test_setup_teardown(int_test_success, setup, teardown),
-	cmocka_unit_test_setup_teardown(memmove_null_pointer_test, setup, teardown),
-	cmocka_unit_test_setup_teardown(memmove_no_overlap, setup, teardown),
-	cmocka_unit_test_setup_teardown(memmove_SRC_in_DST, setup, teardown),
-	cmocka_unit_test_setup_teardown(memmove_DST_in_SRC, setup, teardown),
-	cmocka_unit_test_setup_teardown(memset_null_pointer_test, setup, teardown),
-	cmocka_unit_test_setup_teardown(memset_check_region_set, setup, teardown),
-	cmocka_unit_test_setup_teardown(memzero_null_pointer_test, setup, teardown),
-	cmocka_unit_test_setup_teardown(memzero_check_region_zero, setup, teardown),
-	cmocka_unit_test_setup_teardown(reverse_null_pointer_test, setup, teardown),
-	cmocka_unit_test_setup_teardown(reverse_check_odd, setup, teardown),
-	cmocka_unit_test_setup_teardown(reverse_check_even, setup, teardown),
-	cmocka_unit_test_setup_teardown(reverse_check_all_chars, setup, teardown),
-	cmocka_unit_test_setup_teardown(big_to_litte_null_pointer_test, setup, teardown),
-	cmocka_unit_test_setup_teardown(big_to_litte_conversion_test, setup, teardown),
-	cmocka_unit_test_setup_teardown(little_to_big_null_pointer_test, setup, teardown),
-	cmocka_unit_test_setup_teardown(little_to_big_concersion_test, setup, teardown),
-	cmocka_unit_test_setup_teardown(create_cicular_buffer, setup, teardown),
-	cmocka_unit_test_setup_teardown(circular_bufffer_null_pointer_test, setup, teardown),
-	cmocka_unit_test_setup_teardown(circular_buffer_initialized_test, setup, teardown),
-	cmocka_unit_test_setup_teardown(circular_buffer_add_remove_test, setup, teardown),
-	cmocka_unit_test_setup_teardown(circular_buffer_full_test, setup, teardown),
-	cmocka_unit_test_setup_teardown(circular_buffer_empty_test, setup, teardown),
-	cmocka_unit_test_setup_teardown(circular_buffer_wrap_add_test, setup, teardown),
-	cmocka_unit_test_setup_teardown(circular_buffer_wrap_remove_test, setup, teardown),
-	cmocka_unit_test_setup_teardown(circular_buffer_overfill_test, setup, teardown),
-	cmocka_unit_test_setup_teardown(circular_buffer_overempty_test, setup, teardown),	
-    }
+	cmocka_unit_test(null_test_success)
+        cmocka_unit_test(int_test_success),
+	cmocka_unit_test(memmove_null_pointer_test),
+	cmocka_unit_test(memmove_no_overlap),
+	cmocka_unit_test(memmove_SRC_in_DST),
+	cmocka_unit_test(memmove_DST_in_SRC),
+	cmocka_unit_test(memset_null_pointer_test),
+	cmocka_unit_test(memset_check_region_set),
+	cmocka_unit_test(memzero_null_pointer_test),
+	cmocka_unit_test(memzero_check_region_zero),
+	cmocka_unit_test(reverse_null_pointer_test),
+	cmocka_unit_test(reverse_check_odd),
+	cmocka_unit_test(reverse_check_even),
+	cmocka_unit_test(reverse_check_all_chars),
+	cmocka_unit_test(big_to_litte_null_pointer_test),
+	cmocka_unit_test(big_to_litte_conversion_test),
+	cmocka_unit_test(little_to_big_null_pointer_test),
+	cmocka_unit_test(little_to_big_conversion_test),
+	cmocka_unit_test(create_cicular_buffer),
+	/*cmocka_unit_test(circular_buffer_null_pointer_test),*/
+	cmocka_unit_test(circular_buffer_initialized_test),
+	cmocka_unit_test(circular_buffer_add_remove_test),
+	cmocka_unit_test(circular_buffer_full_test),
+	cmocka_unit_test(circular_buffer_empty_test),
+	cmocka_unit_test(circular_buffer_wrap_add_test),
+	cmocka_unit_test(circular_buffer_wrap_remove_test),
+	cmocka_unit_test(circular_buffer_overfill_test),
+	cmocka_unit_test(circular_buffer_overempty_test),	
+    };
 
     return cmocka_run_group_tests(tests, NULL, NULL);
-
 }
+
+ 
+
