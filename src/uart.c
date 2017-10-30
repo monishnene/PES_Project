@@ -108,7 +108,7 @@ return Success;
 }
 /***********************************************************************
  * @brief UART_receive_n()
- * This function stores multiple values from receive circular buffer to  a certain memory location
+ * This function stores multipl000e values from receive circular buffer to  a certain memory location
  * @rx_circbufpointer to circular buffer
  * @length length of data
  ***********************************************************************/
@@ -129,6 +129,7 @@ return Success;
  * This function checks the register values after interrupt occurs and sends or receives data by UART
  ***********************************************************************/
 void UART0_IRQHandler(void)
-{ uint8_t i;
-	i=UART_receive(&buffer);
+{
+ uint8_t i=UART_receive(&buffer);
+ receiver_flag=0;
 }
