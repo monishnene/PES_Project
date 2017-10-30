@@ -11,8 +11,6 @@
 #include <stdint.h>
 #include "memory.h"
 #include "circbuf.h"
-#include "system_MKL25Z4.h"
-#include "MKL25Z4.h"
 #include "uart.h"
 
 /***********************************************************************
@@ -24,8 +22,6 @@
  ***********************************************************************/
 uint8_t CB_buffer_add_item(CB_t* cbptr,uint8_t data)
 {
-	while((UART0_S1 & UART_S1_TDRE_MASK)==0);
-			UART0_D = 71;
 	uint8_t i = CB_is_full(cbptr);
 	if(i == Buffer_Full)
 		{return Buffer_Full;}
@@ -38,11 +34,7 @@ uint8_t CB_buffer_add_item(CB_t* cbptr,uint8_t data)
 			cbptr->head++;
 			(cbptr->count++);
 			}
-		while((UART0_S1 & UART_S1_TDRE_MASK)==0);
-					UART0_D = 72;
-		(cbptr->head) = data;
-		while((UART0_S1 & UART_S1_TDRE_MASK)==0);
-						UART0_D = 73;
+	
 		return Success;
 	}
 }
@@ -61,7 +53,7 @@ uint8_t CB_buffer_remove_item(CB_t* cbptr,uint8_t* store)
 	if(i == Buffer_Empty)
 		{return Buffer_Empty;}
 	else
-	{0
+	{
 		if (((cbptr->tail)+1)==(cbptr->size))
 			{cbptr->tail = cbptr->buffptr;}
 		else
@@ -71,7 +63,10 @@ uint8_t CB_buffer_remove_item(CB_t* cbptr,uint8_t* store)
 			}
 		*store=*(cbptr->tail);
 
-	}
+             
+
+     }
+       return Success;
 }
 
 /***********************************************************************
@@ -82,8 +77,7 @@ uint8_t CB_buffer_remove_item(CB_t* cbptr,uint8_t* store)
  ***********************************************************************/
 uint8_t CB_is_full(CB_t* cbptr)
 	{
-	while((UART0_S1 & UART_S1_TDRE_MASK)==0);
-			UART0_D = 70;
+
 	if((cbptr->tail)==(cbptr->head)+1)
 		return Buffer_Full;
 	else
