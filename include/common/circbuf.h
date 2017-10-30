@@ -11,11 +11,12 @@
 
 typedef struct
 {
-int32_t* buffptr;//base
-uint32_t head;//in
-uint32_t tail;//out
-uint32_t size;//limit
-uint32_t count;//used
+uint8_t* buffptr;//base
+uint8_t* head;//in
+uint8_t* tail;//out
+uint8_t* size;//limit
+uint8_t length;//length of buffer
+uint8_t count;//used
 }CB_t;
 
 typedef enum
@@ -27,11 +28,11 @@ Null_Error,
 }CB_status;
 
 extern CB_status cbstatus;
-uint8_t CB_buffer_add_item(CB_t cbptr,int8_t* data);
-uint8_t CB_buffer_remove_item(CB_t cbptr,int8_t* store);
-uint8_t CB_is_full(CB_t cbptr);
-uint8_t CB_is_empty(CB_t cbptr);
-uint8_t CB_peek(CB_t cbptr,uint8_t position, uint8_t* store);
-uint8_t CB_init(CB_t cbptr,uint8_t length);
-uint8_t CB_destroy(CB_t cbptr);
+uint8_t CB_buffer_add_item(CB_t* cbptr,uint8_t data);
+uint8_t CB_buffer_remove_item(CB_t* cbptr,uint8_t* store);
+uint8_t CB_is_full(CB_t* cbptr);
+uint8_t CB_is_empty(CB_t* cbptr);
+uint8_t CB_peek(CB_t* cbptr,uint8_t position, uint8_t* store);
+uint8_t CB_init(CB_t* cbptr,uint8_t length);
+uint8_t CB_destroy(CB_t* cbptr);
 #endif /*circbuf.h*/
