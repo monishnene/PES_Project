@@ -11,6 +11,9 @@
 #include <stdint.h>
 #include "memory.h"
 #include "circbuf.h"
+#include "system_MKL25Z4.h"
+#include "MKL25Z4.h"
+#include "uart.h"
 
 /***********************************************************************
  * @brief CB_buffer_add_item()
@@ -19,22 +22,27 @@
  * @data value to be stored in circular buffer
  * @return error in form of enum defined in structure.h
  ***********************************************************************/
-uint8_t CB_buffer_add_item(CB_t cbptr,int8_t* data)
+uint8_t CB_buffer_add_item(CB_t* cbptr,uint8_t data)
 {
-	uint8_t i=CB_is_full(cbptr);
+	while((UART0_S1 & UART_S1_TDRE_MASK)==0);
+			UART0_D = 71;
+	uint8_t i = CB_is_full(cbptr);
 	if(i == Buffer_Full)
 		{return Buffer_Full;}
 	else
 	{
-		if (((cbptr.head)+1)==(cbptr.size))
-			{cbptr.head = 0;}
+		if (((cbptr->head)+1)==(cbptr->size))
+			{cbptr->head = cbptr->buffptr;}
 		else
-			{cbptr.head++;}
-		   *((cbptr.buffptr)+(cbptr.head)) = *data;
-		if((cbptr.head)>=(cbptr.tail))
-			{(cbptr.count)= (cbptr.head)-(cbptr.tail);}
-		else
-			{(cbptr.count)= ((cbptr.head)-(cbptr.tail)+(cbptr.size));}
+			{
+			cbptr->head++;
+			(cbptr->count++);
+			}
+		while((UART0_S1 & UART_S1_TDRE_MASK)==0);
+					UART0_D = 72;
+		(cbptr->head) = data;
+		while((UART0_S1 & UART_S1_TDRE_MASK)==0);
+						UART0_D = 73;
 		return Success;
 	}
 }
@@ -47,23 +55,22 @@ uint8_t CB_buffer_add_item(CB_t cbptr,int8_t* data)
  * @store pointer to the location where the data is supposed to be stored
  * @return error in form of enum defined in structure.h
  ***********************************************************************/
-uint8_t CB_buffer_remove_item(CB_t cbptr,int8_t* store)
+uint8_t CB_buffer_remove_item(CB_t* cbptr,uint8_t* store)
 {
 	uint8_t i=CB_is_empty(cbptr);
 	if(i == Buffer_Empty)
 		{return Buffer_Empty;}
 	else
-	{
-		if (((cbptr.tail)+1)==(cbptr.size))
-			{cbptr.tail = 0;}
+	{0
+		if (((cbptr->tail)+1)==(cbptr->size))
+			{cbptr->tail = cbptr->buffptr;}
 		else
-			{cbptr.tail++;}
-		*store=*((cbptr.buffptr)+(cbptr.tail));
-		if((cbptr.head)>=(cbptr.tail))
-			{(cbptr.count)= (cbptr.head)-(cbptr.tail);}
-		else
-			{(cbptr.count)= ((cbptr.head)-(cbptr.tail)+(cbptr.size));}
-		return Success;
+			{
+			cbptr->tail++;
+			(cbptr->count)--;
+			}
+		*store=*(cbptr->tail);
+
 	}
 }
 
@@ -73,9 +80,11 @@ uint8_t CB_buffer_remove_item(CB_t cbptr,int8_t* store)
  * @(CB_t)* cbptr pointer to circular buffer struct
  * @return error in form of enum defined in structure.h
  ***********************************************************************/
-uint8_t CB_is_full(CB_t cbptr)
+uint8_t CB_is_full(CB_t* cbptr)
 	{
-	if((cbptr.tail+1)==(cbptr.head))
+	while((UART0_S1 & UART_S1_TDRE_MASK)==0);
+			UART0_D = 70;
+	if((cbptr->tail)==(cbptr->head)+1)
 		return Buffer_Full;
 	else
 		return Success;
@@ -89,9 +98,9 @@ uint8_t CB_is_full(CB_t cbptr)
  * @(CB_t)* cbptr pointer to circular buffer struct
  * @return error in form of enum defined in structure.h
  ***********************************************************************/
-uint8_t CB_is_empty(CB_t cbptr)
+uint8_t CB_is_empty(CB_t* cbptr)
 {
-	if((cbptr.tail)==(cbptr.head))
+	if((cbptr->tail)==(cbptr->head))
 		return Buffer_Empty;
 	else
 		return Success;
@@ -107,15 +116,15 @@ uint8_t CB_is_empty(CB_t cbptr)
  * @store pointer to the location where the data is supposed to be stored
  * @return error in form of enum defined in structure.h
  ***********************************************************************/
-uint8_t CB_peek(CB_t cbptr,uint8_t position, uint8_t* store)
+uint8_t CB_peek(CB_t* cbptr,uint8_t position, uint8_t* store)
 {
 	uint8_t i=CB_is_empty(cbptr);
 	if(i == Buffer_Empty)
 		{return Buffer_Empty;}
 	else
-	{	while(position > cbptr.size)
-		 {position = position - cbptr.size;}
-		*store=*((cbptr.buffptr)+position);
+	{	while(position > cbptr->length)
+		 {position = position - cbptr->length;}
+		*store=*((cbptr->buffptr)+position);
 		return Success;
 	}
 }
@@ -128,14 +137,16 @@ uint8_t CB_peek(CB_t cbptr,uint8_t position, uint8_t* store)
  * @length length of the circular buffer
  * @return error in form of enum defined in structure.h
  ***********************************************************************/
-uint8_t CB_init(CB_t cbptr,uint8_t length)
+uint8_t CB_init(CB_t* cbptr,uint8_t length)
 {
-	(cbptr.buffptr) = malloc(length);
-	(cbptr.size) = length;
-	(cbptr.head) = 0;
-	(cbptr.tail) = 0;
-	(cbptr.count) = 0;
-	if(cbptr.buffptr == NULL)
+	(cbptr -> buffptr) = malloc(length);
+	cbptr = malloc(sizeof(CB_t));
+	(cbptr->size) = (cbptr->buffptr + length);
+	(cbptr->head) = (cbptr->buffptr);
+	(cbptr->tail) = (cbptr->buffptr);
+	(cbptr->count) = 0;
+	(cbptr->length)=length;
+	if(cbptr->buffptr == NULL)
 		{return Null_Error;}
 	else
 		{return Success;}
@@ -147,10 +158,13 @@ uint8_t CB_init(CB_t cbptr,uint8_t length)
  * @(CB_t)* cbptr pointer to circular buffer struct
  * @return error in form of enum defined in structure.h
  ***********************************************************************/
-uint8_t CB_destroy(CB_t cbptr)
+uint8_t CB_destroy(CB_t* cbptr)
 {
 	{
-	free(cbptr.buffptr);
+	free(cbptr->buffptr);
+	free(cbptr->head);
+	free(cbptr->tail);
+	free(cbptr->size);
 	return Success;
 	}
 }
