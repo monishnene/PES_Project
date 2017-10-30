@@ -9,11 +9,12 @@
 #define INCLUDES_UART_H_
 #include "circbuf.h"
 #include <stdint.h>
-void UART0_IRQHandler();
-uint8_t UART_receive_n(CB_t rx_circbuf,uint8_t length);
-uint8_t UART_receive(CB_t rx_circbuf);
-void UART_send_n(CB_t tx_circbuf,uint8_t length);
-void UART_send (CB_t tx_circbuf);
+CB_t buffer;
+void UART0_IRQHandler(void);
+uint8_t UART_receive_n(CB_t* rx_circbuf,uint8_t length);
+uint8_t UART_receive(CB_t* rx_circbuf);
+void UART_send_n(CB_t* tx_circbuf,uint8_t length);
+void UART_send (CB_t* tx_circbuf);
 void UART_send_test(void);
 void UART_configure(void);
 
