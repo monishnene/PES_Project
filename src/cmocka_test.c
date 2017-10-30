@@ -20,7 +20,7 @@
 #include <stdarg.h>
 #include <stddef.h>
 #include <setjmp.h>
-#include "cmocka.h"
+#include "cmocka_test.h"
 #include <stdio.h>
 #include "circbuf.h"
 #include "conversion.h"
@@ -33,7 +33,7 @@ uint8_t* store;
 uint8_t* data;
 uint8_t length, position, value;
 CB_t* cbptr;
-static int setup(void **state) {
+/*static int setup(void **state) {
     int *answer = malloc(sizeof(int));
 
     assert_non_null(answer);
@@ -43,13 +43,14 @@ static int setup(void **state) {
     *state = answer;
 
     return 0;
-}
+}*/
 
-static int teardown(void **state) {
+/*static int teardown(void **state) {
     free(*state);
 
     return 0;
-}
+}*/
+
 
 /* A test case that does nothing and succeeds. */
 static void null_test_success(void **state) {
@@ -610,18 +611,19 @@ printf(" Circular buffer not over empty");
 assert_int_equal(0, 0);
 }
 /* A test case that does check if an int is equal. */
-int int_test_success(void **state) {
+/*int int_test_success(void **state) {
 
     int *answer = *state;
     
     assert_int_equal(1, 1);
-}
+}*/
 
-int main(void) {
-    const struct CMUnitTest tests[] = 
+int main(int argc, char **argv) {
+
+        const struct CMUnitTest tests[32] = 
     {
-	cmocka_unit_test(null_test_success)
-        cmocka_unit_test(int_test_success),
+	cmocka_unit_test(null_test_success),
+        /*cmocka_unit_test(int_test_success),*/
 	cmocka_unit_test(memmove_null_pointer_test),
 	cmocka_unit_test(memmove_no_overlap),
 	cmocka_unit_test(memmove_SRC_in_DST),
