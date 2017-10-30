@@ -15,7 +15,6 @@
 #define size_tx 200
 uint8_t alpha=0,nums=0,punc=0,misc=0;
 
-
 void sort(uint8_t peek)
 {
 if(((peek>=65)&&(peek<=90))||((peek>=97)&&(peek<=122)))
@@ -32,25 +31,29 @@ return;
 void project2(void)
 {
 char stringc[]="\n\r counts of characters",stringa[]="\n\r number of alphabets=",stringp[]="\n\r number of punctuations=",stringm[]="\n\r number of miscellaneous=",stringn[]="\n\r numbers=";
-uint8_t i=0,j,circbuf_status,peek,n=11,a=23,m=27,p=26,c=23,str_length=0, array[20];
-uint8_t* prevhead = NULL;
+uint8_t i=0,j,circbuf_status,peek=0,n=11,a=23,m=27,p=26,c=23,str_length=0, array[20];
+uint8_t* peek_ptr = &peek;
 uint8_t* value = array;
 SystemInit();
 i = CB_init(&tx_buffer,size_tx);
 UART_configure();
+
 while(1)
 {
-	if(buffer.head!=prevhead)
+	if(receiver_flag==0)
 	{
-
-		peek = *(buffer.head);
-		prevhead=buffer.head;
+		i = CB_my_peek(&buffer,peek_ptr);
 		sort(peek);
+		receiver_flag=1;
+		while((UART0_S1 & UART_S1_TDRE_MASK)==0);
+		UART0_D = peek;
 	}
 
 	circbuf_status=CB_is_full(&buffer);
-	if(circbuf_status == Buffer_Full||peek==0x0D)
+	if(circbuf_status == Buffer_Full||peek==0xD)
 	{
+		while((UART0_S1 & UART_S1_TDRE_MASK)==0);
+				UART0_D = peek;
 		UART0->C2 &= ~UART_C2_RIE_MASK;
 		UART_send_n(&buffer,buffer.count);
 		UART0->C2 |= UART_C2_RIE_MASK;
