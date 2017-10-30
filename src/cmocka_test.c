@@ -32,7 +32,7 @@ uint8_t* src;
 uint8_t* store; 
 uint8_t* data;
 uint8_t length, position, value;
-CB_t cbptr;
+CB_t* cbptr;
 static int setup(void **state) {
     int *answer = malloc(sizeof(int));
 
