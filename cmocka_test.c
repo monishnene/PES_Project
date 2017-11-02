@@ -25,7 +25,7 @@
 #include "circbuf.h"
 #include "conversion.h"
 #include "memory.h"
-//#include "cmocka_test.h"
+#include "cmocka_test.h"
 #include <stdlib.h>
 
 uint8_t* src;
@@ -33,7 +33,6 @@ uint8_t* src;
 uint8_t* store; 
 uint8_t* data;
 uint8_t length, position, value;
-CB_t *cbptr;
 static int setup(void **state) {
     int *answer = malloc(sizeof(int));
 
@@ -424,9 +423,7 @@ else
 }
 static void create_cicular_buffer(void **state) 
 {
-CB_t circular_buffer;
-CB_t* cbptr = &circular_buffer;
-CB_init(&buffer,length);
+CB_init(&circular_buffer,length);
 circular_buffer.head = circular_buffer.buffptr;
 circular_buffer.tail = circular_buffer.buffptr;
 circular_buffer.count = 0;
@@ -439,8 +436,8 @@ return;
 static void circular_buffer_null_pointer_test(void **state) 
 {
 
-value == cbptr;
-value= CB_peek(cbptr,position,store);
+value == &circular_buffer;
+value= CB_peek(&circular_buffer,position,store);
 if(value == NULL)
 {
 printf(" Null pointer detected \n");
@@ -455,7 +452,7 @@ assert_int_equal(1, 1);
 
 static void circular_buffer_initialized_test(void **state) 
 {
-value = CB_peek(cbptr,12,store);
+value = CB_peek(&circular_buffer,12,store);
 if(value == Success)
 {
 printf(" Circular buffer initialized");
@@ -470,10 +467,10 @@ assert_int_equal(1, 1);
 static void circular_buffer_add_remove_test(void **state) 
 {
 
-value = CB_buffer_add_item(cbptr,src);
+value = CB_buffer_add_item(&circular_buffer,src);
 if(value == Success)
 {
-value = CB_buffer_remove_item(cbptr,dst);
+value = CB_buffer_remove_item(&circular_buffer,dst);
 if( *dst == *src)
 {
 printf(" Add and Remove successful");
@@ -492,9 +489,9 @@ static void circular_buffer_full_test(void **state)
 uint8_t i;
 for(i=0;i<10;i++)
 {
-value = CB_buffer_add_item(cbptr,dst);
+value = CB_buffer_add_item(&circular_buffer,dst);
 }
-value = CB_is_full(cbptr);
+value = CB_is_full(&circular_buffer);
 
 if(value == Buffer_Full)
 {
@@ -512,9 +509,9 @@ static void circular_buffer_empty_test(void **state)
 uint8_t i;
 for(i=0;i<10;i++)
 {
-value = CB_buffer_remove_item(cbptr,dst);
+value = CB_buffer_remove_item(&circular_buffer,dst);
 }
-value = CB_is_empty(cbptr);
+value = CB_is_empty(&circular_buffer);
 if(value == Buffer_Empty)
 {
 printf("Circular buffer Empty");
@@ -532,17 +529,17 @@ static void circular_buffer_wrap_add_test(void **state)
  uint8_t i;
  for(i=0;i<6;i++)
 {
- value= CB_buffer_add_item(cbptr,dst);
+ value= CB_buffer_add_item(&circular_buffer,dst);
 }
  for(i=0;i<5;i++)
 {
- value= CB_buffer_remove_item(cbptr,dst);
+ value= CB_buffer_remove_item(&circular_buffer,dst);
 }
  for(i=0;i<7;i++)
 {
-  value= CB_buffer_add_item(cbptr,dst);
+  value= CB_buffer_add_item(&circular_buffer,dst);
 }
-value = CB_is_full(cbptr);
+value = CB_is_full(&circular_buffer);
 if(value == Buffer_Full)
 {
 printf("wrap add successful");
@@ -559,17 +556,17 @@ static void circular_buffer_wrap_remove_test(void **state) {
 uint8_t i;
 for(i=0;i<6;i++)
 {
-value = CB_buffer_remove_item(cbptr,store);
+value = CB_buffer_remove_item(&circular_buffer,store);
 }
 for(i=0;i<5;i++)
 {
-value = CB_buffer_add_item(cbptr,dst);
+value = CB_buffer_add_item(&circular_buffer,dst);
 }
 for(i=0;i<7;i++)
 {
-value= CB_buffer_remove_item(cbptr,store);
+value= CB_buffer_remove_item(&circular_buffer,store);
 }
-value = CB_is_empty(cbptr);
+value = CB_is_empty(&circular_buffer);
 if(value== Buffer_Empty)
 {
 printf("wrap remove successful");
@@ -583,10 +580,10 @@ assert_int_equal(value,0);
 }
 static void circular_buffer_overfill_test(void **state) {
 uint8_t i;
-value = CB_is_full(cbptr);
+value = CB_is_full(&circular_buffer);
 for(i=0;i<5;i++)
 {
-value = CB_buffer_add_item(cbptr,dst);
+value = CB_buffer_add_item(&circular_buffer,dst);
 }
 if(value == Success)
 {
@@ -601,10 +598,10 @@ assert_int_equal(1, 1);
 
 static void circular_buffer_overempty_test (void **state) {
 uint8_t i;
-value = CB_is_empty(cbptr);
+value = CB_is_empty(&circular_buffer);
 for(i=0;i<5;i++)
 {
-value = CB_buffer_remove_item(cbptr,store);
+value = CB_buffer_remove_item(&circular_buffer,store);
 }
 if(value == Success)
 {
