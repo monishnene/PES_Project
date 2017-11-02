@@ -1,10 +1,7 @@
 	
 	defined = -DPROJECT1	-DCMOCKA 
 
-	common_sources= main.c \
-			project1.c \
-			conversion.c \
-			debug.c	\
+	common_sources= conversion.c \
 			memory.c\
 			circbuf.c	
 	
@@ -99,21 +96,17 @@ endif
 	$(CC)	$(flags)	$(includes)	-c	$<	-o	$@
 
 %.d:%.c	
-	$(CC)	$(flags)	$(includes)	-M	$<	-o	$@
-
-%.d:%.s	
-	$(CC)	$(flags)	$(includes)	-M	$<	-o	$@
-
-build:	$(objects)	$(deps)
-	$(CC) $(flags) $(includes)	-o	project1.elf	$(objects)
-
-compile-all:	$(objects)
+	$(CC)	$(flags)	$(includes)	-M	$<	-o	$@ile-all:	$(objects)
 
 upload: 
 	scp	project1.elf	root@192.168.7.2:~/home
 
 cmocka_test:$(objects)	$(deps)
-	$(CC)	cmocka_test.c	-lcmocka -o cmockatest $(includes) 
+
+	$(CC)	cmocka_test.c	-lcmocka -o cmockatest.elf $(sources) -I ../includes/common
  
+test:$(cmocka_test)
+	./cmockatest.elf
+
 clean :
 	rm	-f	*.o	*.s	*.i	*.o	*.d	*.elf *.swp

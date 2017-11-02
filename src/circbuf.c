@@ -11,10 +11,6 @@
 #include <stdint.h>
 #include "memory.h"
 #include "circbuf.h"
-#include "system_MKL25Z4.h"
-#include "MKL25Z4.h"
-#include "uart.h"
-
 /***********************************************************************
  * @brief CB_buffer_add_item()
  * This function adds an item to circular buffer
@@ -157,4 +153,4 @@ uint8_t CB_destroy(CB_t* cbptr)
 	return Success;
 	}
 }
-0
+
