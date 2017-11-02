@@ -21,4 +21,3 @@ void UART_send_test(void);
 void UART_configure(void);
 
 #endif /* INCLUDES_UART_H_ */
-0
