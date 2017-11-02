@@ -29,14 +29,14 @@ uint8_t CB_buffer_add_item(CB_t* cbptr,uint8_t data)
 		{return Buffer_Full;}
 	else
 	{
-		if (((cbptr->head)+1)==(cbptr->size))
+		if (((cbptr->head)+1)==(cbptr->buffptr+cbptr->length))
 			{cbptr->head = cbptr->buffptr;}
 		else
 			{
 			cbptr->head++;
 			(cbptr->count++);
 			}
-		(cbptr->head) = data;
+		*(cbptr->head) = data;
 		return Success;
 	}
 }
@@ -56,15 +56,15 @@ uint8_t CB_buffer_remove_item(CB_t* cbptr,uint8_t* store)
 		{return Buffer_Empty;}
 	else
 	{
-		if (((cbptr->tail)+1)==(cbptr->size))
+		if (((cbptr->tail)+1)==(cbptr->buffptr)+(cbptr->length))
 			{cbptr->tail = cbptr->buffptr;}
 		else
 			{
-			cbptr->tail++;
-			(cbptr->count)--;
+			 cbptr->tail++;
+			(cbptr->count--);
 			}
-		*store = *(cbptr->tail);
-
+		*store=*(cbptr->tail);
+		return Success;
 	}
 }
 
@@ -108,14 +108,16 @@ uint8_t CB_is_empty(CB_t* cbptr)
  * @store pointer to the location where the data is supposed to be stored
  * @return error in form of enum defined in structure.h
  ***********************************************************************/
-uint8_t CB_my_peek(CB_t* cbptr,uint8_t* store)
+uint8_t CB_my_peek(CB_t* cbptr,uint16_t position,uint8_t* store)
 {
 	uint8_t i=CB_is_empty(cbptr);
 	if(i == Buffer_Empty)
 		{return Buffer_Empty;}
 	else
 	{
-		*store=(cbptr->head);
+		while(position> cbptr->length)
+		{position -= cbptr->length;}
+		*store=*(cbptr->head-position);
 		return Success;
 	}
 }
@@ -128,15 +130,10 @@ uint8_t CB_my_peek(CB_t* cbptr,uint8_t* store)
  * @length length of the circular buffer
  * @return error in form of enum defined in structure.h
  ***********************************************************************/
-uint8_t CB_init(CB_t* cbptr,uint8_t length)
+uint8_t CB_init(CB_t* cbptr,uint16_t length)
 {
 	(cbptr -> buffptr) = malloc(length);
 	cbptr = malloc(sizeof(CB_t));
-	(cbptr->size) = (cbptr->buffptr + length);
-	(cbptr->head) = (cbptr->buffptr);
-	(cbptr->tail) = (cbptr->buffptr);
-	(cbptr->count) = 0;
-	(cbptr->length)=length;
 	if(cbptr->buffptr == NULL)
 		{return Null_Error;}
 	else
@@ -156,6 +153,8 @@ uint8_t CB_destroy(CB_t* cbptr)
 	free(cbptr->head);
 	free(cbptr->tail);
 	free(cbptr->size);
+	free(cbptr);
 	return Success;
 	}
 }
+0
