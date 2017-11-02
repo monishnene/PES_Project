@@ -7,7 +7,6 @@
 #ifndef	PROJECT2_H_
 #define PROJECT2_H_
 #include "circbuf.h"
-CB_t tx_buffer;
 void project2(void);
 #endif
 
