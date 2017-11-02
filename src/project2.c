@@ -23,7 +23,7 @@ else if(((peek>=48)&&(peek<=57)))
 nums++;
 else if(((peek>=33)&&(peek<=47))||((peek>=91)&&(peek<=96))||((peek>=123)&&(peek<=127)))
 punc++;
-else
+else if(!((peek==0x0D)||(peek==0x1B)||(peek==0x0A)||(peek==0x00)))
 misc++;
 return;
 }
@@ -35,89 +35,92 @@ uint8_t i=0,j,circbuf_status,peek=0,n=11,a=23,m=27,p=26,c=23,str_length=0, array
 uint8_t* peek_ptr = &peek;
 uint8_t* value = array;
 SystemInit();
-i = CB_init(&tx_buffer,size_tx);
 UART_configure();
 
 while(1)
 {
 	if(receiver_flag==0)
 	{
-		i = CB_my_peek(&buffer,peek_ptr);
+		i = CB_my_peek(&buffer,0,peek_ptr);
 		sort(peek);
 		receiver_flag=1;
-		while((UART0_S1 & UART_S1_TDRE_MASK)==0);
-		UART0_D = peek;
 	}
-
 	circbuf_status=CB_is_full(&buffer);
 	if(circbuf_status == Buffer_Full||peek==0xD)
 	{
-		while((UART0_S1 & UART_S1_TDRE_MASK)==0);
-				UART0_D = peek;
 		UART0->C2 &= ~UART_C2_RIE_MASK;
-		UART_send_n(&buffer,buffer.count);
+		UART_send_n(&buffer,buffer.count-1);
+		while((UART0_S1 & UART_S1_TDRE_MASK)==0);
+					UART0_D = 10;
+		while((UART0_S1 & UART_S1_TDRE_MASK)==0);
+					UART0_D = 13;
 		UART0->C2 |= UART_C2_RIE_MASK;
+
 	}
 
 	if(peek==0x1B)
 	{
 		UART0->C2 &= ~UART_C2_RIE_MASK;
-		str_length += c;
 		for(i=0;i<c;i++)
 		{
 			j=(uint8_t)stringc[i];
-			j=CB_buffer_add_item(&tx_buffer,j);
+			while((UART0_S1 & UART_S1_TDRE_MASK)==0);
+			UART0_D = j;
 		}
-		str_length += a;
 		for(i=0;i<a;i++)
 		{
 			j=(uint8_t)stringa[i];
-			j=CB_buffer_add_item(&tx_buffer,j);
+			while((UART0_S1 & UART_S1_TDRE_MASK)==0);
+			UART0_D = j;
 		}
-		a= my_itoa(alpha,value,10);
-		str_length += a-1;
-		for(i=0;i<a-1;i++)
-				{
-					j=CB_buffer_add_item(&tx_buffer,*(value+i));
-				}
-		str_length += n;
+		j= my_itoa(alpha,value,10);
+		for(i=0;i<j-1;i++)
+		{
+			while((UART0_S1 & UART_S1_TDRE_MASK)==0);
+			UART0_D = *(value+i);
+		}
 		for(i=0;i<n;i++)
 		{
 			j=(uint8_t)stringn[i];
-			j=CB_buffer_add_item(&tx_buffer,j);
+			while((UART0_S1 & UART_S1_TDRE_MASK)==0);
+			UART0_D = j;
 		}
-		n= my_itoa(nums,value,10);
-		str_length += n-1;
-		for(i=0;i<n-1;i++)
+		j= my_itoa(nums,value,10);
+		for(i=0;i<j-1;i++)
 		{
-			j=CB_buffer_add_item(&tx_buffer,*(value+i));
+			while((UART0_S1 & UART_S1_TDRE_MASK)==0);
+			UART0_D = *(value+i);
 		}
-		str_length += p;
 		for(i=0;i<p;i++)
 		{
 			j=(uint8_t)stringp[i];
-			j=CB_buffer_add_item(&tx_buffer,j);
+			while((UART0_S1 & UART_S1_TDRE_MASK)==0);
+				UART0_D = j;
 		}
-		p= my_itoa(punc,value,10);
-		str_length += p-1;
-		for(i=0;i<p-1;i++)
+		j= my_itoa(punc,value,10);
+		for(i=0;i<j-1;i++)
 		{
-				j=CB_buffer_add_item(&tx_buffer,*(value+i));
+			while((UART0_S1 & UART_S1_TDRE_MASK)==0);
+			UART0_D = *(value+i);
 		}
-		str_length += m;
 		for(i=0;i<m;i++)
 		{
 			j=(uint8_t)stringm[i];
-			j=CB_buffer_add_item(&tx_buffer,j);
+			while((UART0_S1 & UART_S1_TDRE_MASK)==0);
+			UART0_D = j;
 		}
-		m= my_itoa(misc,value,10);
-		str_length += m-1;
-		for(i=0;i<m-1;i++)
+		j= my_itoa(misc,value,10);
+		for(i=0;i<j-1;i++)
 		{
-				j=CB_buffer_add_item(&tx_buffer,*(value+i));
+			while((UART0_S1 & UART_S1_TDRE_MASK)==0);
+			UART0_D = *(value+i);
 		}
-		UART_send_n(&tx_buffer,str_length);
+		while((UART0_S1 & UART_S1_TDRE_MASK)==0);
+		UART0_D = 10;
+		while((UART0_S1 & UART_S1_TDRE_MASK)==0);
+		UART0_D = 13;
 		UART0->C2 |= UART_C2_RIE_MASK;
 	}
+	peek=0x00;
 }
 }
