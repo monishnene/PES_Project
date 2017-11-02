@@ -18,7 +18,7 @@
 #include "MKL25Z4.h"
 #include "uart.h"
 #include "circbuf.h"
-#define baud_rate  38400
+#define baud_rate  57600
 #define size (1000)
 
 
@@ -47,6 +47,11 @@ void UART_configure(void)
 	UART0_BDL |= (uint8_t)(baud & UART0_BDL_SBR_MASK);
 	UART0_BDH |= (uint8_t)((baud >>8 ) & UART0_BDH_SBR_MASK);
 	i = CB_init(&buffer,size);
+	buffer.head = buffer.buffptr;
+	buffer.tail = buffer.buffptr;
+	buffer.count = 0;
+	buffer.length = size;
+	buffer.count = 0;
 	return;
 }
 
@@ -81,13 +86,14 @@ return;
  ***********************************************************************/
 void UART_send_n(CB_t* tx_circbuf,uint8_t length)
 {
-uint8_t* temp;
+uint8_t temp,j;
+uint8_t* temp_ptr=&temp;
 uint8_t i;
 for(i=0;i<length;i++)
 {
-	CB_buffer_remove_item(tx_circbuf,temp);
+	j = CB_buffer_remove_item(tx_circbuf,temp_ptr);
 	while((UART0_S1 & UART_S1_TDRE_MASK)==0);
-	UART0_D = *temp;
+	UART0_D = *temp_ptr;
 }
 
 return;
