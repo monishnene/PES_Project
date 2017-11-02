@@ -20,11 +20,12 @@
 #include <stdarg.h>
 #include <stddef.h>
 #include <setjmp.h>
-#include "cmocka.h"
+#include <cmocka.h>
 #include <stdio.h>
 #include "circbuf.h"
 #include "conversion.h"
 #include "memory.h"
+//#include "cmocka_test.h"
 #include <stdlib.h>
 
 uint8_t* src;
@@ -425,7 +426,13 @@ static void create_cicular_buffer(void **state)
 {
 CB_t circular_buffer;
 CB_t* cbptr = &circular_buffer;
-CB_init(cbptr,length);
+CB_init(&buffer,length);
+circular_buffer.head = circular_buffer.buffptr;
+circular_buffer.tail = circular_buffer.buffptr;
+circular_buffer.count = 0;
+circular_buffer.length = length;
+circular_buffer.count = 0;
+return;
 }
 
 
