@@ -68,9 +68,10 @@ uint8_t nrf_read_rf_ch();
 {
  uint8_t i,k;
  PTC_BASE_PTR->PCOR = 1<<4;
- k = nrf_write_register(NORDIC_RF_CH);
+ nrf_write_register(NORDIC_RF_CH);
  i = SPI_write(0xff);
  PTC_BASE_PTR->PSOR = 1<<4;
+ k=nrf_read_fifo_status();
  return k;
 }
 
@@ -81,7 +82,7 @@ PTC_BASE_PTR->PCOR = 1<<4;
 channel = nrf_write_register(NORDIC_RF_CH);
 for(i=0; i<5; i++)
 {
-  SPI_write(0xCA);
+  SPI_write(0x10);
 }
 PTC_BASE_PTR->PSOR = 1<<4;
 }
@@ -138,26 +139,6 @@ void nrf_flush_rx_fifo() //function to flush the rx fifo
 	PTC_BASE_PTR->PSOR = 1<<4;
 }
 
-/*void nrf_transmit_data() //send data to nrf buffer
-{
-	PTC_BASE_PTR->PCOR = 1<<4;
-	SPI_write(W_TXPAYLOAD);
-	SPI_write(0x10);
-        PTC_BASE_PTR->PSOR = 1<<4; 																																							
-
-}
- 
-void nrf_read_data() //receive data from nrf buffer
-{
-	uint8_t c;
-	PTC_BASE_PTR->PCOR = 1<<4;
-	SPI_write(R_RXPAYLOAD);
-	c=SPI_write(0xff);
-	PTC_BASE_PTR->PSOR = 1<<4;
-
-	nrf_fifostatus_read();
-
-}*/
 
 
 
