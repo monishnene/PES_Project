@@ -27,8 +27,9 @@ void size( uint16_t length, uint8_t case)
     
     case 3:
  
+     src = my_memset(src, length, value);
+     dst = my_memmove( src, dst, length);
     
-
 
     case 4: 
     memset_dma(uint8_t *dst, uint32_t length);
