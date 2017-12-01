@@ -16,6 +16,8 @@ unsigned char* my_memzero(unsigned char* src, int length);
 uint8_t* my_reverse(unsigned char* src, int length);
 int* reserve_words(int length);
 void free_words(uint32_t* src);
+dma_st memmove_dma(uint8_t *src, uint8_t *dst, uint32_t length);
+void memset_dma(uint8_t *dst, uint32_t length);
 
 
 #endif /* MEMORY_H_ */
