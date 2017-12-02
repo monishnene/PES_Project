@@ -3,6 +3,9 @@
 #include "memory.h"
 #include <stdint.h>
 
+void main()
+{
+
 uint8_t* src;
 uint8_t* dst;
 uint8_t value;
@@ -24,4 +27,4 @@ n = *(dst)+*(dst+1)+*(dst+2)+*(dst+3)+*(dst+4)+*(dst+5)+*(dst+6)+*(dst+7)+*(dst+
 if(n==10)
 printf("The data tranfer is successful");
 
-
+}
