@@ -2,6 +2,7 @@
 #include "memory.c"
 #include "memory.h"
 #include <stdint.h>
+#include <stdlib.h>
 
 void main()
 {
