@@ -214,22 +214,22 @@ void free_words(uint32_t* src) /*Function to free memory*/
 return;
 }
 /***************************************************************************
-
-
-
-
-
-
+ *@brief memmove_dma()
+ * memmove_dma is used for copying length of bytes from source to destination
+ * without any overlap using dma.
+ * @src 8 bit source pointer 
+ * @dst  8 bit destination pointer
+ * @length 32 bit length of data to be transferred
 *****************************************************************************/
 void memmove_dma(uint8_t *src, uint8_t *dst, uint32_t length)
 {
 	uint8_t i,j=2,k=4;
-	SIM_SCGC7 |= SIM_SCGC7_DMA_MASK;
-	SIM_SCGC6 |= SIM_SCGC6_DMAMUX_MASK;
-	DMAMUX0_CHCFG0 &= ~DMAMUX_CHCFG_ENBL_MASK;
+	SIM_SCGC7 |= SIM_SCGC7_DMA_MASK; //Clock gate enabled for DMA 
+	SIM_SCGC6 |= SIM_SCGC6_DMAMUX_MASK;  //Clock gate enabled for DMAMUX
+	DMAMUX0_CHCFG0 &= ~DMAMUX_CHCFG_ENBL_MASK; //Disable channel 0
 	DMA_DSR_BCR0 |= DMA_DSR_BCR_DONE_MASK;
-	DMA_DSR_BCR0 |= length;
-	DMA_DCR0 |= DMA_DCR_SINC_MASK;
+	DMA_DSR_BCR0 |= length; //length of data to be transfered
+	DMA_DCR0 |= DMA_DCR_SINC_MASK; 
 	DMA_DCR0 |= DMA_DCR_DINC_MASK;
 	/*if((src<dst) && ((src+length)>dst))
     {
@@ -238,67 +238,73 @@ void memmove_dma(uint8_t *src, uint8_t *dst, uint32_t length)
     }
     else
     {*/
-	DMA_SAR0 = (uint32_t) src;
-	DMA_DAR0 = (uint32_t) dst;
+	DMA_SAR0 = (uint32_t) src; //set src to DMA_SAR0
+	DMA_DAR0 = (uint32_t) dst; //set dst to DMA_DAR0
     //}
 	if(length%k == 0)
     {
-		DMA_DCR0 |= DMA_DCR_SSIZE(0);
-		DMA_DCR0 |= DMA_DCR_DSIZE(0);
+		DMA_DCR0 |= DMA_DCR_SSIZE(0); //set source size for 2 byte transfer
+		DMA_DCR0 |= DMA_DCR_DSIZE(0); //set destination size for 2 byte transfer
     }
     else if(length%j == 0)
     {
-		DMA_DCR0 |= DMA_DCR_SSIZE(10);
-		DMA_DCR0 |= DMA_DCR_DSIZE(10);
+		DMA_DCR0 |= DMA_DCR_SSIZE(10); //set source size for 1 byte transfer
+		DMA_DCR0 |= DMA_DCR_DSIZE(10); //set destination size for 1 byte transfer
     }
     else
 	{
-		DMA_DCR0 |= DMA_DCR_SSIZE(1);
-		DMA_DCR0 |= DMA_DCR_DSIZE(1);
+		DMA_DCR0 |= DMA_DCR_SSIZE(1); 
+		DMA_DCR0 |= DMA_DCR_DSIZE(1); 
 	}
-	DMA_DCR0 |= DMA_DCR_EINT_MASK;
-	NVIC_EnableIRQ(DMA0_IRQn);
+	/*DMA_DCR0 |= DMA_DCR_EINT_MASK;     //enable interrupt mask
+	NVIC_EnableIRQ(DMA0_IRQn);           //NVIC_EnableIRQ
 	__enable_irq;
-	DMAMUX0_CHCFG0 |= DMAMUX_CHCFG_ENBL_MASK;
-	DMA_DCR0 |= DMA_DCR_START_MASK;
-	/*while(DMA_DSR_BCR0 != DMA_DSR_BCR_DONE_MASK);
+*/
+	DMAMUX0_CHCFG0 |= DMAMUX_CHCFG_ENBL_MASK; //Enable channel 0
+	DMA_DCR0 |= DMA_DCR_START_MASK;           //Start DMA
+	while(DMA_DSR_BCR0 != DMA_DSR_BCR_DONE_MASK); 
 	{
 		DMA_DSR_BCR0 |= DMA_DSR_BCR_DONE_MASK;
-	}*/
+	} 
 }
-
+/***************************************************************************
+ *@brief memset_dma() sets a value to the source location
+ * @dst 8 bit source pointer
+ * @value 32 bit value to be set
+ * @length 32 bit length of data to be set
+*****************************************************************************/
 void memset_dma(uint8_t *dst, uint32_t length, uint32_t value)
 {
 	uint8_t i,j=2,k=4;
-	SIM_SCGC7 |= SIM_SCGC7_DMA_MASK;
-	SIM_SCGC6 |= SIM_SCGC6_DMAMUX_MASK;
-	DMAMUX0_CHCFG0 &= ~DMAMUX_CHCFG_ENBL_MASK;
+	SIM_SCGC7 |= SIM_SCGC7_DMA_MASK; //Clock gate enabled for DMA
+	SIM_SCGC6 |= SIM_SCGC6_DMAMUX_MASK; //Clock gate enabled for DMAMUX
+	DMAMUX0_CHCFG0 &= ~DMAMUX_CHCFG_ENBL_MASK; //Disable channel 0
 	DMA_DSR_BCR0 |= DMA_DSR_BCR_DONE_MASK;
-	DMA_SAR0 =  (uint32_t) &value;
-	DMA_DAR0 =  (uint32_t) dst;
+	DMA_SAR0 =  (uint32_t) &value;           //set source location to the address of value
+	DMA_DAR0 =  (uint32_t) dst;              //set dst to DMA_DAR0
 	DMA_DCR0 |= DMA_DCR_DINC_MASK;
 	if(length%k == 0)
 	{
-		DMA_DCR0 |= DMA_DCR_SSIZE(0);
-		DMA_DCR0 |= DMA_DCR_DSIZE(0);
+		DMA_DCR0 |= DMA_DCR_SSIZE(0); //set source size for 2 byte transfer
+		DMA_DCR0 |= DMA_DCR_DSIZE(0); //set destination size for 2 byte transfer
 	}
 	else if(length%j == 0)
 	{
-		DMA_DCR0 |= DMA_DCR_SSIZE(10);
-		DMA_DCR0 |= DMA_DCR_DSIZE(10);
+		DMA_DCR0 |= DMA_DCR_SSIZE(10);  //set source size for 1 byte transfer
+		DMA_DCR0 |= DMA_DCR_DSIZE(10);  //set destination size for 1 byte transfer
 	}
 	else
 	{
 		DMA_DCR0 |= DMA_DCR_SSIZE(1);
 		DMA_DCR0 |= DMA_DCR_DSIZE(1);
 	}
-	DMA_DCR0 |= DMA_DCR_EINT_MASK;
-	NVIC_EnableIRQ(DMA0_IRQn);
-	__enable_irq;
-	DMAMUX0_CHCFG0 |= DMAMUX_CHCFG_ENBL_MASK;
-	DMA_DCR0 |= DMA_DCR_START_MASK;
-	/*while(DMA_DSR_BCR0 != DMA_DSR_BCR_DONE_MASK);
+	/*DMA_DCR0 |= DMA_DCR_EINT_MASK;          //enable interrupt mask
+	NVIC_EnableIRQ(DMA0_IRQn);                 //NVIC_EnableIRQ
+	__enable_irq;*/
+	DMAMUX0_CHCFG0 |= DMAMUX_CHCFG_ENBL_MASK;  //Enable channel 0
+	DMA_DCR0 |= DMA_DCR_START_MASK;            //Start DMA
+	while(DMA_DSR_BCR0 != DMA_DSR_BCR_DONE_MASK);
 	{
 		DMA_DSR_BCR0 |= DMA_DSR_BCR_DONE_MASK;
-	}*/
+	}
 }
