@@ -81,7 +81,7 @@ void SPI_send_packet(uint8_t* p, uint8_t length) //To send the SPI packet
  * Function that flushes out the SPI transmit and the recieve buffers
 
  ***********************************************************************/
-void spi_flush() //To flush out the  spi transmit and recieve buffers
+void SPI_flush() //To flush out the  spi transmit and recieve buffers
 {
 	SPI0_C1&=0xBF;
 	SPI_init();
