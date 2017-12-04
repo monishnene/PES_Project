@@ -1,9 +1,4 @@
-/*
- * spi.c
- *
- *  Created on: Dec 3, 2017
- *      Author: monish and sanika
- */
+
 
 #include "MKL25Z4.h"
 #include "spi.h"
@@ -11,7 +6,6 @@
 
 /***********************************************************************
  Function that initializes the SPI
-
  ***********************************************************************/
 
 
@@ -28,19 +22,20 @@ void SPI_init(void) {
 
 	PTC_BASE_PTR->PSOR = 1<<4;//make gpio chip high
 	SPI0->C1 = 0x50;// Enable SPI as master
-	SPI0_BR = (SPI_BR_SPPR(0x03) | SPI_BR_SPR(0x08));     //Set  the baud rate prescale divisor to 3 & set baud rate divisor to 512 for baud rate of 15625 hz
+	SPI0_BR = (SPI_BR_SPPR(0x03) | SPI_BR_SPR(0x08)); //Set  the baud rate prescale divisor to 3 & set baud rate divisor to 512 for baud rate of 15625 hz
 }
 /***********************************************************************
  * @brief SPI_read_byte
  * It checks if the transfer is complete i.e. receiver buffer is full
  * SPI byte is read
-
  ***********************************************************************/
 
-void SPI_read_byte(uint8_t* byte)
+uint8_t SPI_read_byte(uint8_t byte)
 {
-   while ((SPI_state() & 0x80) != 0x80); //If the receive buffer is full then the transfer is complete
-   *(byte) = SPI0->D; //Read the data
+
+	while ((SPI_state() & 0x80) != 0x80); //If the receive buffer is full then the transfer is complete
+	byte = SPI0->D; //Read the data
+	return byte;
 }
 
 /***********************************************************************
@@ -49,19 +44,18 @@ void SPI_read_byte(uint8_t* byte)
  * It then checks if the transfer is complete i.e. receiver buffer is full
  ***********************************************************************/
 
-void SPI_write_byte(uint8_t byte)
+ uint8_t SPI_write_byte(uint8_t byte)
 
 {
 		SPI0->D = byte; //Send  the data
 		while ((SPI_state() & 0x80) != 0x80); //if receive buffer is full then the transfer is complete
-		return; 
+		return SPI0->D;
 }
 
 /***********************************************************************
  * @brief SPI_send_packet
  * It checks if the transmit buffer is empty and sends the packet
  * It then checks if the transfer is complete i.e. receiver buffer is full
-
  ***********************************************************************/
 
 void SPI_send_packet(uint8_t* p, uint8_t length) //To send the SPI packet
@@ -79,7 +73,6 @@ void SPI_send_packet(uint8_t* p, uint8_t length) //To send the SPI packet
 /***********************************************************************
  * @brief SPI_flush()
  * Function that flushes out the SPI transmit and the recieve buffers
-
  ***********************************************************************/
 void SPI_flush() //To flush out the  spi transmit and recieve buffers
 {
@@ -90,10 +83,8 @@ void SPI_flush() //To flush out the  spi transmit and recieve buffers
 /***************************************************************************
  * @brief SPI_state
  * It gives the state of SPI
- * returns a 8 bit pointer 
+ * returns a 8 bit pointer
 ****************************************************************************/
-uint8_t SPI_state(void) { 
+uint8_t SPI_state(void) {
 	return SPI0->S;
 }
-
-
