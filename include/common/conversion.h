@@ -1,3 +1,4 @@
+
 /*
  * conversion.h
  *
@@ -9,6 +10,7 @@
 #define CONVERSION_H_
 #include <stdint.h>
 
+uint32_t get_count_of_1(uint32_t number);
 unsigned char my_itoa(int data, unsigned char * ptr, unsigned int base);
 int my_atoi(unsigned char * ptr, unsigned char digits, unsigned int base);
 char big_to_little32(unsigned int * data, unsigned int length);
