@@ -2,25 +2,135 @@
  * uart.c
  *
  *  Created on: Oct 27, 2017
- *      Author: monis
- */
-/**
- * @file circbuf.c
+ *      Author: monish
+ *
+ * @file uart.c
  * @brief This file contains circular buffer operation functions.
  * @author monish and sanika
  * @date oct 25s, 2017
  *
- * circbuf.c
+ * uart.c
  * @Long description:-
  */
+
 #include <stdint.h>
 #include "system_MKL25Z4.h"
 #include "MKL25Z4.h"
 #include "uart.h"
+#include "conversion.h"
 #include "circbuf.h"
 #define baud_rate  57600
 #define size (1000)
+uint8_t alpha=0,nums=0,punc=0,misc=0;
 
+void sort(uint8_t peek)
+{
+	if(((peek>=65)&&(peek<=90))||((peek>=97)&&(peek<=122)))
+		alpha++;
+	else if(((peek>=48)&&(peek<=57)))
+		nums++;
+	else if(((peek>=33)&&(peek<=47))||((peek>=91)&&(peek<=96))||((peek>=123)&&(peek<=127)))
+		punc++;
+	else if(!((peek==0x0D)||(peek==0x1B)||(peek==0x0A)||(peek==0x00)))
+		misc++;
+	return;
+}
+
+void char_count_display(void)
+{
+	char stringc[]="\n\r counts of characters",stringa[]="\n\r number of alphabets=",stringp[]="\n\r number of punctuations=",stringm[]="\n\r number of miscellaneous=",stringn[]="\n\r numbers=";
+	uint8_t i=0,j=0,n=11,a=23,m=27,p=26,c=23,array[20];
+	uint8_t* value = array;
+	UART0->C2 &= ~UART_C2_RIE_MASK;
+	for(i=0;i<c;i++)
+	{
+		j=(uint8_t)stringc[i];
+		while((UART0_S1 & UART_S1_TDRE_MASK)==0);
+		UART0_D = j;
+	}
+	for(i=0;i<a;i++)
+	{
+		j=(uint8_t)stringa[i];
+		while((UART0_S1 & UART_S1_TDRE_MASK)==0);
+		UART0_D = j;
+	}
+	j= my_itoa(alpha,value,10);
+	for(i=0;i<j-1;i++)
+	{
+		while((UART0_S1 & UART_S1_TDRE_MASK)==0);
+		UART0_D = *(value+i);
+	}
+	for(i=0;i<n;i++)
+	{
+		j=(uint8_t)stringn[i];
+		while((UART0_S1 & UART_S1_TDRE_MASK)==0);
+		UART0_D = j;
+	}
+	j= my_itoa(nums,value,10);
+	for(i=0;i<j-1;i++)
+	{
+		while((UART0_S1 & UART_S1_TDRE_MASK)==0);
+		UART0_D = *(value+i);
+	}
+	for(i=0;i<p;i++)
+	{
+		j=(uint8_t)stringp[i];
+		while((UART0_S1 & UART_S1_TDRE_MASK)==0);
+		UART0_D = j;
+	}
+	j= my_itoa(punc,value,10);
+	for(i=0;i<j-1;i++)
+	{
+		while((UART0_S1 & UART_S1_TDRE_MASK)==0);
+		UART0_D = *(value+i);
+	}
+	for(i=0;i<m;i++)
+	{
+		j=(uint8_t)stringm[i];
+		while((UART0_S1 & UART_S1_TDRE_MASK)==0);
+		UART0_D = j;
+	}
+	j= my_itoa(misc,value,10);
+	for(i=0;i<j-1;i++)
+	{
+		while((UART0_S1 & UART_S1_TDRE_MASK)==0);
+		UART0_D = *(value+i);
+	}
+	while((UART0_S1 & UART_S1_TDRE_MASK)==0);
+	UART0_D = 10;
+	while((UART0_S1 & UART_S1_TDRE_MASK)==0);
+	UART0_D = 13;
+	UART0->C2 |= UART_C2_RIE_MASK;
+}
+
+void get_char_count(uint8_t* alpha_ptr,uint8_t* nums_ptr,uint8_t* punc_ptr,uint8_t* misc_ptr)
+{
+	*(alpha_ptr)=alpha;
+	*(nums_ptr)=nums;
+	*(punc_ptr)=punc;
+	*(misc_ptr)=misc;
+	return;
+}
+
+uint8_t get_alpha_count(void)
+{
+	return alpha;
+}
+
+uint8_t get_nums_count(void)
+{
+	return nums;
+}
+
+uint8_t get_punc_count(void)
+{
+	return punc;
+}
+
+uint8_t get_misc_count(void)
+{
+	return misc;
+}
 
 /***********************************************************************
  * @brief UART_configure()
@@ -64,6 +174,7 @@ void UART_send (CB_t* tx_circbuf)
 {
 uint8_t* temp;
 CB_buffer_remove_item(tx_circbuf,temp);
+sort(*temp);
 while((UART0_S1 & UART_S1_TDRE_MASK)==0);
 UART0_D = *temp;
 return;
@@ -92,6 +203,7 @@ uint8_t i;
 for(i=0;i<length;i++)
 {
 	j = CB_buffer_remove_item(tx_circbuf,temp_ptr);
+	sort(*temp_ptr);
 	while((UART0_S1 & UART_S1_TDRE_MASK)==0);
 	UART0_D = *temp_ptr;
 }
@@ -139,3 +251,5 @@ void UART0_IRQHandler(void)
  uint8_t i=UART_receive(&buffer);
  receiver_flag=0;
 }
+
+
