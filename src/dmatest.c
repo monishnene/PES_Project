@@ -10,20 +10,22 @@ void main()
 
 uint8_t* src;
 uint8_t* dst;
-uint8_t i=0,m=0,n=0;
-uint32_t value = 0;
-uint32_t length=10;
-src = (uint8_t*) malloc(10);
-dst = (uint8_t*) malloc(10);
-value = 1;
-memset_dma(dst,length,value);
+uint8_t sum=0, sum1=0;
+uint8_t i=0,m[4]={1,2,3,4};
+uint8_t n[4]={5,6,7,8};
+uint32_t length=4;
+src = m;
+dst = n;
+uint32_t value = 4;
+
+memset_dma(src,length,value);
 for(i=0;i<length;i++)
 {
-	m+=*(src+i);
+	sum+= m[i];
 }
-memmove_dma(src,dst,10);
+memmove_dma(src,dst,length);
 for(i=0;i<length;i++)
 {
-	n+=*(dst+i);
+	 n[i];
 }
 }
