@@ -18,12 +18,12 @@ src = m;
 dst = n;
 uint32_t value = 4;
 
-memset_dma(src,length,value);
+memset_dma(src,length,value,4);
 for(i=0;i<length;i++)
 {
 	sum+= m[i];
 }
-memmove_dma(src,dst,length);
+memmove_dma(src,dst,length,4);
 for(i=0;i<length;i++)
 {
 	 n[i];
