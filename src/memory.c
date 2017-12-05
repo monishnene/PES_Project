@@ -1,4 +1,5 @@
 
+
 #include <stdint.h>
 #include <stdlib.h>
 #include <stdio.h>
@@ -192,9 +193,9 @@ return;
 }
 /***************************************************************************
 *****************************************************************************/
-void memmove_dma(uint8_t* src, uint8_t* dst, uint32_t length)
+void memmove_dma(uint8_t* src, uint8_t* dst, uint32_t length , uint32_t byte)
 {
-	uint8_t i=1,j=2,k=4;
+
 		uint8_t a= 0,b=2,c=1;
 		SIM_SCGC7 |= SIM_SCGC7_DMA_MASK;
 		SIM_SCGC6 |= SIM_SCGC6_DMAMUX_MASK;
@@ -202,31 +203,32 @@ void memmove_dma(uint8_t* src, uint8_t* dst, uint32_t length)
 		DMA_SAR0 = (uint32_t) src;
 		DMA_DAR0 = (uint32_t) dst;
 
-		/*if(length%k == 0)
+
+		if(byte == 4)
 		{
 			DMA_DSR_BCR0 |= length;
 			DMA_DCR0 &= ~DMA_DCR_SINC_MASK;
 			DMA_DCR0 |= DMA_DCR_SSIZE(a);
 			DMA_DCR0 |= DMA_DCR_DINC_MASK;
 			DMA_DCR0 |= DMA_DCR_DSIZE(a);
-		}*/
-		/*else if(length%j == 0)
+		}
+		else if(byte == 2)
 		{
 			DMA_DSR_BCR0 |= length;
 			DMA_DCR0 &= ~DMA_DCR_SINC_MASK;
 			DMA_DCR0 |= DMA_DCR_SSIZE(b);
 			DMA_DCR0 |= DMA_DCR_DINC_MASK;
 			DMA_DCR0 |= DMA_DCR_DSIZE(b);
-		}*/
-		//else
-		//{
+		}
+		else if(byte == 1)
+		{
 			DMA_DSR_BCR0 |= length;
 			DMA_DCR0 |= DMA_DCR_SINC_MASK;
 			DMA_DCR0 |= DMA_DCR_SSIZE(c);
 			DMA_DCR0 |= DMA_DCR_DINC_MASK;
 			DMA_DCR0 |= DMA_DCR_DSIZE(c);
 
-		//}
+		}
 		/*DMA_DCR0 |= DMA_DCR_EINT_MASK;
 		NVIC_EnableIRQ(DMA0_IRQn);
 		__enable_irq;*/
@@ -238,9 +240,9 @@ void memmove_dma(uint8_t* src, uint8_t* dst, uint32_t length)
 		}
 	}
 
-void memset_dma(uint8_t* dst, uint32_t length, uint32_t value)
+void memset_dma(uint8_t* dst, uint32_t length, uint32_t value, uint32_t byte)
 {
-	uint8_t i=1,j=2,k=4;
+
 	uint8_t a= 0,b=2,c=1;
 	SIM_SCGC7 |= SIM_SCGC7_DMA_MASK;
 	SIM_SCGC6 |= SIM_SCGC6_DMAMUX_MASK;
@@ -248,31 +250,31 @@ void memset_dma(uint8_t* dst, uint32_t length, uint32_t value)
 	DMA_SAR0 = (uint32_t) &value;
 	DMA_DAR0 = (uint32_t) dst;
 
-	/*if(length%k == 0)
+	if(byte == 4)
 	{
 		DMA_DSR_BCR0 |= length;
 		DMA_DCR0 &= ~DMA_DCR_SINC_MASK;
 		DMA_DCR0 |= DMA_DCR_SSIZE(a);
 		DMA_DCR0 |= DMA_DCR_DINC_MASK;
 		DMA_DCR0 |= DMA_DCR_DSIZE(a);
-	}*/
-	/*else if(length%j == 0)
+	}
+	else if(byte == 2)
 	{
 		DMA_DSR_BCR0 |= length;
 		DMA_DCR0 &= ~DMA_DCR_SINC_MASK;
 		DMA_DCR0 |= DMA_DCR_SSIZE(b);
 		DMA_DCR0 |= DMA_DCR_DINC_MASK;
 		DMA_DCR0 |= DMA_DCR_DSIZE(b);
-	}*/
-	//else
-	//{
+	}
+	else if(byte==1)
+	{
 		DMA_DSR_BCR0 |= length;
 		DMA_DCR0 &= ~DMA_DCR_SINC_MASK;
 		DMA_DCR0 |= DMA_DCR_SSIZE(c);
 		DMA_DCR0 |= DMA_DCR_DINC_MASK;
 		DMA_DCR0 |= DMA_DCR_DSIZE(c);
 
-	//}
+	}
 	/*DMA_DCR0 |= DMA_DCR_EINT_MASK;
 	NVIC_EnableIRQ(DMA0_IRQn);
 	__enable_irq;*/
