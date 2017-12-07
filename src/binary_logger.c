@@ -12,32 +12,39 @@
 #include <stdint.h>
 #include "System_MKL25Z4.h"
 #include "MKL25Z4.h"
+#include "profiling.h"
 #define log_size 100
 
 void log_buffer_configure(void)
 {
 	uint8_t i;
 	i = CB_init(&log_buffer,log_size);
-	log_buffer.head = buffer.buffptr;
-	log_buffer.tail = buffer.buffptr;
+	log_buffer.head = log_buffer.buffptr;
+	log_buffer.tail = log_buffer.buffptr;
 	log_buffer.count = 0;
 	log_buffer.length = log_size;
+	i = CB_init(&log_queue,log_size);
+	log_queue.head = log_queue.buffptr;
+	log_queue.tail = log_queue.buffptr;
+	log_queue.count = 0;
+	log_queue.length = log_size;
 	return;
 }
 
 void log_item(uint8_t log_id_current)
 {
-	uint32_t real_time=1162167621;
+	uint32_t real_time=RTC_TSR;;
 	uint32_t* real_time_ptr= &real_time;
 	uint32_t count=0,i=0,j=0,count_char=0;
-	uint8_t temp=0;
+	uint8_t temp=0,header='!';
 	uint8_t* temp_ptr = &temp;
+	count+=log_string(&header,1);
+	count+=log_string(&log_id_current,1);
+	count+=log_data(real_time_ptr,1);
 	switch(log_id_current)
 	{
 		case LOGGER_INITIALIZED:
 		{
-			count+=log_integer(log_id_current);
-			count+=log_data(real_time_ptr,1);
 			count+=log_integer(0);
 			count+=log_integer(count);
 			break;
@@ -45,8 +52,6 @@ void log_item(uint8_t log_id_current)
 
 		case GPIO_INITIALIZED:
 		{
-			count+=log_integer(log_id_current);
-			count+=log_data(real_time_ptr,1);
 			count+=log_integer(0);
 			count+=log_integer(count);
 			break;
@@ -54,8 +59,6 @@ void log_item(uint8_t log_id_current)
 
 		case SYSTEM_INITIALIZED:
 		{
-			count+=log_integer(log_id_current);
-			count+=log_data(real_time_ptr,1);
 			count+=log_integer(0);
 			count+=log_integer(count);
 			break;
@@ -63,8 +66,6 @@ void log_item(uint8_t log_id_current)
 
 		case SYSTEM_HALTED:
 		{
-			count+=log_integer(log_id_current);
-			count+=log_data(real_time_ptr,1);
 			count+=log_integer(0);
 			count+=log_integer(count);
 			break;
@@ -72,8 +73,6 @@ void log_item(uint8_t log_id_current)
 
 		case INFO:
 		{
-			count+=log_integer(log_id_current);
-			count+=log_data(real_time_ptr,1);
 			count+=log_integer(log_buffer.count);
 			for(i=0;i<log_buffer.count;i++)
 			{
@@ -86,8 +85,6 @@ void log_item(uint8_t log_id_current)
 
 		case WARNING:
 		{
-			count+=log_integer(log_id_current);
-			count+=log_data(real_time_ptr,1);
 			count+=log_integer(log_buffer.count);
 			for(i=0;i<log_buffer.count;i++)
 			{
@@ -100,8 +97,6 @@ void log_item(uint8_t log_id_current)
 
 		case ERROR:
 		{
-			count+=log_integer(log_id_current);
-			count+=log_data(real_time_ptr,1);
 			count+=log_integer(log_buffer.count);
 			for(i=0;i<log_buffer.count;i++)
 			{
@@ -114,8 +109,6 @@ void log_item(uint8_t log_id_current)
 
 		case PROFILING_STARTED:
 		{
-			count+=log_integer(log_id_current);
-			count+=log_data(real_time_ptr,1);
 			count+=log_integer(0);
 			count+=log_integer(count);
 			break;
@@ -123,10 +116,8 @@ void log_item(uint8_t log_id_current)
 
 		case PROFILING_RESULT:
 		{
-			count+=log_integer(log_id_current);
-			count+=log_data(real_time_ptr,1);
 			count+=log_integer(log_buffer.count);
-			for(i=0;i<log_buffer.count;i++)
+			while(CB_is_empty(&log_buffer)!=Buffer_Empty)
 			{
 				j = CB_buffer_remove_item(&log_buffer,temp_ptr);
 				count += log_string(temp_ptr,1);
@@ -137,8 +128,6 @@ void log_item(uint8_t log_id_current)
 
 		case DATA_RECEIVED:
 		{
-			count+=log_integer(log_id_current);
-			count+=log_data(real_time_ptr,1);
 			count+=log_integer(0);
 			count+=log_integer(count);
 			break;
@@ -146,8 +135,6 @@ void log_item(uint8_t log_id_current)
 
 		case PROFILING_COMPLETED:
 		{
-			count+=log_integer(log_id_current);
-			count+=log_data(real_time_ptr,1);
 			count+=log_integer(0);
 			count+=log_integer(count);
 			break;
@@ -155,7 +142,7 @@ void log_item(uint8_t log_id_current)
 
 		case DATA_ANALYSIS_STARTED:
 		{
-			count+=log_integer(log_id_current);
+			count+=log_string(&log_id_current,1);
 			count+=log_data(real_time_ptr,1);
 			count+=log_integer(0);
 			count+=log_integer(count);
@@ -164,8 +151,6 @@ void log_item(uint8_t log_id_current)
 
 		case DATA_ALPHA_COUNT:
 		{
-			count+=log_integer(log_id_current);
-			count+=log_data(real_time_ptr,1);
 			count_char = get_alpha_count();
 			count+=log_integer(1);
 			count+=log_integer(count_char);
@@ -175,8 +160,6 @@ void log_item(uint8_t log_id_current)
 
 		case DATA_NUMERIC_COUNT:
 		{
-			count+=log_integer(log_id_current);
-			count+=log_data(real_time_ptr,1);
 			count_char = get_nums_count();
 			count+=log_integer(1);
 			count+=log_integer(count_char);
@@ -186,8 +169,6 @@ void log_item(uint8_t log_id_current)
 
 		case DATA_PUNCTUATION_COUNT:
 		{
-			count+=log_integer(log_id_current);
-			count+=log_data(real_time_ptr,1);
 			count_char = get_punc_count();
 			count+=log_integer(1);
 			count+=log_integer(count_char);
@@ -197,8 +178,6 @@ void log_item(uint8_t log_id_current)
 
 		case DATA_MISC_COUNT:
 		{
-			count+=log_integer(log_id_current);
-			count+=log_data(real_time_ptr,1);
 			count_char = get_misc_count();
 			count+=log_integer(1);
 			count+=log_integer(count_char);
@@ -208,8 +187,6 @@ void log_item(uint8_t log_id_current)
 
 		case DATA_ANALYSIS_COMPLETED:
 		{
-			count+=log_integer(log_id_current);
-			count+=log_data(real_time_ptr,1);
 			count+=log_integer(0);
 			count+=log_integer(count);
 			break;
@@ -217,8 +194,7 @@ void log_item(uint8_t log_id_current)
 
 		case HEARTBEAT:
 		{
-			count+=log_integer(log_id_current);
-			count+=log_data(real_time_ptr,1);
+			count+=log_integer(0);
 			count+=log_integer(count);
 			break;
 		}
@@ -232,8 +208,8 @@ uint32_t log_data(uint32_t* src, uint32_t length)
 	uint8_t i=0,k=0,count=0;
 	for(i=0;i<4*length;i++)
 	{
-		CB_buffer_add_item(&buffer,*src2);
-		count += get_count_of_1(*src2);
+		CB_buffer_add_item(&buffer,*(src2+i));
+		count += get_count_of_1(*src2+i);
 	}
 	return count;
 }
@@ -242,10 +218,10 @@ uint32_t log_string(uint8_t* src, uint32_t length)
 {
 
 	uint8_t i=0,k=0,count=0;
-	for(i=0;i<=length;i++)
+	for(i=0;i<length;i++)
 	{
-		CB_buffer_add_item(&buffer,*src);
-		count += get_count_of_1(*src);
+		CB_buffer_add_item(&buffer,*(src+i));
+		count += get_count_of_1(*(src+i));
 	}
 	return count;
 }
