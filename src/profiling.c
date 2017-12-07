@@ -2,7 +2,7 @@
  * profiling.c
  *
  *  Created on: Nov 30, 2017
- *      Author: monish
+ *      Author: monish and sanika
  */
 #include "memory.h"
 #include <stdint.h>
@@ -10,15 +10,14 @@
 #include "MKL25Z4.h"
 #include <stdlib.h>
 #include <string.h>
-#include "binary_logger.h"
 #include "profiling.h"
 uint32_t pre_interrupt[8],post_interrupt[8],profiling_time[8];
 
 void SysTick_Init() //Setup TDM
 {
-	SysTick-> LOAD = 0xFFFFFF;
+	SysTick-> LOAD = SysTick_LOAD_RELOAD_Msk;
 	SysTick-> VAL = 0;
-	SysTick-> CTRL |= 7;
+	SysTick-> CTRL |= (SysTick_CTRL_ENABLE_Msk | SysTick_CTRL_CLKSOURCE_Msk);
 	return;
 }
 
@@ -32,17 +31,14 @@ void SysTick_Init() //Setup TDM
 
 void time_start(uint8_t state)
 {
-	switch(state)
-	{
-	     pre_interrupt[state] = SysTick-> LOAD;
+	     pre_interrupt[state] = SysTick-> VAL;
 	     return;
-	}
 }
 
 void time_end(uint8_t state)
 
 {
-	post_interrupt[state] = SysTick-> LOAD;
+	post_interrupt[state] = SysTick-> VAL;
 	profiling_time[state] = pre_interrupt[state] - post_interrupt[state];
 	return;
 }
@@ -72,7 +68,7 @@ void log_result(uint32_t length, uint8_t k)
 * Free destination and free source
 ***********************************************************************/
 
-void profiling(uint32_t length)
+void profiling_function(uint32_t length)
 {
 	uint8_t i=0;
 	if(length>100)
@@ -88,42 +84,42 @@ void profiling(uint32_t length)
 		time_start(k);
 		src=memset((void*)src,(uint8_t)(k+1),4*length); //using standary C version memset
 		time_end(k);
-		log_result(length,k);
+		//log_result(length,k);
 		k++;
 		time_start(k);
 		src=memmove((void*)dst,(void*)src,4*length);    //using standard C version memmove
 		time_end(k);
-		log_result(length,k);
+		//log_result(length,k);
 		k++;
 		time_start(k);
 		src = my_memset(src, length, (uint8_t)k); //using memory function for memset
 		time_end(k);
-		log_result(length,k);
+		//log_result(length,k);
 		k++;
 		time_start(k);
 		dst = my_memmove( src, dst, length);          //using memory function for memmove
 		time_end(k);
-		log_result(length,k);
+		//log_result(length,k);
 		k++;
 		time_start(k);
 		src = my_memset(src, length, (uint8_t) k); //using memory function for memset by O3 flag
 		time_end(k);
-		log_result(length,k);
+		//log_result(length,k);
 		k++;
 		time_start(k);
 		dst = my_memmove( src, dst, length);           //using memory function for memmove by O3 flag
 		time_end(k);
-		log_result(length,k);
+		//log_result(length,k);
 		k++;
 		time_start(k);
 		memset_dma(src,length,k,1);                 //using memset function by dma
 		time_end(k);
-		log_result(length,k);
+		//log_result(length,k);
 		k++;
 		time_start(k);
 		memmove_dma(src,dst,length,1);   // using memmove function by dma
 		time_end(k);
-		log_result(length,k);
+		//log_result(length,k);
 		k++;
 		free_words((uint32_t*)dst);                          //frees destination
 		free_words((uint32_t*)src);                          //frees source
