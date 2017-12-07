@@ -8,12 +8,11 @@
 
  ***********************************************************************/
 
-uint8_t nrf_read_register(uint8_t address)
+void nrf_read_register(uint8_t register_function)
 
 {
-        uint8_t l=0;
-	l = SPI_write_byte(0x00|address);//Reads the command
-        return l;
+	   SPI_write_byte(0x00|register_function);//Reads the command
+
 }
 
 /***********************************************************************
@@ -22,10 +21,9 @@ uint8_t nrf_read_register(uint8_t address)
 
  ***********************************************************************/
 
-void nrf_write_register(uint8_t address, uint8_t value)
+void nrf_write_register(uint8_t register_function)
 {
-  value = 254;
-  SPI_write_byte(value|address); //Writes the command
+  SPI_write_byte(0x20|register_function); //Writes the command
 }
 
 /***********************************************************************
@@ -36,15 +34,15 @@ void nrf_write_register(uint8_t address, uint8_t value)
 
  ***********************************************************************/
 
-uint8_t nrf_read_status() //function that reads the nrf status register
+void nrf_read_status() //function that reads the nrf status register
 {
-	uint8_t c,d,h;
+	uint8_t c;
 	PTC_BASE_PTR->PCOR = 1<<4; //Chip select is made low
-	d = nrf_read_register(NRF_STATUS_REG);
-	h = SPI_write_byte(0xFF);
-	c= SPI_read_byte(h);
+	nrf_read_register(NRF_STATUS_REG);
+    SPI_write_byte(0xFF);
+	c= SPI_read_byte();
 	PTC_BASE_PTR->PSOR = 1<<4; //Chip select is set to high
-	return c;
+
 }
 
 /***********************************************************************
@@ -55,13 +53,12 @@ uint8_t nrf_read_status() //function that reads the nrf status register
  * config variable. The chip select is then set to high
  ***********************************************************************/
 
-uint8_t nrf_write_config(uint8_t config) //function that is used for writing config register
+ void nrf_write_config() //function that is used for writing config register
 {
 	PTC_BASE_PTR->PCOR = 1<<4;
-    nrf_write_register(NRF_CONFIG_REG, 3); //Write command to Config register
-	config = SPI_write_byte(0x03);//Write data to Config register
+    nrf_write_register(NRF_CONFIG_REG); //Write command to Config register
+   SPI_write_byte(0x03);//Write data to Config register
 	PTC_BASE_PTR->PSOR =  1<<4;
-	return config;
 }
 
 /***********************************************************************
@@ -72,15 +69,15 @@ uint8_t nrf_write_config(uint8_t config) //function that is used for writing con
  * A dummy value is sent to receive data
  * The chip select is then set to high and the dummy value is being returned
  ***********************************************************************/
-uint8_t nrf_read_config()
+ void nrf_read_config()
 {
-	SIM_SCGC5 |= SIM_SCGC5_PORTB_MASK; //enable clock to port B
-	uint8_t j,k;
+	SIM_SCGC5 |= SIM_SCGC5_PORTC_MASK; //enable clock to port C
+	uint8_t j;
 	PTC_BASE_PTR->PCOR = 1<<4; //Chip select  is made low
-    k = nrf_read_register(NRF_CONFIG_REG); // Read command to Config register
-	j=SPI_write_byte(0X7F);//Sends a test value to recieve data
+    nrf_read_register(NRF_CONFIG_REG); // Read command to Config register
+	j=SPI_write_byte(0XFF);//Sends a test value to recieve data
 	PTC_BASE_PTR->PSOR = 1<<4; //Chip select is set to high
-        return j;
+
 }
 /***********************************************************************
  * @brief nrf_read_rf_setup
@@ -91,14 +88,13 @@ uint8_t nrf_read_config()
  * The chip select is then set to high
  ***********************************************************************/
 
-uint8_t nrf_read_rf_setup() //Read the rf register
+void nrf_read_rf_setup() //Read the rf register
 {
 	uint8_t c;
 	PTC_BASE_PTR->PCOR = 1<<4;
-	nrf_write_register(NRF_RF_SETUP_REG, 6);
+	nrf_write_register(NRF_RF_SETUP_REG);
 	c=SPI_write_byte(0xff);
 	PTC_BASE_PTR->PSOR = 1<<4;
-	return c;
 
 }
 /***********************************************************************
@@ -110,11 +106,11 @@ uint8_t nrf_read_rf_setup() //Read the rf register
  * The chip select is then set to high
  ***********************************************************************/
 
-void nrf_write_rf_setup(uint8_t config) //Setup the rf register
+void nrf_write_rf_setup() //Setup the rf register
 {
 	PTC_BASE_PTR->PCOR = 1<<4;
-    nrf_write_register(NRF_RF_SETUP_REG, 3);
-	config = SPI_write_byte(0x08);
+    nrf_write_register(NRF_RF_SETUP_REG);
+    SPI_write_byte(0x02);
 	PTC_BASE_PTR->PSOR = 1<<4;
 }
 /***********************************************************************
@@ -127,15 +123,14 @@ void nrf_write_rf_setup(uint8_t config) //Setup the rf register
  * The fifo status is then read and returned
  ***********************************************************************/
 
-uint8_t nrf_read_rf_ch() //Read rf_ch register
+ void nrf_read_rf_ch() //Read rf_ch register
 {
- uint8_t i,k;
+ uint8_t i;
  PTC_BASE_PTR->PCOR = 1<<4;
- nrf_write_register(NRF_RF_CH_REG, 4);
+ nrf_write_register(NRF_RF_CH_REG);
  i = SPI_write_byte(0xff);
  PTC_BASE_PTR->PSOR = 1<<4;
- k= nrf_read_fifo_status(); //Read the fifo status
- return i;
+ nrf_read_fifo_status(); //Read the fifo status
 }
 /***********************************************************************
  * @brief nrf_write_rf_ch
@@ -146,11 +141,12 @@ uint8_t nrf_read_rf_ch() //Read rf_ch register
  * The chip select is then set to high
  ***********************************************************************/
 
-void nrf_write_rf_ch(uint8_t channel) //Write command to rf_ch register
+void nrf_write_rf_ch() //Write command to rf_ch register
 {
-uint32_t i;
+uint32_t i; 
+uint8_t channel;
 PTC_BASE_PTR->PCOR = 1<<4;
-nrf_write_register(NRF_RF_CH_REG, 5);
+nrf_write_register(NRF_RF_CH_REG);
 for(i=0; i<5; i++)
  {
    channel = SPI_write_byte(0x10);
@@ -166,12 +162,12 @@ PTC_BASE_PTR->PSOR = 1<<4;
  * The chip select is then set to high
  ***********************************************************************/
 
-void nrf_read_TX_ADDR(uint8_t* address) //Read the tx address register
+void nrf_read_TX_ADDR() //Read the tx address register
 {
 	uint32_t i;
 	uint8_t k;
 	PTC_BASE_PTR->PCOR = 1<<4;
-	*address = nrf_read_register(TX_ADDR); //Command to read the TX_ADDR register
+	nrf_read_register(TX_ADDR); //Command to read the TX_ADDR register
 	 for(i=0;i<5;i++)
 	 {
 
@@ -188,14 +184,14 @@ void nrf_read_TX_ADDR(uint8_t* address) //Read the tx address register
  * The chip select is then set to high
  ***********************************************************************/
 
-void nrf_write_TX_ADDR(uint8_t *tx_addr) // Command to write to the tx address register
+void nrf_write_TX_ADDR() // Command to write to the tx address register
 {
 	uint32_t i;
 	PTC_BASE_PTR->PCOR = 1<<4;
-     nrf_write_register(TX_ADDR, 2);
+     nrf_write_register(TX_ADDR);
 	 for(i=0;i<5;i++)
 	 {
-		 *tx_addr = SPI_write_byte(0xBB);// Setting BB as the TX address
+	   SPI_write_byte(0xBB);// Setting BB as the TX address
 	 }
 	 PTC_BASE_PTR->PSOR = 1<<4;
 }
@@ -208,15 +204,14 @@ void nrf_write_TX_ADDR(uint8_t *tx_addr) // Command to write to the tx address r
  * The chip select is then set to high
  ***********************************************************************/
 
-uint8_t nrf_read_fifo_status() //Function to read the nrf fifostatus register
+void nrf_read_fifo_status() //Function to read the nrf fifostatus register
 {
 
-	uint8_t c,j;
+	uint8_t c;
 	PTC_BASE_PTR->PCOR = 1<<4;
-	 j = nrf_read_register(FIFO_STATUS_REG); //Command to read the fifo_status_register
+    nrf_read_register(FIFO_STATUS_REG); //Command to read the fifo_status_register
 	c=SPI_write_byte(0xff);
 	 PTC_BASE_PTR->PSOR = 1<<4;
-	 return c;
 }
 /***********************************************************************
  * @brief nrf_flush_tx_fifo
@@ -251,18 +246,7 @@ void nrf_flush_rx_fifo() //Function that flushes the rx fifo
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
+	
 
 
 
