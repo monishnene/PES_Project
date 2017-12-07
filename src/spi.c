@@ -1,8 +1,9 @@
-
-
-
-
-
+/*
+ * spi.c
+ *
+ *  Created on: Dec 6, 2017
+ *      Author: monis
+ */
 
 #include "MKL25Z4.h"
 #include "SPI.h"
@@ -49,8 +50,9 @@ void SPI_send_packet(uint8_t* p, uint8_t length) {
 		SPI0->D = *(p+i);
 	}
 }
-uint8_t SPI_read_byte(uint8_t byte) {
-		SPI0->D = 0x00;
+uint8_t SPI_read_byte(uint8_t byte)
+{
+		SPI0->D = byte;
 		while ((SPI_state() & 0x80) != 0x80);
 		byte = SPI0->D;
 		return byte;
@@ -62,3 +64,4 @@ void spi_flush() //To flush out the transmit and recieve buffers
 	SPI0_C1&=0xBF;
 	SPI_init();
 }
+
