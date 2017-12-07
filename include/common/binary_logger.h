@@ -13,7 +13,7 @@
 #include <stdint.h>
 typedef enum
 {
-LOGGER_INITIALIZED,
+LOGGER_INITIALIZED=65,
 GPIO_INITIALIZED,
 SYSTEM_INITIALIZED,
 SYSTEM_HALTED,
@@ -33,6 +33,7 @@ DATA_ANALYSIS_COMPLETED,
 HEARTBEAT,
 }LOG_ID;
 CB_t log_buffer;
+CB_t log_queue;
 void log_buffer_configure(void);
 void log_init(void);
 uint32_t log_data(uint32_t* src, uint32_t length);
