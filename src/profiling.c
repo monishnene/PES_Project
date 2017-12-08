@@ -12,7 +12,6 @@
 #include <string.h>
 #include "binary_logger.h"
 #include "profiling.h"
-uint32_t pre_interrupt[8],post_interrupt[8],profiling_time[8];
 
 void SysTick_Init() //Setup TDM
 {
@@ -32,31 +31,41 @@ void SysTick_Init() //Setup TDM
 
 void time_start(uint8_t state)
 {
-	     pre_interrupt[state] = SysTick-> LOAD;
+	     pre_interrupt[state] = SysTick-> VAL;
 	     return;
 }
 
 void time_end(uint8_t state)
 
 {
-	post_interrupt[state] = SysTick-> LOAD;
+	post_interrupt[state] = SysTick-> VAL;
 	profiling_time[state] = pre_interrupt[state] - post_interrupt[state];
 	return;
 }
 
 void log_result(uint32_t length, uint8_t k)
 {
-		uint8_t i=0;
+		uint8_t i=0,j=0,count=0;
+		uint8_t array[20];
+		uint8_t* value = array;
 		uint8_t* profiling_time_ptr = (uint8_t*)&profiling_time[k];
-		uint8_t* length_ptr = (uint8_t*)&length;
-		k=CB_buffer_add_item(&log_profiling_result,(uint8_t)* &k);
-		for(i=0;i<4;i++)
+		j = my_itoa(k,value,10);
+		for(i=0;i<j;i++)
 		{
-			k=CB_buffer_add_item(&log_profiling_result,*(length_ptr+i));
+			CB_buffer_add_item(&log_profiling_result,*(value+i));
+			count += get_count_of_1(*(value+i));
 		}
-		for(i=0;i<4;i++)
+		j = my_itoa(length,value,10);
+		for(i=0;i<j;i++)
 		{
-			k=CB_buffer_add_item(&log_profiling_result,*(profiling_time_ptr+i));
+			CB_buffer_add_item(&log_profiling_result,*(value+i));
+			count += get_count_of_1(*(value+i));
+		}
+		j = my_itoa(profiling_time[k],value,10);
+		for(i=0;i<j;i++)
+		{
+			CB_buffer_add_item(&log_profiling_result,*(value+i));
+			count += get_count_of_1(*(value+i));
 		}
 		return;
 }
@@ -85,7 +94,7 @@ void profiling(uint32_t length)
 	}
 	for(i=0;i<loop_for_big_memory;i++)
 	{
-	src=memset((void*)src,(uint8_t)(k+1),4*length); //using standary C version memset
+		src=memset((void*)src,(uint8_t)(k+1),4*length); //using standary C version memset
 	}
 	if (flag_length_change==1)
 	{
@@ -221,6 +230,7 @@ void profiling(uint32_t length)
 void DMA0_IRQHandler(void)
 {
 		static uint8_t DMA_transfers_counter = 0,i=0;
+		uint8_t counter;
 		DMA_DSR_BCR0 |= DMA_DSR_BCR_DONE_MASK;
 		if(overlap_flag == 0)
 		{
@@ -230,11 +240,11 @@ void DMA0_IRQHandler(void)
 		{
 			DMA_overlap_handler();
 		}
-		if(DMA_transfers_counter == 128)
+		if(DMA_transfers_counter == 2)
 		{
-			i=CB_buffer_add_item(&log_queue,DATA_RECEIVED);
 			i=CB_buffer_add_item(&log_queue,PROFILING_COMPLETED);
 			i=CB_buffer_add_item(&log_queue,PROFILING_RESULT);
+			DMA_transfers_counter = 0;
 		}
 }
 
