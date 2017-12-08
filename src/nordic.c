@@ -143,7 +143,7 @@ void nrf_write_rf_setup() //Setup the rf register
 
 void nrf_write_rf_ch() //Write command to rf_ch register
 {
-uint32_t i; 
+uint32_t i;
 uint8_t channel;
 PTC_BASE_PTR->PCOR = 1<<4;
 nrf_write_register(NRF_RF_CH_REG);
@@ -246,7 +246,6 @@ void nrf_flush_rx_fifo() //Function that flushes the rx fifo
 
 
 
-	
 
 
 
