@@ -38,7 +38,7 @@ void nrf_read_status();
 void nrf_write_config();
 void nrf_read_config();
 void nrf_read_rf_setup();
-void nrf_write_rf_setup()
+void nrf_write_rf_setup();
 void nrf_read_rf_ch();
 void nrf_write_rf_ch();
 void nrf_read_TX_ADDR();
