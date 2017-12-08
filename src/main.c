@@ -1,17 +1,18 @@
-#include "project1.h"
-#include "platform.h"
+
+//#include "platform.h"
 #include "memory.h"
-#include "conversion.h"
-#include "debug.h"
+//#include "conversion.h"
+//#include "debug.h"
 #include <stdint.h>
-#include "cmocka_test.h"
-int main()
+#include "project3.h"
+//#include "cmocka_test.h"
+void main()
 {
-#ifdef PROJECT1
+/*#ifdef PROJECT10
 project1();
 #endif
-#ifdef CMOCKA
-cmocka_test();
-#endif
-return 0;
+project2();
+*/
+project3();
 }
+
