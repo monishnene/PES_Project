@@ -14,16 +14,32 @@
 #include "MKL25Z4.h"
 #include "profiling.h"
 #define log_size 100
+#define log_queue_size 20
 
 void log_buffer_configure(void)
 {
 	uint8_t i;
-	i = CB_init(&log_buffer,log_size);
-	log_buffer.head = log_buffer.buffptr;
-	log_buffer.tail = log_buffer.buffptr;
-	log_buffer.count = 0;
-	log_buffer.length = log_size;
-	i = CB_init(&log_queue,log_size);
+	i = CB_init(&log_information,log_size);
+	log_information.head = log_information.buffptr;
+	log_information.tail = log_information.buffptr;
+	log_information.count = 0;
+	log_information.length = log_size;
+	i = CB_init(&log_error,log_size);
+	log_error.head = log_error.buffptr;
+	log_error.tail = log_error.buffptr;
+	log_error.count = 0;
+	log_error.length = log_size;
+	i = CB_init(&log_warning,log_size);
+	log_warning.head = log_warning.buffptr;
+	log_warning.tail = log_warning.buffptr;
+	log_warning.count = 0;
+	log_warning.length = log_size;
+	i = CB_init(&log_profiling_result,4*log_size);
+	log_profiling_result.head = log_profiling_result.buffptr;
+	log_profiling_result.tail = log_profiling_result.buffptr;
+	log_profiling_result.count = 0;
+	log_profiling_result.length = log_size;
+	i = CB_init(&log_queue,log_queue_size);
 	log_queue.head = log_queue.buffptr;
 	log_queue.tail = log_queue.buffptr;
 	log_queue.count = 0;
@@ -73,10 +89,10 @@ void log_item(uint8_t log_id_current)
 
 		case INFO:
 		{
-			count+=log_integer(log_buffer.count);
-			for(i=0;i<log_buffer.count;i++)
+			count+=log_integer(log_information.count);
+			while(CB_is_empty(&log_information)!=Buffer_Empty)
 			{
-				j = CB_buffer_remove_item(&log_buffer,temp_ptr);
+				j = CB_buffer_remove_item(&log_information,temp_ptr);
 				count += log_string(temp_ptr,1);
 			}
 			count+=log_integer(count);
@@ -85,10 +101,10 @@ void log_item(uint8_t log_id_current)
 
 		case WARNING:
 		{
-			count+=log_integer(log_buffer.count);
-			for(i=0;i<log_buffer.count;i++)
+			count+=log_integer(log_warning.count);
+			while(CB_is_empty(&log_warning)!=Buffer_Empty)
 			{
-				j = CB_buffer_remove_item(&log_buffer,temp_ptr);
+				j = CB_buffer_remove_item(&log_warning,temp_ptr);
 				count += log_string(temp_ptr,1);
 			}
 			count+=log_integer(count);
@@ -97,10 +113,10 @@ void log_item(uint8_t log_id_current)
 
 		case ERROR:
 		{
-			count+=log_integer(log_buffer.count);
-			for(i=0;i<log_buffer.count;i++)
+			count+=log_integer(log_error.count);
+			while(CB_is_empty(&log_error)!=Buffer_Empty)
 			{
-				j = CB_buffer_remove_item(&log_buffer,temp_ptr);
+				j = CB_buffer_remove_item(&log_error,temp_ptr);
 				count += log_string(temp_ptr,1);
 			}
 			count+=log_integer(count);
@@ -116,10 +132,10 @@ void log_item(uint8_t log_id_current)
 
 		case PROFILING_RESULT:
 		{
-			count+=log_integer(log_buffer.count);
-			while(CB_is_empty(&log_buffer)!=Buffer_Empty)
+			count+=log_integer(log_profiling_result.count);
+			while(CB_is_empty(&log_profiling_result)!=Buffer_Empty)
 			{
-				j = CB_buffer_remove_item(&log_buffer,temp_ptr);
+				j = CB_buffer_remove_item(&log_profiling_result,temp_ptr);
 				count += log_string(temp_ptr,1);
 			}
 			count+=log_integer(count);
