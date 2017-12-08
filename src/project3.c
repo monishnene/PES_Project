@@ -12,55 +12,85 @@
 #include "uart.h"
 #include "System_MKL25Z4.h"
 #include "MKL25Z4.h"
-//#include "RTC.h"
+#include "rtc.h"
 #include "memory.h"
-uint8_t m=0,n=0,i=0,length=10;
-uint8_t* src;
-uint8_t* dst;
-
-void dma_test()
+#include "spi.h"
+#include "nordic.h"
+void profiling_task(void)
 {
-	uint32_t value = 1;
-	src = (uint8_t*) malloc(10);
-	dst = (uint8_t*) malloc(10);
-	memset_dma(src,length,value);
-	memmove_dma(src,dst,length);
+	uint8_t i=CB_buffer_add_item(&log_queue,PROFILING_STARTED);
+	profiling(10);
+	profiling(100);
+	profiling(1000);
+	profiling(5000);
+	return;
 }
 
-void DMA0_IRQHandler()
+
+/*
+void spi_task(void)
 {
-	if(DMA_DSR_BCR0 == DMA_DSR_BCR_DONE_MASK)
+	SPI_write_byte(6);
+	uint8_t i = SPI_read_byte(5);
+	if(i==5)
 	{
-		DMA_DSR_BCR0 |= DMA_DSR_BCR_DONE_MASK;
 		while((UART0_S1 & UART_S1_TDRE_MASK)==0);
-		UART0_D = *(src+i)+48;
+		UART0_D = '5';
+	}
+	else if(i==6)
+	{
 		while((UART0_S1 & UART_S1_TDRE_MASK)==0);
-		UART0_D = *(src+i)+48;
-		while((UART0_S1 & UART_S1_TDRE_MASK)==0);
-		UART0_D = *(dst+i)+48;
+		UART0_D = '6';
 	}
 	else
 	{
-		DMA_DSR_BCR0 |= DMA_DSR_BCR_DONE_MASK;
+		while((UART0_S1 & UART_S1_TDRE_MASK)==0);
+		UART0_D = '7';
 	}
-}
+}*/
 
+/*
+void nordic_task(void)
+{
+
+}*/
 
 void project3(void)
 {
+	uint32_t time_data=0,i=0;
+	uint8_t logger_id_call=0,flag=0;
 	SystemInit();
 	UART_configure();
 	log_buffer_configure();
-	//SPI_init();
-	//RTC_configure();
-	while((UART0_S1 & UART_S1_TDRE_MASK)==0);
-	UART0_D = 'A';
-	dma_test();
-	log_item(LOGGER_INITIALIZED);
-	log_item(GPIO_INITIALIZED);
-	log_item(SYSTEM_INITIALIZED);
-	while(CB_is_empty(&buffer)!=Buffer_Empty)
+	SysTick_Init();
+	SPI_init();
+	nrf_write_config();
+	nrf_read_config();
+	RTC_configure();
+	i=CB_buffer_add_item(&log_queue,LOGGER_INITIALIZED);
+	i=CB_buffer_add_item(&log_queue,GPIO_INITIALIZED);
+	i=CB_buffer_add_item(&log_queue,SYSTEM_INITIALIZED);
+	while(1)
 	{
-		UART_send(&buffer);
+		while(CB_is_empty(&log_queue)!= Buffer_Empty)
+		{
+			i=CB_buffer_remove_item(&log_queue,&logger_id_call);
+			log_item(logger_id_call);
+		}
+		while(CB_is_empty(&buffer)!= Buffer_Empty)
+		{
+			UART_send(&buffer);
+		}
+		if(flag==0)
+		{
+			//nordic_task();
+			//spi_task();
+			flag++;
+		}
+		if(flag==1)
+		{
+			profiling_task();
+			flag++;
+		}
 	}
 }
