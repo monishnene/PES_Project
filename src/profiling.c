@@ -2,7 +2,7 @@
  * profiling.c
  *
  *  Created on: Nov 30, 2017
- *      Author: monish and sanika
+ *      Author: monish
  */
 #include "memory.h"
 #include <stdint.h>
@@ -10,6 +10,7 @@
 #include "MKL25Z4.h"
 #include <stdlib.h>
 #include <string.h>
+#include "binary_logger.h"
 #include "profiling.h"
 uint32_t pre_interrupt[8],post_interrupt[8],profiling_time[8];
 
@@ -31,14 +32,14 @@ void SysTick_Init() //Setup TDM
 
 void time_start(uint8_t state)
 {
-	     pre_interrupt[state] = SysTick-> VAL;
+	     pre_interrupt[state] = SysTick-> LOAD;
 	     return;
 }
 
 void time_end(uint8_t state)
 
 {
-	post_interrupt[state] = SysTick-> VAL;
+	post_interrupt[state] = SysTick-> LOAD;
 	profiling_time[state] = pre_interrupt[state] - post_interrupt[state];
 	return;
 }
@@ -48,14 +49,14 @@ void log_result(uint32_t length, uint8_t k)
 		uint8_t i=0;
 		uint8_t* profiling_time_ptr = (uint8_t*)&profiling_time[k];
 		uint8_t* length_ptr = (uint8_t*)&length;
-		k=CB_buffer_add_item(&log_buffer,(uint8_t)* &k);
+		k=CB_buffer_add_item(&log_profiling_result,(uint8_t)* &k);
 		for(i=0;i<4;i++)
 		{
-			k=CB_buffer_add_item(&log_buffer,*(length_ptr+i));
+			k=CB_buffer_add_item(&log_profiling_result,*(length_ptr+i));
 		}
 		for(i=0;i<4;i++)
 		{
-			k=CB_buffer_add_item(&log_buffer,*(profiling_time_ptr+i));
+			k=CB_buffer_add_item(&log_profiling_result,*(profiling_time_ptr+i));
 		}
 		return;
 }
@@ -68,9 +69,32 @@ void log_result(uint32_t length, uint8_t k)
 * Free destination and free source
 ***********************************************************************/
 
-void profiling_function(uint32_t length)
+void profiling(uint32_t length)
 {
-	uint8_t i=0;
+	uint32_t length_temp=0;
+	uint8_t i=0,flag_length_change=0,j=0,k=0;
+	uint8_t* dst = (uint8_t*) malloc(length+10); //memory allocation to dst
+	uint8_t* src = dst + 10; //memory allocation to src
+	time_start(k);
+	if(length>100)
+	{
+		loop_for_big_memory = length/100 + 1;
+		flag_length_change=1;
+		length_temp=length;
+		length=100;
+	}
+	for(i=0;i<loop_for_big_memory;i++)
+	{
+	src=memset((void*)src,(uint8_t)(k+1),4*length); //using standary C version memset
+	}
+	if (flag_length_change==1)
+	{
+		length=length_temp;
+	}
+	time_end(k);
+	log_result(length,k);//1
+	k++;
+	time_start(k);
 	if(length>100)
 	{
 		loop_for_big_memory = length/100 + 1;
@@ -78,52 +102,119 @@ void profiling_function(uint32_t length)
 	}
 	for(i=0;i<loop_for_big_memory;i++)
 	{
-		uint8_t* dst = (uint8_t*) malloc(length); //memory allocation to dst
-		uint8_t* src = (uint8_t*) malloc(length); //memory allocation to src
-		uint8_t i=0,j=0,k=0;
-		time_start(k);
-		src=memset((void*)src,(uint8_t)(k+1),4*length); //using standary C version memset
-		time_end(k);
-		//log_result(length,k);
-		k++;
-		time_start(k);
-		src=memmove((void*)dst,(void*)src,4*length);    //using standard C version memmove
-		time_end(k);
-		//log_result(length,k);
-		k++;
-		time_start(k);
-		src = my_memset(src, length, (uint8_t)k); //using memory function for memset
-		time_end(k);
-		//log_result(length,k);
-		k++;
-		time_start(k);
-		dst = my_memmove( src, dst, length);          //using memory function for memmove
-		time_end(k);
-		//log_result(length,k);
-		k++;
-		time_start(k);
-		src = my_memset(src, length, (uint8_t) k); //using memory function for memset by O3 flag
-		time_end(k);
-		//log_result(length,k);
-		k++;
-		time_start(k);
-		dst = my_memmove( src, dst, length);           //using memory function for memmove by O3 flag
-		time_end(k);
-		//log_result(length,k);
-		k++;
-		time_start(k);
-		memset_dma(src,length,k,1);                 //using memset function by dma
-		time_end(k);
-		//log_result(length,k);
-		k++;
-		time_start(k);
-		memmove_dma(src,dst,length,1);   // using memmove function by dma
-		time_end(k);
-		//log_result(length,k);
-		k++;
-		free_words((uint32_t*)dst);                          //frees destination
-		free_words((uint32_t*)src);                          //frees source
+		src=memmove((void*)dst,(void*)src,4*length); //using standard C version memmove
 	}
+	if (flag_length_change==1)
+	{
+		length=length_temp;
+	}
+	time_end(k);
+	log_result(length,k);//2
+	k++;
+	time_start(k);
+	if(length>100)
+	{
+		loop_for_big_memory = length/100 + 1;
+		length=100;
+	}
+	for(i=0;i<loop_for_big_memory;i++)
+	{
+		src = my_memset(src, length, (uint8_t)k); //using memory function for memset
+	}
+	if (flag_length_change==1)
+	{
+		length=length_temp;
+	}
+	time_end(k);
+	log_result(length,k);//3
+	k++;
+	time_start(k);
+	if(length>100)
+	{
+		loop_for_big_memory = length/100 + 1;
+		length=100;
+	}
+	for(i=0;i<loop_for_big_memory;i++)
+	{
+		dst = my_memmove( src, dst, length);          //using memory function for memmove
+	}
+	if (flag_length_change==1)
+	{
+		length=length_temp;
+	}
+	time_end(k);
+	log_result(length,k);//4
+	k++;
+	time_start(k);
+	if(length>100)
+	{
+		loop_for_big_memory = length/100 + 1;
+		length=100;
+	}
+	for(i=0;i<loop_for_big_memory;i++)
+	{
+		src = my_memset(src, length, (uint8_t) k); //using memory function for memset by O3 flag
+	}
+	if (flag_length_change==1)
+	{
+		length=length_temp;
+	}
+	time_end(k);
+	log_result(length,k);//5
+	k++;
+	time_start(k);
+	if(length>100)
+	{
+		loop_for_big_memory = length/100 + 1;
+		length=100;
+	}
+	for(i=0;i<loop_for_big_memory;i++)
+	{
+		dst = my_memmove( src, dst, length);           //using memory function for memmove by O3 flag
+	}
+	if (flag_length_change==1)
+	{
+		length=length_temp;
+	}
+	time_end(k);
+	log_result(length,k);//6
+	k++;
+	time_start(k);
+	if(length>100)
+	{
+		loop_for_big_memory = length/100 + 1;
+		length=100;
+	}
+	for(i=0;i<loop_for_big_memory;i++)
+	{
+		memset_dma(src,length,k,1);                 //using memset function by dma
+	}
+	if (flag_length_change==1)
+	{
+		length=length_temp;
+	}
+	time_end(k);
+	log_result(length,k);//7
+	k++;
+	time_start(k);
+	if(length>100)
+	{
+		loop_for_big_memory = length/100 + 1;
+		length=100;
+	}
+	for(i=0;i<loop_for_big_memory;i++)
+	{
+		memmove_dma(src,dst,length,1);   // using memmove function by dma
+	}
+	if (flag_length_change==1)
+	{
+		length=length_temp;
+	}
+	time_end(k);
+	log_result(length,k);//8
+	k++;
+	free_words((uint32_t*)dst);                          //frees destination
+	free_words((uint32_t*)src);                          //frees source
 	return;
 }
 
