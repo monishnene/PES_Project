@@ -1,3 +1,26 @@
+/**s
+ * @file memory.c
+ * @brief This file contains memory manipulation functions.
+ * @author monish and sanika
+ * @date Sep 29, 2017
+ *
+ * memory.c
+ *@Long description:-
+It has various memory functions like:-
+1)my_memmove:- memmove takes 1 byte pointers source and destination and copies a length of bytes from source to destination location without any overalp. If flag =1 , if end of destination adresses intersects at start of source address then we start copying from the begining to handle overlap condition and if the start of destination location intersects at the end of source location then we start copying from the end to handle the overlap condition. If there is no overlap, then flag is zero. Destination is being returned.
+
+2)my_memcpy:- It is used to copy a length of bytes from source to destination. THe copy function may or maynot corrupt the data. Destination is being returned.
+
+3)my memset:- It is used to set all the locations of the source to a given value. It performs the same function as the set_all() function. Source is being returned.
+
+4)my_memzero:- It is used to zero out all the memory.It performs the same function as the clear_all() function. Source is being returned.
+
+5)my_reverse:- It is used for reversing the bytes in a memory. If the length of string is even ( tested by mod operator) the length is divided by 2 to carry out the iterations in the for loop (for reversing) upto half of the length. In case, the length is odd, it is first reduced by 1 and then divided by 2 and then reversing logic is performed. In the reverse for loop, the temp variable stores the source location for every iteration. THen, destination is stored in source and the temp which contains the source is stored back in destination. The function returns source.
+
+6)reserve_words:- Malloc function that contatins the size of operator is used to reserve words in the source. This function returns source.
+
+7)free_words:-  It is used to free dynamic memory location.
+ */
 
 
 #include <stdint.h>
@@ -5,6 +28,8 @@
 #include <stdio.h>
 #include "System_MKL25Z4.h"
 #include "MKL25Z4.h"
+#include "memory.h"
+
 
 /***********************************************************************
  * @brief my_memmove()
@@ -82,7 +107,6 @@ uint8_t* my_memcpy(uint8_t* src, uint8_t* dst, uint32_t length)
 
 	return dst;
 }
-
 /***********************************************************************
  * @brief my_memset()
  * sets a value to all the addresses given
@@ -112,7 +136,7 @@ uint8_t* my_memset(uint8_t* src, uint32_t length, uint8_t value)
  * @length length of data to be set 0
  * @return source pointer
  ***********************************************************************/
-uint8_t* my_memzero(uint8_t* src, size_t length)
+uint8_t* my_memzero(uint8_t* src, uint32_t length)
 {
 	uint8_t i;
         if( (src !=NULL) && (length >=0) )
@@ -139,20 +163,20 @@ uint8_t* my_reverse(uint8_t* src, uint32_t length) /*Function for reversing byte
 	size_t i,n;
         if( (src !=NULL) && (length >=0) )
       {
-	if(length%2==0) /*If the length is even*/
-	{
-		n=length/2;
-	}
-	else
-	{
-		n=(length-1)/2; /*If the length is odd*/
-	}
-	for(i=0;i<n;i++) /*Loop for reversing the bytes*/
-	{
-		 temp = *(src+i);
-		 *(src+i) = *(src+length-i-1);
-		 *(src+length-i-1) = temp;
-	}
+			if(length%2==0) /*If the length is even*/
+			{
+				n=length/2;
+			}
+			else
+			{
+				n=(length-1)/2; /*If the length is odd*/
+			}
+			for(i=0;i<n;i++) /*Loop for reversing the bytes*/
+			{
+				 temp = *(src+i);
+				 *(src+i) = *(src+length-i-1);
+				 *(src+length-i-1) = temp;
+			}
        }
 
 	return src;
@@ -193,17 +217,27 @@ return;
 }
 /***************************************************************************
 *****************************************************************************/
-void memmove_dma(uint8_t* src, uint8_t* dst, uint32_t length , uint32_t byte)
+void memmove_dma(uint8_t* src, uint8_t* dst, uint32_t length , uint8_t byte)
 {
-
 		uint8_t a= 0,b=2,c=1;
 		SIM_SCGC7 |= SIM_SCGC7_DMA_MASK;
 		SIM_SCGC6 |= SIM_SCGC6_DMAMUX_MASK;
 		DMAMUX0_CHCFG0 &= ~DMAMUX_CHCFG_ENBL_MASK;
 		DMA_SAR0 = (uint32_t) src;
 		DMA_DAR0 = (uint32_t) dst;
+		if((src<dst)&&(src+length>dst))
+		{
+			overlap_flag=1;
+			temp_location = (uint8_t)(uint8_t*) malloc(length);
+			original_length=length;
+			original_byte=byte;
+			original_dst = dst;
+			dst=temp_location;
+		}
+		else
+		{
 
-
+		}
 		if(byte == 4)
 		{
 			DMA_DSR_BCR0 |= length;
@@ -229,18 +263,18 @@ void memmove_dma(uint8_t* src, uint8_t* dst, uint32_t length , uint32_t byte)
 			DMA_DCR0 |= DMA_DCR_DSIZE(c);
 
 		}
-		/*DMA_DCR0 |= DMA_DCR_EINT_MASK;
+		DMA_DCR0 |= DMA_DCR_EINT_MASK;
 		NVIC_EnableIRQ(DMA0_IRQn);
-		__enable_irq;*/
+		__enable_irq;
 		DMAMUX0_CHCFG0 |= DMAMUX_CHCFG_ENBL_MASK;
 		DMA_DCR0 |= DMA_DCR_START_MASK;
-		while(DMA_DSR_BCR0 != DMA_DSR_BCR_DONE_MASK);
+		/*while(DMA_DSR_BCR0 != DMA_DSR_BCR_DONE_MASK);
 		{
 			DMA_DSR_BCR0 |= DMA_DSR_BCR_DONE_MASK;
-		}
+		}*/
 	}
 
-void memset_dma(uint8_t* dst, uint32_t length, uint32_t value, uint32_t byte)
+void memset_dma(uint8_t* dst, uint32_t length, uint32_t value, uint8_t byte)
 {
 
 	uint8_t a= 0,b=2,c=1;
@@ -275,14 +309,20 @@ void memset_dma(uint8_t* dst, uint32_t length, uint32_t value, uint32_t byte)
 		DMA_DCR0 |= DMA_DCR_DSIZE(c);
 
 	}
-	/*DMA_DCR0 |= DMA_DCR_EINT_MASK;
+	DMA_DCR0 |= DMA_DCR_EINT_MASK;
 	NVIC_EnableIRQ(DMA0_IRQn);
-	__enable_irq;*/
+	__enable_irq;
 	DMAMUX0_CHCFG0 |= DMAMUX_CHCFG_ENBL_MASK;
 	DMA_DCR0 |= DMA_DCR_START_MASK;
-	while(DMA_DSR_BCR0 != DMA_DSR_BCR_DONE_MASK);
+	/*while(DMA_DSR_BCR0 != DMA_DSR_BCR_DONE_MASK);
 	{
 		DMA_DSR_BCR0 |= DMA_DSR_BCR_DONE_MASK;
-	}
+	}*/
+}
+
+void DMA_overlap_handler(void)
+{
+	overlap_flag=0;
+	memmove_dma(temp_location, original_dst, original_length , original_byte);
 }
 
