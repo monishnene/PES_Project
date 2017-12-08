@@ -32,8 +32,7 @@ DATA_MISC_COUNT,
 DATA_ANALYSIS_COMPLETED,
 HEARTBEAT,
 }LOG_ID;
-CB_t log_buffer;
-CB_t log_queue;
+CB_t log_information,log_queue,log_warning,log_error,log_profiling_result;
 void log_buffer_configure(void);
 void log_init(void);
 uint32_t log_data(uint32_t* src, uint32_t length);
