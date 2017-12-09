@@ -38,7 +38,6 @@ void SPI_write_byte(uint8_t byte)
 {
         while ((SPI_state() & 0x20) != 0x20); //To check if the Transmitter buffer is empty
 		SPI0->D = byte;                       //Sends the data
-
 }
 
 /************************************************************************
@@ -62,10 +61,9 @@ void SPI_send_packet(uint8_t* p, uint8_t length) {
  * The baud rate prescale and baud rate divisor is then being set
  ***********************************************************************/
 
-uint8_t SPI_read_byte()
+uint8_t SPI_read_byte(uint8_t byte)
 {
-	uint8_t byte;
-	SPI0->D = 0x00;                             //Test value pushed to SPI
+	SPI0->D = byte;                             //Test value pushed to SPI
 	while ((SPI_state() & 0x80) != 0x80);       //To check if the receive buffer is empty
 	byte = SPI0->D;                             // Reads byte
 	return byte;                                // Returns the byte
