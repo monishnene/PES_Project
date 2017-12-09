@@ -1,4 +1,3 @@
-
 /*
  * nordic.c
  * Created on : Nov 23, 2017
@@ -9,16 +8,17 @@
 #include "spi.h"
 #include "gpio.h"
 
+
 /***********************************************************************
  * @brief nrf_read_register
  * It reads the SPI_write_byte register in a variable and returns the value
  ***********************************************************************/
 
-void nrf_read_register(uint8_t register_function)
+uint8_t nrf_read_register(void)
 
 {
-   SPI_write_byte(0x00|register_function);//Reads the command
-
+	uint8_t value = SPI_read_byte();
+	return value;
 }
 
 /***********************************************************************
@@ -26,9 +26,10 @@ void nrf_read_register(uint8_t register_function)
  * It sets the SPI_write_byte register to a value
  ***********************************************************************/
 
-void nrf_write_register(uint8_t register_function)
+void nrf_write_register(uint8_t value)
 {
-  SPI_write_byte(0x25|register_function); //Writes the command
+  SPI_write_byte(value); //Writes the command
+  return;
 }
 
 /***********************************************************************
@@ -41,7 +42,7 @@ void nrf_write_register(uint8_t register_function)
 void nrf_read_status() //function that reads the nrf status register
 {
 	nrf_chip_enable(); //GPIO is made low
-	nrf_read_register(NRF_STATUS_REG);
+	uint8_t i = nrf_read_register();
     SPI_write_byte(0xFF);
 	nrf_chip_disable(); // GPIO is set to high
 
@@ -75,9 +76,10 @@ void nrf_read_status() //function that reads the nrf status register
 {
 	SIM_SCGC5 |= SIM_SCGC5_PORTC_MASK; //enable clock to port C
 	nrf_chip_enable(); //GPIO is made low
-    nrf_read_register(NRF_CONFIG_REG); // Read command to the Config register
+	uint8_t i = nrf_read_register(); // Read command to the Config register
 	SPI_write_byte(0X3F);//Sends a test value to see if j returns the value that is being written to the nrf_write_config
 	nrf_chip_disable(); //GPIO is set to high
+
 
 }
 /***********************************************************************
@@ -164,9 +166,9 @@ void nrf_write_rf_ch() //Write command to rf_ch register
 
 void nrf_read_TX_ADDR() //Read the tx address register
 {
-	uint32_t i;
+	uint8_t i,j;
 	nrf_chip_enable();
-	nrf_read_register(TX_ADDR); //Command to read the TX_ADDR register
+	j = nrf_read_register(); //Command to read the TX_ADDR register
 	 for(i=0;i<5;i++)
 	 {
 
@@ -207,7 +209,7 @@ void nrf_read_fifo_status() //Function to read the nrf fifo_status_register
 {
 
 	nrf_chip_enable();
-    nrf_read_register(FIFO_STATUS_REG); //Command to read the fifo_status_register
+	uint8_t i = nrf_read_register(); //Command to read the fifo_status_register
 	SPI_write_byte(0xFF);
 	nrf_chip_disable();
 }
@@ -239,6 +241,4 @@ void nrf_flush_rx_fifo() //Function that flushes the rx_fifo register
 	SPI_write_byte(0xE2);
 	nrf_chip_disable();
 }
-
-
 
