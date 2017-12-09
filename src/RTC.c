@@ -9,6 +9,8 @@
 #include <stdint.h>
 #include "binary_logger.h"
 #include "rtc.h"
+#define START_CRITICAL __disable_irq();
+#define END_CRITICAL   __enable_irq();
 
 uint32_t date_to_sec(void)
 {
