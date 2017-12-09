@@ -14,11 +14,11 @@
  * It reads the SPI_write_byte register in a variable and returns the value
  ***********************************************************************/
 
-void nrf_read_register(uint8_t register_function)
+uint8_t nrf_read_register(uint8_t value)
 
 {
-   SPI_write_byte(0x00|register_function);//Reads the command
-
+   value = SPI_read_byte(value);
+   return value;
 }
 
 /***********************************************************************
@@ -26,9 +26,9 @@ void nrf_read_register(uint8_t register_function)
  * It sets the SPI_write_byte register to a value
  ***********************************************************************/
 
-void nrf_write_register(uint8_t register_function)
+void nrf_write_register(uint8_t value)
 {
-  SPI_write_byte(0x25|register_function); //Writes the command
+  SPI_write_byte(value); //Writes the command
 }
 
 /***********************************************************************
@@ -44,7 +44,6 @@ void nrf_read_status() //function that reads the nrf status register
 	nrf_read_register(NRF_STATUS_REG);
     SPI_write_byte(0xFF);
 	nrf_chip_disable(); // GPIO is set to high
-
 }
 
 /***********************************************************************
@@ -78,7 +77,6 @@ void nrf_read_status() //function that reads the nrf status register
     nrf_read_register(NRF_CONFIG_REG); // Read command to the Config register
 	SPI_write_byte(0X3F);//Sends a test value to see if j returns the value that is being written to the nrf_write_config
 	nrf_chip_disable(); //GPIO is set to high
-
 }
 /***********************************************************************
  * @brief nrf_read_rf_setup
@@ -221,9 +219,9 @@ void nrf_read_fifo_status() //Function to read the nrf fifo_status_register
 
 void nrf_flush_tx_fifo() //Function that flushes the tx_fifo register
 {
-	nrf_chip_enable();
+	nrf_chip_enable;
 	SPI_write_byte(0xE1);
-	nrf_chip_disable();
+	nrf_chip_disable;
 }
 /***********************************************************************
  * @brief nrf_flush_rx_fifo
@@ -235,9 +233,10 @@ void nrf_flush_tx_fifo() //Function that flushes the tx_fifo register
 
 void nrf_flush_rx_fifo() //Function that flushes the rx_fifo register
 {
-	nrf_chip_enable();
+	nrf_chip_enable;
 	SPI_write_byte(0xE2);
-	nrf_chip_disable();
+	nrf_chip_disable;
 }
+
 
 
