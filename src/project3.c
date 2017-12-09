@@ -16,7 +16,11 @@
 #include "memory.h"
 #include "spi.h"
 #include "nordic.h"
-#include "LED.h"
+#include "gpio.h"
+
+void main()
+{
+
 void profiling_task(void)
 {
 	uint8_t i=CB_buffer_add_item(&log_queue,PROFILING_STARTED);
@@ -48,6 +52,16 @@ void spi_task(void)
 
 void nordic_task(void)
 {
+
+	uint8_t byte = 8;
+	uint8_t register_function = 6;
+	uint8_t i=0;
+	uint8_t j=0;
+	GPIO_nrf_configure();
+	nrf_write_config();
+	nrf_read_config();
+	nrf_write_register(register_function);
+	nrf_read_register(register_function);
 
 }
 
@@ -90,24 +104,6 @@ void project3(void)
 			UART0_D = *peek_ptr;
 			receiver_flag=1;
 		}
-		/*if(peek==65)
-		{
-			LED_ON();
-			LEDFunction(color);
-		}
-		if(peek==66)
-		{
-			LED_OFF();
-			LEDFunction(color);
-		}
-		if(peek==67)
-		{
-			if(color==6)
-			{color=0;}
-			else
-			{color++;}
-			LEDFunction(color);
-		}*/
 		if(peek==68)
 		{
 			data_analysis_task();
@@ -137,4 +133,4 @@ void project3(void)
 		peek=0x00;
 	}
 }
-
+}
