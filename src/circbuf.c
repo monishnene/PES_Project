@@ -70,7 +70,7 @@ uint8_t CB_buffer_remove_item(CB_t* cbptr,uint8_t* store)
  * @(CB_t)* cbptr pointer to circular buffer struct
  * @return error in form of enum defined in structure.h
  ***********************************************************************/
-uint8_t CB_is_full(CB_t* cbptr)
+uint8_t __attribute__((always_inline))static inline CB_is_full(CB_t* cbptr)
 	{
 	if((cbptr->tail)==(cbptr->head)+1)
 		return Buffer_Full;
@@ -86,7 +86,7 @@ uint8_t CB_is_full(CB_t* cbptr)
  * @(CB_t)* cbptr pointer to circular buffer struct
  * @return error in form of enum defined in structure.h
  ***********************************************************************/
-uint8_t CB_is_empty(CB_t* cbptr)
+ static uint8_t __attribute__((always_inline))CB_is_empty(CB_t* cbptr)
 {
 	if((cbptr->tail)==(cbptr->head))
 		return Buffer_Empty;
@@ -153,4 +153,3 @@ uint8_t CB_destroy(CB_t* cbptr)
 	return Success;
 	}
 }
-
