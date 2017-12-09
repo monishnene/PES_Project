@@ -7,15 +7,6 @@
 * Author: Sanika
 */
 
-/*
-* nordic.h
-*
-*
-* Created on: Nov 19, 2017
-*
-* Author: Sanika
-*/
-
 #ifndef NORDIC_H_
 #define NORDIC_H_
 
@@ -46,8 +37,8 @@
 //#define W_TXPAYLOAD (0xA0)
 //#define R_RXPAYLOAD (0x61)
 
-void  nrf_read_register(uint8_t register_function);
-void nrf_write_register(uint8_t register_function);
+uint8_t nrf_read_register(void);
+void nrf_write_register(uint8_t value);
 void nrf_read_status();
 void nrf_write_config();
 void nrf_read_config();
