@@ -16,6 +16,12 @@
 #define log_size 100
 #define log_queue_size 20
 
+/********************************************************************
+ * @brief log_buffer_configure()
+ * Function that is used to configure the log_buffer
+ *
+ ********************************************************************/
+
 void log_buffer_configure(void)
 {
 	uint8_t i;
@@ -46,7 +52,29 @@ void log_buffer_configure(void)
 	log_queue.length = log_size;
 	return;
 }
-
+/*********************************************************
+ * @brief log_item(uint8_t log_id_current)
+ * Function that generates log_item
+ * It handles different cases
+ * CASE Logger is initialized
+ * CASE GPIO is initialized
+ * CASE SYSTEM_INITIALIZED
+ * CASE SYSTEM_HALTED
+ * CASE ERROR
+ * CASE INFO
+ * CASE WARNING
+ * CASE PROFILING_STARTED
+ * CASE PROFILING_RESULT
+ * CASE DATA_RECEIVED
+ * CASE PROFILING_COMPLETED
+ * CASE DATA_ANALAYSIS_STARTED
+ * CASE DATA_ALPHA_COUNT
+ * CASE DATA_PUNCTUATION_COUNT
+ * CASE DATA_NUMERIC_COUNT
+ * CASE DATA_MISC_COUNT
+ * CASE DATA_ANALYSIS_COMPLETED
+ * CASE HEARTBEAT
+ ********************************************************************************/
 void log_item(uint8_t log_id_current)
 {
 	uint32_t real_time=RTC_TSR;;
@@ -216,7 +244,11 @@ void log_item(uint8_t log_id_current)
 		}
 	}
 }
-
+/*****************************************************
+ * @brief log_data 
+ * Function that pushes the log data
+ * returns the count for data
+ *****************************************************/
 
 uint32_t log_data(uint32_t* src, uint32_t length)
 {
@@ -229,7 +261,11 @@ uint32_t log_data(uint32_t* src, uint32_t length)
 	}
 	return count;
 }
-
+/***************************************************
+ * @brief log_string
+ * Function that passes a log string
+ * returns the count for string
+ ***************************************************/
 uint32_t log_string(uint8_t* src, uint32_t length)
 {
 
@@ -241,6 +277,11 @@ uint32_t log_string(uint8_t* src, uint32_t length)
 	}
 	return count;
 }
+/***************************************************
+ * @brief log_integer
+ * Function that passes a log integer
+ * returns the count for integer values
+ ***************************************************/
 
 uint32_t log_integer(uint32_t src)
 {
@@ -255,6 +296,11 @@ uint32_t log_integer(uint32_t src)
 	}
 	return count;
 }
+/***************************************************
+ * @brief log_flush
+ * Function that flushes out the log
+ * returns success or failure
+ ***************************************************/
 
 uint8_t log_flush(void)
 {
