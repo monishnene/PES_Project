@@ -241,4 +241,3 @@ void nrf_flush_rx_fifo() //Function that flushes the rx_fifo register
 }
 
 
-
