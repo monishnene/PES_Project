@@ -17,21 +17,17 @@
 #include "spi.h"
 #include "nordic.h"
 #include "gpio.h"
-
-void main()
-{
-
 void profiling_task(void)
 {
 	uint8_t i=CB_buffer_add_item(&log_queue,PROFILING_STARTED);
-	profiling(10);
+	profiling(5000);
 	return;
 }
 
 void spi_task(void)
 {
-	SPI_write_byte(6);
-	uint8_t i = SPI_read_byte();
+	SPI_write_byte('5');
+	uint8_t i = SPI_read_byte('6');
 	if(i==5)
 	{
 		while((UART0_S1 & UART_S1_TDRE_MASK)==0);
@@ -45,24 +41,23 @@ void spi_task(void)
 	else
 	{
 		while((UART0_S1 & UART_S1_TDRE_MASK)==0);
-		UART0_D = '7';
+		UART0_D = 48+i;
 	}
 }
 
 
 void nordic_task(void)
 {
-
 	uint8_t byte = 8;
 	uint8_t register_function = 6;
 	uint8_t i=0;
 	uint8_t j=0;
-	GPIO_nrf_configure();
 	nrf_write_config();
 	nrf_read_config();
-	nrf_write_register(register_function);
-	nrf_read_register(register_function);
-
+	nrf_write_register('A');
+	uint8_t value=nrf_read_register('B');
+	while((UART0_S1 & UART_S1_TDRE_MASK)==0);
+	UART0_D = 48+value;
 }
 
 void data_analysis_task(void)
@@ -86,11 +81,10 @@ void project3(void)
 	UART_configure();
 	log_buffer_configure();
 	SysTick_Init();
+	GPIO_nrf_configure();
 	SPI_init();
 	uint8_t i=0,j=0,peek=0;
 	uint8_t* peek_ptr = &peek;
-	nrf_write_config();
-	nrf_read_config();
 	RTC_configure();
 	i=CB_buffer_add_item(&log_queue,LOGGER_INITIALIZED);
 	i=CB_buffer_add_item(&log_queue,GPIO_INITIALIZED);
@@ -104,20 +98,38 @@ void project3(void)
 			UART0_D = *peek_ptr;
 			receiver_flag=1;
 		}
-		if(peek==68)
+		/*if(peek==65)
+		{
+			LED_ON();
+			LEDFunction(color);
+		}
+		if(peek==66)
+		{
+			LED_OFF();
+			LEDFunction(color);
+		}
+		if(peek==67)
+		{
+			if(color==6)
+			{color=0;}
+			else
+			{color++;}
+			LEDFunction(color);
+		}*/
+		if(peek=='D'||peek=='d')
 		{
 			data_analysis_task();
 		}
 
-		if(peek==78)
+		if(peek=='N'||peek=='n')
 		{
 			nordic_task();
 		}
-		if(peek==80)
+		if(peek=='P'||peek=='p')
 		{
 			profiling_task();
 		}
-		if(peek==83)
+		if(peek=='S'||peek=='s')
 		{
 			spi_task();
 		}
@@ -133,4 +145,4 @@ void project3(void)
 		peek=0x00;
 	}
 }
-}
+
