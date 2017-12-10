@@ -4,6 +4,12 @@
  * Author : Sanika
  */
 
+/*
+ * spi.c
+ * Created on : Nov 22, 2017
+ * Author : Sanika
+ */
+
 #include "MKL25Z4.h"
 #include "SPI.h"
 
@@ -50,11 +56,11 @@ uint8_t SPI_state(void) {  //Shows the status of SPI
  * Function to write byte to the SPI
  * It writes the byte if the transmitter buffer is empty
  ***********************************************************************/
-  uint8_t SPI_write_byte(uint8_t byte)
+void SPI_write_byte(uint8_t byte)
 {
         while ((SPI_state() & 0x20) != 0x20); //To check if the Transmitter buffer is empty
-		SPI0->D = byte;//Sends the data
-         return byte;
+		SPI0->D = byte;    //Sends the data
+		return;
 }
 
 /************************************************************************
@@ -80,10 +86,11 @@ void SPI_send_packet(uint8_t* p, uint8_t length) {
 
 uint8_t SPI_read_byte()
 {
+
 	SPI0->D = 0x00;                             //Test value pushed to SPI
 	while ((SPI_state() & 0x80) != 0x80);       //To check if the receive buffer is empty
 	uint8_t byte = SPI0->D;                             // Reads byte
-	return byte;                                // Returns the byte
+	return byte;
 }
 /************************************************************************
  * @brief SPI_flush()
