@@ -9,7 +9,8 @@
 		PORTC->PCR[3] = PORT_PCR_MUX(1);
 		GPIOC->PDDR |= 1<<4;
 		GPIOC->PSOR |= 1<<4;
-		GPIOC->PDDR |= 1<<3;
-		GPIOC->PSOR |= 1<<3;
+		GPIOC->PDDR |= 1<<2;
+		GPIOC->PSOR |= 1<<2;
 
  }
+
