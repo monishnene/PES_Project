@@ -50,11 +50,11 @@ uint8_t SPI_state(void) {  //Shows the status of SPI
  * Function to write byte to the SPI
  * It writes the byte if the transmitter buffer is empty
  ***********************************************************************/
-void SPI_write_byte(uint8_t byte)
+  uint8_t SPI_write_byte(uint8_t byte)
 {
         while ((SPI_state() & 0x20) != 0x20); //To check if the Transmitter buffer is empty
-		SPI0->D = byte;    //Sends the data
-		return;
+		SPI0->D = byte;//Sends the data
+         return byte;
 }
 
 /************************************************************************
